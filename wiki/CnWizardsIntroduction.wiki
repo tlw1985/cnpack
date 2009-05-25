@@ -1,5 +1,3 @@
-#CnWizards Introduction.
-
 =====================
 *1. What is CnWizards?*
 =====================
