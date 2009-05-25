@@ -1,10 +1,4 @@
-#summary One-sentence summary of this page.
-
-= Introduction =
-
-CnWizardsIntroduction.
-
-= Details =
+#CnWizards Introduction.
 
 =====================
 *1. What is CnWizards?*
@@ -63,6 +57,9 @@ CnWizards is a FREE, OPENSOURCE tool. Anyone can use CnWizards freely.
 CnPack Team are Made up of Many Chinese Programmers and Delphi / C++ Builder Fans on Internet. Our products include CnPack IDE Wizards, CnPack Component Package and CVSTracNT. etc.
 
 CnPack Website: http://www.cnpack.org
+
 CnPack BBS:     http://bbs.cnpack.org
+
 Nightly Build:  http://www.cnpack.org/downbuilds.php
+
 Email:          master@cnpack.org
