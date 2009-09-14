@@ -1,0 +1,12 @@
+application: cnpack-help
+version: 1
+runtime: python
+api_version: 1
+skip_files: |
+  (.*/CVS/.*)
+
+default_expiration: "1h"
+
+handlers:
+- url: .*
+  script: main.py

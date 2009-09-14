@@ -1,0 +1,31 @@
+application: cnpack-upgrade
+version: 7
+runtime: python
+api_version: 1
+skip_files: |
+  (.*/CVS/.*)
+
+default_expiration: "1h"
+
+handlers:
+- url: /cnwizards/latest/
+  static_files: cnwizards/latest/index.html
+  upload: cnwizards/latest/index.html
+
+- url: /css
+  static_dir: css
+
+- url: /image
+  static_dir: image
+
+- url: /view/
+  script: view.py
+
+- url: /cnwizards/
+  script: cwstat.py
+
+#- url: /geoip.py
+#  script: geoip/geoip.py
+
+- url: .*
+  script: main.py
