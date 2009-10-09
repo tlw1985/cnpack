@@ -1,0 +1,4 @@
+cron:
+- description: deleting old data job
+  url: /tasks/crondelold/
+  schedule: every 5 minutes
