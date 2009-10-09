@@ -22,7 +22,7 @@ class DelOldPage(webapp.RequestHandler):
     dset = db.GqlQuery("SELECT * "
                        "FROM CWLogs "
                        "WHERE date < :1 "
-                       "ORDER BY date DESC "
+                       "ORDER BY date "
                        "LIMIT 0, 100", adate) 
     if dset:
       for rec in dset:
@@ -43,7 +43,7 @@ class CronDelOldPage(webapp.RequestHandler):
     dset = db.GqlQuery("SELECT * "
                        "FROM CWLogs "
                        "WHERE date < :1 "
-                       "ORDER BY date DESC "
+                       "ORDER BY date "
                        "LIMIT 0, 100", adate) 
     if dset:
       for rec in dset:
