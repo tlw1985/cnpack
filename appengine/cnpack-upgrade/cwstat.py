@@ -23,10 +23,11 @@ class CnWizards(webapp.RequestHandler):
     if ret == '':
       ret = default
     else:
-      p = re.compile('(\'|")')
-      ret = p.sub('', ret)
+      p = re.compile('[^a-zA-Z0-9_.\-]')
+      if p.search(ret):
+        ret = default
     return ret
-    
+
   def incLog(self, ipaddr, now, ide, ver, code):
     log = cndef.CWLogs(ipaddr=ipaddr, date=now, ide=ide, ver=ver, code=code)
     log.put()
