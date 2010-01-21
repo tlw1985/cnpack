@@ -10,6 +10,7 @@ import os
 import cgi
 import datetime
 import cndef
+import config
 import wsgiref.handlers
 
 from google.appengine.ext import db
@@ -566,6 +567,20 @@ alt="由 Google App Engine 提供支持" /></td></tr>
 <br>''')
 
   def get(self):
+    username = ''
+    password = ''
+    auth = os.environ.get('HTTP_AUTHORIZATION', '')
+    if auth:
+      scheme, data = auth.split(None, 1)
+      assert scheme.lower() == 'basic'
+      username, password = data.decode('base64').split(':', 1)
+
+    if (username != config.ADMIN_USER) or (password != config.ADMIN_PASS):
+      self.response.headers["WWW-Authenticate"] = 'Basic realm="CnPack Admin Login"'
+      self.response.set_status(401)
+      self.outStr('Access denied.')
+      return
+    
     self.now = datetime.datetime.now() + datetime.timedelta(hours = 8)
     self.today = datetime.date(self.now.year, self.now.month, self.now.day)
     self.alldate = datetime.date.min
