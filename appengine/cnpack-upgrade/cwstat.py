@@ -8,6 +8,7 @@
 
 import os
 import cgi
+import re
 import datetime
 import cndef
 import wsgiref.handlers
@@ -17,6 +18,15 @@ from google.appengine.ext import webapp
 
 class CnWizards(webapp.RequestHandler):
 
+  def getReq(self, ident, default='none'):
+    ret = self.request.get(ident)
+    if ret == '':
+      ret = default
+    else:
+      p = re.compile('(\'|")')
+      ret = p.sub('', ret)
+    return ret
+    
   def incLog(self, ipaddr, now, ide, ver, code):
     log = cndef.CWLogs(ipaddr=ipaddr, date=now, ide=ide, ver=ver, code=code)
     log.put()
@@ -87,12 +97,8 @@ class CnWizards(webapp.RequestHandler):
     if self.request.get('manual') == '1':
       return
 
-    ide = self.request.get('ide')
-    if ide == '':
-      ide = 'none'
-    ver = self.request.get('ver')
-    if ver == '':
-      ver = 'none'
+    ide = self.getReq('ide')
+    ver = self.getReq('ver')
     code = cndef.country_code_by_addr(ipaddr)
 
     self.incLog(ipaddr, now, ide, ver, code)
