@@ -131,6 +131,11 @@ class CWLogs(db.Model):
   ver = db.StringProperty(required=True) # CnWizards Version
   code = db.StringProperty() # Country Code
 
+# Dictionary
+class CWDictionary(db.Model):
+  name = db.StringProperty(required=True)
+  value = db.StringProperty(required=True)
+
 # Count by Hour
 class CWCntHour(db.Model):
   date = db.DateProperty(required=True) # date = min means all the time
@@ -157,5 +162,13 @@ class CWCntVer(db.Model):
 # Count by Country
 class CWCntCountry(db.Model):
   date = db.DateProperty(required=True) # date = min means all the time
+  code = db.StringProperty(required=True)
+  count = db.IntegerProperty(required=True)
+
+# Count by Ide & Ver & Country
+class CWCntUnion(db.Model):
+  date = db.DateProperty(required=True) # date = min means all the time
+  ide = db.StringProperty(required=True)
+  ver = db.StringProperty(required=True)
   code = db.StringProperty(required=True)
   count = db.IntegerProperty(required=True)

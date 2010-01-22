@@ -31,6 +31,12 @@ class CnWizards(webapp.RequestHandler):
   def incLog(self, ipaddr, now, ide, ver, code):
     log = cndef.CWLogs(ipaddr=ipaddr, date=now, ide=ide, ver=ver, code=code)
     log.put()
+    
+  def addToDict(self, name, value):
+    rec = db.get(db.Key.from_path('CWDictionary', 'D:%s:%s' % (name, value)))
+    if not rec:
+      rec = cndef.CWDictionary(name=name, value=value, key_name='D:%s:%s' % (name, value))
+      rec.put()
 
   def incCntHour(self, date, hour):
     rec = db.get(db.Key.from_path('CWCntHour', 'D:%s:%d' % (date, hour)))
@@ -72,6 +78,14 @@ class CnWizards(webapp.RequestHandler):
         rec.count += 1
     rec.put()
 
+  def incCntUnion(self, date_month, ide, ver, code):
+    rec = db.get(db.Key.from_path('CWCntUnion', 'D:%s:%s:%s:%s' % (date_month, ide, ver, code)))
+    if not rec:
+        rec = cndef.CWCntUnion(date=date_month, ide=ide, ver=ver, code=code, count=1, key_name='D:%s:%s:%s:%s' % (date_month, ide, ver, code))
+    else:
+        rec.count += 1
+    rec.put()
+
   def outDatafile(self, fname):
     f = file(fname)
     while True:
@@ -104,6 +118,11 @@ class CnWizards(webapp.RequestHandler):
 
     self.incLog(ipaddr, now, ide, ver, code)
 
+    db.run_in_transaction(self.addToDict, 'month', '%d' % (date_month.year * 100 + date_month.month))
+    db.run_in_transaction(self.addToDict, 'ide', ide)
+    db.run_in_transaction(self.addToDict, 'ver', ver)
+    db.run_in_transaction(self.addToDict, 'code', code)
+
     db.run_in_transaction(self.incCntHour, alldate, now.hour)
     db.run_in_transaction(self.incCntHour, today, now.hour)
 
@@ -115,6 +134,9 @@ class CnWizards(webapp.RequestHandler):
 
     db.run_in_transaction(self.incCntCountry, alldate, code)
     db.run_in_transaction(self.incCntCountry, today, code)
+
+    db.run_in_transaction(self.incCntUnion, alldate, ide, ver, code)
+    db.run_in_transaction(self.incCntUnion, date_month, ide, ver, code)
 
 def main():
   application = webapp.WSGIApplication([

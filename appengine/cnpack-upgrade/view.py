@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 #
-# Copyright 2009 CnPack Team
+# Copyright 2001-2010 CnPack Team
 #
 # Author: Zhou Jingyu (zjy@cnpack.org)
 #
@@ -15,6 +15,12 @@ import wsgiref.handlers
 
 from google.appengine.ext import db
 from google.appengine.ext import webapp
+
+def atoi(s, default = 0):
+  try:
+    return int(s)
+  except:
+    return default
 
 def toStr(s):
   if s != '':
@@ -43,12 +49,7 @@ def ipUrl(ipaddr):
 class ViewPage(webapp.RequestHandler):
 
   def getint(self, ident, default=0):
-    ret = self.request.get(ident)
-    if ret == '':
-      ret = default
-    else:
-      ret = int(ret)
-    return ret
+    return atoi(self.request.get(ident), default)
 
   def outStr(self, s):
     self.response.out.write(s)
@@ -102,6 +103,7 @@ class ViewPage(webapp.RequestHandler):
 <a href="/view/?kind=3">IDE 统计</a>
 <a href="/view/?kind=4">版本统计</a>
 <a href="/view/?kind=5">区域统计</a>
+<a href="/view/?kind=8">组合查询</a>
 <a href="/view/?kind=6">日志查看</a>
 <br>
 <br>''')
@@ -113,7 +115,7 @@ class ViewPage(webapp.RequestHandler):
     <tr><td><hr></td></tr>
   </table>
   <table border=0 width=770 height=20 cellspacing=0 cellpadding=0>
-    <tr><td align="center">版权所有(C) 2001-2009 <a href="mailto:master@cnpack.org">CnPack 开发组</a></td></tr>
+    <tr><td align="center">版权所有(C) 2001-2010 <a href="mailto:master@cnpack.org">CnPack 开发组</a></td></tr>
     <tr><td align="center">程序编写：<a href="mailto:zjy@cnpack.org">周劲羽</a></td></tr>
     <tr><td align="center"><img src="http://code.google.com/appengine/images/appengine-noborder-120x30.gif" 
 alt="由 Google App Engine 提供支持" /></td></tr>
@@ -566,6 +568,144 @@ alt="由 Google App Engine 提供支持" /></td></tr>
 </table>
 <br>''')
 
+  def getMonthStr(self, date):
+    if date == self.alldate:
+      return '全部'
+    else:
+      return '%s-%s' % (date.year, date.month)
+  
+  def outQuery(self):
+    num = 20
+    idate = self.getint('date', 0)
+    if idate > 100:
+      year = idate / 100
+      month = idate % 100
+      date = datetime.date(int(year), int(month), 1)
+    else:
+      date = self.alldate
+    ide = self.request.get('ide')
+    ver = self.request.get('ver')
+    code = self.request.get('code')
+    
+    self.outStr('条件组合查询：')
+    if self.offset >= 1:
+      self.outStr('<a href="/view/?kind=8&offset=%d&date=%d&ide=%s&ver=%s&code=%s">上一页</a>&nbsp;' % (self.offset - 1, idate, toStr(ide), toStr(ver), toStr(code)))
+    self.outStr('<a href="/view/?kind=8&offset=0&date=%d&ide=%s&ver=%s&code=%s">当前</a>&nbsp;' % (idate, toStr(ide), toStr(ver), toStr(code)))
+    self.outStr('<a href="/view/?kind=8&offset=%d&date=%d&ide=%s&ver=%s&code=%s">下一页</a>&nbsp;' % (self.offset + 1, idate, toStr(ide), toStr(ver), toStr(code)))
+
+    self.outStr('''
+<form method="get" name="query" action="/view/" class="form">
+<input type="hidden" name="kind" value="8">
+月份:&nbsp;
+<select size="1" name="date">
+<option value="">全部</option>''')
+    dset = db.GqlQuery("SELECT * "
+                       "FROM CWDictionary "
+                       "WHERE name = 'month' "
+                       "ORDER BY value DESC ")
+    for rec in dset:
+      ival = atoi(rec.value)
+      if ival > 100:
+        if ival == idate:
+          selected = 'selected'
+        else:
+          selected = ''
+        self.outStr('<option %s value="%d">%d-%d</option>' % (selected, ival, ival / 100, ival % 100))
+
+    self.outStr('''
+</select>
+&nbsp;&nbsp;国家/地区:&nbsp;
+<select size="1" name="code">
+<option value="">全部</option>''')
+    dset = db.GqlQuery("SELECT * "
+                       "FROM CWDictionary "
+                       "WHERE name = 'code' "
+                       "ORDER BY value ")
+    for rec in dset:
+      if rec.value == code:
+        selected = 'selected'
+      else:
+        selected = ''
+      self.outStr('<option %s value="%s">%s</option>' % (selected, toStr(rec.value), toStr(cndef.country_name_by_code(rec.value))))
+
+    self.outStr('''
+</select>
+&nbsp;&nbsp;IDE:&nbsp;
+<select size="1" name="ide">
+<option value="">全部</option>''')
+    dset = db.GqlQuery("SELECT * "
+                       "FROM CWDictionary "
+                       "WHERE name = 'ide' "
+                       "ORDER BY value ")
+    for rec in dset:
+      if rec.value == ide:
+        selected = 'selected'
+      else:
+        selected = ''
+      self.outStr('<option %s value="%s">%s</option>' % (selected, toStr(rec.value), toStr(rec.value)))
+
+    self.outStr('''
+</select>
+&nbsp;&nbsp;版本号:&nbsp;
+<select size="1" name="ver">
+<option value="">全部</option>''')
+    dset = db.GqlQuery("SELECT * "
+                       "FROM CWDictionary "
+                       "WHERE name = 'ver' "
+                       "ORDER BY value ")
+    for rec in dset:
+      if rec.value == ver:
+        selected = 'selected'
+      else:
+        selected = ''
+      self.outStr('<option %s value="%s">%s</option>' % (selected, toStr(rec.value), toStr(rec.value)))
+
+    self.outStr('''
+</select>
+<input type="submit" value="提交" class="btn2">&nbsp;
+<input type="reset" value="重置" class="btn2">
+</form>''')
+
+    swhere = " WHERE date = :1"
+    if date == '':
+      date = self.alldate
+    if ide != '':
+      swhere += " AND ide = '%s'" % (ide)
+    if ver != '':
+      swhere += " AND ver = '%s'" % (ver)
+    if code != '':
+      swhere += " AND code = '%s'" % (code)
+    dset = db.GqlQuery("SELECT * "
+                       "FROM CWCntUnion "
+                       "%s "
+                       "ORDER BY count DESC "
+                       "LIMIT %d, %d" % (swhere, self.offset * num, num), date)
+    cntall = []
+    for rec in dset:
+      cntall.append(rec.count)
+    allmax = self.getMax(cntall)
+    allsum = self.getSum(cntall)
+
+    self.outStr('''
+<table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
+  <tr>
+    <td width="8%">月份</td>
+    <td width="33%">访问数</td>
+    <td width="27%">国家/地区</td>
+    <td width="12%">IDE</td>
+    <td width="18%">版本号</td>''')
+
+    for rec in dset:
+      self.outStr('<tr>')
+      self.outStr('<td>%s</td>' % (self.getMonthStr(rec.date)))
+      self.outStr("<td>&nbsp;<img src='/image/gauge.gif' alt='%d' width=%d height=7>&nbsp;%d%s</td>" %
+        (rec.count, rec.count * 130 / allmax, rec.count, self.getPercent(rec.count, allsum)))
+      self.outStr('<td>%s</td><td>%s</td><td>%s</td>' % (codeUrl(rec.code), ideUrl(rec.ide), verUrl(rec.ver)))
+      self.outStr('</tr>')
+    self.outStr('''
+</table>
+<br>''')
+
   def get(self):
     username = ''
     password = ''
@@ -605,6 +745,8 @@ alt="由 Google App Engine 提供支持" /></td></tr>
       self.outLog()
     elif kind == 7:
       self.outDetail()
+    elif kind == 8:
+      self.outQuery()
 
     self.outFoot()
 
