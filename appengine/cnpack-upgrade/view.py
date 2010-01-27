@@ -344,9 +344,9 @@ alt="由 Google App Engine 提供支持" /></td></tr>
     self.outStr('''
 <table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
   <tr>
-    <td width="6%">IDE</td>
-    <td width="32%">所有日期数据</td>''')
-    self.outStr('<td width="31%%">%s</td><td width="31%%">%s</td></tr>' %
+    <td width="16%">IDE</td>
+    <td width="29%">所有日期数据</td>''')
+    self.outStr('<td width="28%%">%s</td><td width="28%%">%s</td></tr>' %
       (self.getDateStr(date - datetime.timedelta(1)), self.getDateStr(date)))
     self.outStr("<tr><td>全部</td><td>&nbsp;%d</td><td>&nbsp;%d</td><td>&nbsp;%d</td></tr>" %
       (allsum, lastsum, daysum))
@@ -354,11 +354,11 @@ alt="由 Google App Engine 提供支持" /></td></tr>
     for i in range(len(ides)):
       self.outStr('<tr>')
       self.outStr("<td>&nbsp;%s</td><td>&nbsp;<img src='/image/gauge.gif' alt='%d' width=%d height=7>&nbsp;%d%s</td>" %
-        (ideUrl(ides[i]), cntall[i], cntall[i] * 130 / allmax, cntall[i], self.getPercent(cntall[i], allsum)))
+        (ideUrl(ides[i]), cntall[i], cntall[i] * 110 / allmax, cntall[i], self.getPercent(cntall[i], allsum)))
       self.outStr("<td>&nbsp;<img src='/image/gauge.gif' alt='%d' width=%d height=7>&nbsp;%d%s</td>" %
-        (cntlast[i], cntlast[i] * 130 / lastmax, cntlast[i], self.getPercent(cntlast[i], lastsum)))
+        (cntlast[i], cntlast[i] * 110 / lastmax, cntlast[i], self.getPercent(cntlast[i], lastsum)))
       self.outStr("<td>&nbsp;<img src='/image/gauge.gif' alt='%d' width=%d height=7>&nbsp;%d%s</td>" %
-        (cntday[i], cntday[i] * 130 / daymax, cntday[i], self.getPercent(cntday[i], daysum)))
+        (cntday[i], cntday[i] * 110 / daymax, cntday[i], self.getPercent(cntday[i], daysum)))
       self.outStr('</tr>')
     self.outStr('''
 </table>
@@ -520,11 +520,11 @@ alt="由 Google App Engine 提供支持" /></td></tr>
     self.outStr('''
 <table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
   <tr>
-    <td width="24%">时间</td>
-    <td width="16%">IP地址</td>
+    <td width="22%">时间</td>
+    <td width="14%">IP地址</td>
     <td width="30%">国家/地区</td>
-    <td width="8%">IDE</td>
-    <td width="22%">版本号</td>''')
+    <td width="16%">IDE</td>
+    <td width="16%">版本号</td>''')
 
     for rec in dset:
       self.outStr('<tr>')
@@ -553,11 +553,11 @@ alt="由 Google App Engine 提供支持" /></td></tr>
     self.outStr('''
 <table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
   <tr>
-    <td width="24%">时间</td>
-    <td width="16%">IP地址</td>
+    <td width="22%">时间</td>
+    <td width="14%">IP地址</td>
     <td width="30%">国家/地区</td>
-    <td width="8%">IDE</td>
-    <td width="22%">版本号</td>''')
+    <td width="16%">IDE</td>
+    <td width="16%">版本号</td>''')
 
     for rec in dset:
       self.outStr('<tr>')
@@ -629,8 +629,8 @@ alt="由 Google App Engine 提供支持" /></td></tr>
       self.outStr('<option %s value="%s">%s</option>' % (selected, toStr(rec.value), toStr(cndef.country_name_by_code(rec.value))))
 
     self.outStr('''
-</select>
-&nbsp;&nbsp;IDE:&nbsp;
+</select><br>
+IDE:&nbsp;
 <select size="1" name="ide">
 <option value="">全部</option>''')
     dset = db.GqlQuery("SELECT * "
@@ -690,9 +690,9 @@ alt="由 Google App Engine 提供支持" /></td></tr>
 <table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
   <tr>
     <td width="8%">月份</td>
-    <td width="33%">访问数</td>
-    <td width="27%">国家/地区</td>
-    <td width="12%">IDE</td>
+    <td width="30%">访问数</td>
+    <td width="24%">国家/地区</td>
+    <td width="18%">IDE</td>
     <td width="18%">版本号</td>''')
 
     for rec in dset:
