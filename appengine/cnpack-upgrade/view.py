@@ -61,6 +61,8 @@ class ViewPage(webapp.RequestHandler):
       return ''
 
   def getMax(self, lst):
+    if len(lst) == 0:
+      return 0
     ret = max(lst)
     if ret < 1:
       ret = 1
