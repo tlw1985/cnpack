@@ -51,3 +51,9 @@ indexes:
   - name: date
   - name: count
     direction: desc
+
+- kind: CWDictionary
+  properties:
+  - name: name
+  - name: value
+    direction: desc
