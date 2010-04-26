@@ -17,7 +17,7 @@ indexes:
   - name: count
     direction: desc
 
-# Used 25 times in query history.
+# Used 2 times in query history.
 - kind: CWCntIde
   properties:
   - name: date
@@ -25,115 +25,129 @@ indexes:
     direction: desc
 
 # Used 6 times in query history.
+- kind: CWCntLang
+  properties:
+  - name: date
+  - name: count
+    direction: desc
+
+# Unused in query history -- copied from input.
 - kind: CWCntUnion
   properties:
   - name: code
   - name: date
+  - name: count
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: CWCntUnion
+  properties:
+  - name: code
+  - name: date
+  - name: ide
+  - name: count
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: CWCntUnion
+  properties:
+  - name: code
+  - name: date
+  - name: ide
+  - name: ver
+  - name: count
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: CWCntUnion
+  properties:
+  - name: code
+  - name: date
+  - name: ver
+  - name: count
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: CWCntUnion
+  properties:
+  - name: date
+  - name: count
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: CWCntUnion
+  properties:
+  - name: date
+  - name: ide
+  - name: count
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: CWCntUnion
+  properties:
+  - name: date
+  - name: ide
+  - name: ver
+  - name: count
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: CWCntUnion
+  properties:
+  - name: date
+  - name: ver
   - name: count
     direction: desc
 
 # Used 4 times in query history.
-- kind: CWCntUnion
-  properties:
-  - name: code
-  - name: date
-  - name: ide
-  - name: count
-    direction: desc
-
-# Used 10 times in query history.
-- kind: CWCntUnion
-  properties:
-  - name: code
-  - name: date
-  - name: ide
-  - name: ver
-  - name: count
-    direction: desc
-
-# Used 2 times in query history.
-- kind: CWCntUnion
-  properties:
-  - name: code
-  - name: date
-  - name: ver
-  - name: count
-    direction: desc
-
-# Used 83 times in query history.
-- kind: CWCntUnion
-  properties:
-  - name: date
-  - name: count
-    direction: desc
-
-# Used 5 times in query history.
-- kind: CWCntUnion
-  properties:
-  - name: date
-  - name: ide
-  - name: count
-    direction: desc
-
-# Used 17 times in query history.
-- kind: CWCntUnion
-  properties:
-  - name: date
-  - name: ide
-  - name: ver
-  - name: count
-    direction: desc
-
-# Used 6 times in query history.
-- kind: CWCntUnion
-  properties:
-  - name: date
-  - name: ver
-  - name: count
-    direction: desc
-
-# Used 12 times in query history.
 - kind: CWCntVer
   properties:
   - name: date
   - name: count
     direction: desc
 
-# Used 185 times in query history.
+# Unused in query history -- copied from input.
 - kind: CWDictionary
   properties:
   - name: name
   - name: value
 
-# Used 80 times in query history.
+# Unused in query history -- copied from input.
 - kind: CWDictionary
   properties:
   - name: name
   - name: value
     direction: desc
 
-# Used 2 times in query history.
+# Unused in query history -- copied from input.
 - kind: CWLogs
   properties:
   - name: code
   - name: date
     direction: desc
 
-# Used 5 times in query history.
+# Unused in query history -- copied from input.
 - kind: CWLogs
   properties:
   - name: ide
   - name: date
     direction: desc
 
-# Used 2 times in query history.
+# Unused in query history -- copied from input.
 - kind: CWLogs
   properties:
   - name: ipaddr
   - name: date
     direction: desc
 
-# Used 2 times in query history.
+# Used 3 times in query history.
+- kind: CWLogs
+  properties:
+  - name: lang
+  - name: date
+    direction: desc
+
+# Unused in query history -- copied from input.
 - kind: CWLogs
   properties:
   - name: ver

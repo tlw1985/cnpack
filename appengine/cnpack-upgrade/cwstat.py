@@ -28,8 +28,8 @@ class CnWizards(webapp.RequestHandler):
         ret = default
     return ret
 
-  def incLog(self, ipaddr, now, ide, ver, code):
-    log = cndef.CWLogs(ipaddr=ipaddr, date=now, ide=ide, ver=ver, code=code)
+  def incLog(self, ipaddr, now, ide, ver, code, lang):
+    log = cndef.CWLogs(ipaddr=ipaddr, date=now, ide=ide, ver=ver, code=code, lang=lang)
     log.put()
     
   def addToDict(self, name, value):
@@ -78,6 +78,14 @@ class CnWizards(webapp.RequestHandler):
         rec.count += 1
     rec.put()
 
+  def incCntLang(self, date, lang):
+    rec = db.get(db.Key.from_path('CWCntLang', 'D:%s:%s' % (date, lang)))
+    if not rec:
+        rec = cndef.CWCntLang(date=date, lang=lang, count=1, key_name='D:%s:%s' % (date, lang))
+    else:
+        rec.count += 1
+    rec.put()
+
   def incCntUnion(self, date_month, ide, ver, code):
     rec = db.get(db.Key.from_path('CWCntUnion', 'D:%s:%s:%s:%s' % (date_month, ide, ver, code)))
     if not rec:
@@ -115,8 +123,9 @@ class CnWizards(webapp.RequestHandler):
     ide = self.getReq('ide')
     ver = self.getReq('ver')
     code = cndef.country_code_by_addr(ipaddr)
+    lang = self.getReq('langid')
 
-    self.incLog(ipaddr, now, ide, ver, code)
+    self.incLog(ipaddr, now, ide, ver, code, lang)
 
     db.run_in_transaction(self.addToDict, 'month', '%d' % (date_month.year * 100 + date_month.month))
     db.run_in_transaction(self.addToDict, 'ide', ide)
@@ -134,6 +143,9 @@ class CnWizards(webapp.RequestHandler):
 
     db.run_in_transaction(self.incCntCountry, alldate, code)
     db.run_in_transaction(self.incCntCountry, today, code)
+
+    db.run_in_transaction(self.incCntLang, alldate, lang)
+    db.run_in_transaction(self.incCntLang, today, lang)
 
     db.run_in_transaction(self.incCntUnion, alldate, ide, ver, code)
     db.run_in_transaction(self.incCntUnion, date_month, ide, ver, code)

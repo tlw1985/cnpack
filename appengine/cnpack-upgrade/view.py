@@ -43,6 +43,11 @@ def codeUrl(code):
     code = '--'
   return toUrl('code', code, cndef.country_name_by_code(code))
 
+def langUrl(lang):
+  if not (lang and lang != ''):
+    lang = 'none'
+  return toUrl('lang', lang, cndef.lang_name_by_id(lang))
+
 def ipUrl(ipaddr):
   return toUrl('ipaddr', ipaddr, ipaddr)
 
@@ -105,6 +110,7 @@ class ViewPage(webapp.RequestHandler):
 <a href="/view/?kind=3">IDE 统计</a>
 <a href="/view/?kind=4">版本统计</a>
 <a href="/view/?kind=5">区域统计</a>
+<a href="/view/?kind=9">语言统计</a>
 <a href="/view/?kind=8">组合查询</a>
 <a href="/view/?kind=6">日志查看</a>
 <br>
@@ -496,6 +502,71 @@ alt="由 Google App Engine 提供支持" /></td></tr>
 </table>
 <br>''')
 
+  def outLang(self):
+    date = self.today - datetime.timedelta(self.offset)
+    dset = db.GqlQuery("SELECT * "
+                       "FROM CWCntLang "
+                       "WHERE date = :1 ORDER BY count DESC",
+                       self.alldate)
+    Langs = []
+    cntall = []
+    for rec in dset:
+      Langs.append(rec.lang)
+      cntall.append(rec.count)
+
+    cntday = [0 for x in range(len(Langs))]
+    dset = db.GqlQuery("SELECT * "
+                       "FROM CWCntLang "
+                       "WHERE date = :1",
+                       date)
+    for rec in dset:
+      if Langs.count(rec.lang) > 0:
+        cntday[Langs.index(rec.lang)] = rec.count
+
+    cntlast = [0 for x in range(len(Langs))]
+    dset = db.GqlQuery("SELECT * "
+                       "FROM CWCntLang "
+                       "WHERE date = :1",
+                       date - datetime.timedelta(1))
+    for rec in dset:
+      if Langs.count(rec.lang) > 0:
+        cntlast[Langs.index(rec.lang)] = rec.count
+
+    allmax = self.getMax(cntall)
+    allsum = self.getSum(cntall)
+    daymax = self.getMax(cntday)
+    daysum = self.getSum(cntday)
+    lastmax = self.getMax(cntlast)
+    lastsum = self.getSum(cntlast)
+
+    self.outStr('语言统计数据：')
+    self.outStr('<a href="/view/?kind=9&offset=%d">前一天</a>&nbsp;' % (self.offset + 1))
+    self.outStr('<a href="/view/?kind=9&offset=0">今天</a>&nbsp;')
+    if self.offset >= 1:
+      self.outStr('<a href="/view/?kind=9&offset=%d">后一天</a>&nbsp;' % (self.offset - 1))
+    self.outStr('''
+<table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
+  <tr>
+    <td width="16%">语言</td>
+    <td width="28%">所有日期数据</td>''')
+    self.outStr('<td width="28%%">%s</td><td width="28%%">%s</td></tr>' %
+      (self.getDateStr(date - datetime.timedelta(1)), self.getDateStr(date)))
+    self.outStr("<tr><td>全部&nbsp;(%d个)</td><td>&nbsp;%d</td><td>&nbsp;%d</td><td>&nbsp;%d</td></tr>" %
+      (len(Langs), allsum, lastsum, daysum))
+
+    for i in range(len(Langs)):
+      self.outStr('<tr>')
+      self.outStr("<td>&nbsp;%s</td><td>&nbsp;<img src='/image/gauge.gif' alt='%d' width=%d height=7>&nbsp;%d%s</td>" %
+        (langUrl(Langs[i]), cntall[i], cntall[i] * 110 / allmax, cntall[i], self.getPercent(cntall[i], allsum)))
+      self.outStr("<td>&nbsp;<img src='/image/gauge.gif' alt='%d' width=%d height=7>&nbsp;%d%s</td>" %
+        (cntlast[i], cntlast[i] * 110 / lastmax, cntlast[i], self.getPercent(cntlast[i], lastsum)))
+      self.outStr("<td>&nbsp;<img src='/image/gauge.gif' alt='%d' width=%d height=7>&nbsp;%d%s</td>" %
+        (cntday[i], cntday[i] * 110 / daymax, cntday[i], self.getPercent(cntday[i], daysum)))
+      self.outStr('</tr>')
+    self.outStr('''
+</table>
+<br>''')
+
   def outLog(self):
     num = 20
     min = self.getint('min')
@@ -522,16 +593,17 @@ alt="由 Google App Engine 提供支持" /></td></tr>
     self.outStr('''
 <table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
   <tr>
-    <td width="22%">时间</td>
-    <td width="14%">IP地址</td>
-    <td width="30%">国家/地区</td>
-    <td width="16%">IDE</td>
-    <td width="16%">版本号</td>''')
+    <td width="20%">时间</td>
+    <td width="12%">IP地址</td>
+    <td width="28%">国家/地区</td>
+    <td width="12%">语言</td>
+    <td width="14%">IDE</td>
+    <td width="14%">版本号</td>''')
 
     for rec in dset:
       self.outStr('<tr>')
-      self.outStr('<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>' %
-        (rec.date, ipUrl(rec.ipaddr), codeUrl(rec.code), ideUrl(rec.ide), verUrl(rec.ver)))
+      self.outStr('<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>' %
+        (rec.date, ipUrl(rec.ipaddr), codeUrl(rec.code), langUrl(rec.lang), ideUrl(rec.ide), verUrl(rec.ver)))
       self.outStr('</tr>')
     self.outStr('''
 </table>
@@ -555,16 +627,17 @@ alt="由 Google App Engine 提供支持" /></td></tr>
     self.outStr('''
 <table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
   <tr>
-    <td width="22%">时间</td>
-    <td width="14%">IP地址</td>
-    <td width="30%">国家/地区</td>
-    <td width="16%">IDE</td>
-    <td width="16%">版本号</td>''')
+    <td width="20%">时间</td>
+    <td width="12%">IP地址</td>
+    <td width="28%">国家/地区</td>
+    <td width="12%">语言</td>
+    <td width="14%">IDE</td>
+    <td width="14%">版本号</td>''')
 
     for rec in dset:
       self.outStr('<tr>')
-      self.outStr('<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>' %
-        (rec.date, ipUrl(rec.ipaddr), codeUrl(rec.code), ideUrl(rec.ide), verUrl(rec.ver)))
+      self.outStr('<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>' %
+        (rec.date, ipUrl(rec.ipaddr), codeUrl(rec.code), langUrl(rec.lang), ideUrl(rec.ide), verUrl(rec.ver)))
       self.outStr('</tr>')
     self.outStr('''
 </table>
@@ -749,6 +822,8 @@ IDE:&nbsp;
       self.outDetail()
     elif kind == 8:
       self.outQuery()
+    elif kind == 9:
+      self.outLang()
 
     self.outFoot()
 

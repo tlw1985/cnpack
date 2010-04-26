@@ -93,6 +93,14 @@ COUNTRY_NAMES = (
     "Aland Islands","Guernsey","Isle of Man","Jersey","Saint Barthelemy","Saint Martin"
     )
 
+LANG_IDS = (
+    'none', '1028', '1031', '1033', '1049', '2052'
+    )
+
+LANG_NAMES = (
+    'Unknown', 'ZH-TW(1028)', 'German(1031)', 'English(1033)', 'Russion(1049)', 'ZH-CN(2052)'
+    )
+
 # Count by Country
 class GeoIP(db.Model):
   startip = db.IntegerProperty(required=True)
@@ -123,6 +131,14 @@ def country_name_by_code(code):
   else:
     return names[0]
 
+def lang_name_by_id(lang):
+  langs = list(LANG_IDS)
+  names = list(LANG_NAMES)
+  if langs.count(lang) > 0:
+    return names[langs.index(lang)]
+  else:
+    return names[0]
+
 # Access logs
 class CWLogs(db.Model):
   ipaddr = db.StringProperty(required=True)
@@ -130,6 +146,7 @@ class CWLogs(db.Model):
   ide = db.StringProperty(required=True) # IDE Kind
   ver = db.StringProperty(required=True) # CnWizards Version
   code = db.StringProperty() # Country Code
+  lang = db.StringProperty() # Language ID
 
 # Dictionary
 class CWDictionary(db.Model):
@@ -163,6 +180,12 @@ class CWCntVer(db.Model):
 class CWCntCountry(db.Model):
   date = db.DateProperty(required=True) # date = min means all the time
   code = db.StringProperty(required=True)
+  count = db.IntegerProperty(required=True)
+
+# Count by Lang
+class CWCntLang(db.Model):
+  date = db.DateProperty(required=True) # date = min means all the time
+  lang = db.StringProperty(required=True)
   count = db.IntegerProperty(required=True)
 
 # Count by Ide & Ver & Country
