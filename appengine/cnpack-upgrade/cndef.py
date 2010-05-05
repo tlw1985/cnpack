@@ -94,11 +94,21 @@ COUNTRY_NAMES = (
     )
 
 LANG_IDS = (
-    'none', '1028', '1031', '1033', '1049', '2052'
+    'none',
+    '1025', '1028', '1029', '1030', '1031',
+    '1032', '1033', '1034', '1035', '1036',
+    '1037', '1038', '1040', '1041', '1042',
+    '1043', '1044', '1045', '1046', '1049',
+    '1053', '1054', '0155', '2052', '2070',
     )
 
 LANG_NAMES = (
-    'Unknown', 'ZH-TW(1028)', 'German(1031)', 'English(1033)', 'Russion(1049)', 'ZH-CN(2052)'
+    'Unknown',
+    'Arabic(1025)', 'ZH-TW(1028)', 'Czech(1029)', 'Danish(1030)', 'German(1031)', 
+    'Greek(1032)', 'English(1033)', 'Spanish(1034)', 'Finnish(1035)', 'French(1036)',
+    'Hebrew(1037)', 'Hungarian(1038)', 'Italian(1040)', 'Japanese(1041)', 'Korean(1042)',
+    'Dutch(1043)', 'Norwegian(1044)', 'Polish(1045)', 'Portuguese-BR(1046)', 'Russion(1049)',
+    'Swedish(1053)', 'Thai(1054)', 'Turkish(1055)', 'ZH-CN(2052)', 'Portuguese(2070)'
     )
 
 # Count by Country
