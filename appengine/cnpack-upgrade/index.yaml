@@ -10,21 +10,21 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 3 times in query history.
+# Used 7 times in query history.
 - kind: CWCntCountry
   properties:
   - name: date
   - name: count
     direction: desc
 
-# Used 2 times in query history.
+# Used 7 times in query history.
 - kind: CWCntIde
   properties:
   - name: date
   - name: count
     direction: desc
 
-# Used 6 times in query history.
+# Used 8 times in query history.
 - kind: CWCntLang
   properties:
   - name: date
@@ -67,7 +67,7 @@ indexes:
   - name: count
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 2 times in query history.
 - kind: CWCntUnion
   properties:
   - name: date
@@ -99,20 +99,20 @@ indexes:
   - name: count
     direction: desc
 
-# Used 4 times in query history.
+# Used 7 times in query history.
 - kind: CWCntVer
   properties:
   - name: date
   - name: count
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 3 times in query history.
 - kind: CWDictionary
   properties:
   - name: name
   - name: value
 
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: CWDictionary
   properties:
   - name: name

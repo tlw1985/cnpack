@@ -157,6 +157,24 @@ class CWLogs(db.Model):
   ver = db.StringProperty(required=True) # CnWizards Version
   code = db.StringProperty() # Country Code
   lang = db.StringProperty() # Language ID
+  
+class CWConfig(db.Model):
+  name = db.StringProperty(required=True)
+  value = db.StringProperty(required=True)  
+
+class CWTemp1(db.Model):
+  date = db.DateTimeProperty(required=True)
+  ide = db.StringProperty(required=True) # IDE Kind
+  ver = db.StringProperty(required=True) # CnWizards Version
+  code = db.StringProperty(required=True) # Country Code
+  lang = db.StringProperty(required=True) # Language ID
+
+class CWTemp2(db.Model):
+  date = db.DateTimeProperty(required=True)
+  ide = db.StringProperty(required=True) # IDE Kind
+  ver = db.StringProperty(required=True) # CnWizards Version
+  code = db.StringProperty(required=True) # Country Code
+  lang = db.StringProperty(required=True) # Language ID
 
 # Dictionary
 class CWDictionary(db.Model):
