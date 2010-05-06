@@ -1,8 +1,8 @@
 cron:
 - description: deleting old data job
   url: /tasks/crondelold/
-  schedule: every 3 minutes
+  schedule: every 5 minutes
 
 - description: commit stat data job
   url: /tasks/cronstat/
-  schedule: every 5 minutes
+  schedule: every 3 minutes
