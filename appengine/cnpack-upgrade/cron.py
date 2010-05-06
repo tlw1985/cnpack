@@ -176,19 +176,12 @@ class CronStatPage(webapp.RequestHandler):
 
     while len(lstDate) > 0:
       date = datetime.date(lstDate[0].year, lstDate[0].month, lstDate[0].day)
-      dicHour = {}
       dicIde = {}
       dicVer = {}
       dicCode = {}
       dicLang = {}
       for i in range(len(lstDate) - 1, -1, -1):
         if date == datetime.date(lstDate[i].year, lstDate[i].month, lstDate[i].day):
-          hour = lstDate[i].hour
-          if dicHour.has_key(hour):
-            dicHour[hour] = dicHour[hour] + 1
-          else:
-            dicHour[hour] = 1
-
           ide = lstIde[i]
           if dicIde.has_key(ide):
             dicIde[ide] = dicIde[ide] + 1
@@ -218,10 +211,6 @@ class CronStatPage(webapp.RequestHandler):
           del lstVer[i]
           del lstCode[i]
           del lstLang[i]
-
-      for hour, count in dicHour.items():
-        db.run_in_transaction(self.incCntHour, alldate, hour, count)
-        db.run_in_transaction(self.incCntHour, date, hour, count)
 
       for ide, count in dicIde.items():
         db.run_in_transaction(self.incCntIde, alldate, ide, count)
