@@ -93,7 +93,10 @@ class CnWizards(webapp.RequestHandler):
       db.run_in_transaction(self.incCntHour, today, now.hour)
       db.run_in_transaction(self.incCntHour, alldate, now.hour)
 
-      ipaddr = os.environ['REMOTE_ADDR']
+      ipaddr = self.getReq('ip', '')
+      if cndef.ip2long(ipaddr) == 0:
+        ipaddr = os.environ['REMOTE_ADDR']
+      
       ide = self.getReq('ide')
       ver = self.getReq('ver')
       code = cndef.country_code_by_addr(ipaddr)

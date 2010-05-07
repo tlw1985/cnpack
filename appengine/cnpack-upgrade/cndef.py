@@ -119,8 +119,11 @@ class GeoIP(db.Model):
 
 def ip2long(ip):
   ip_array = ip.split('.')
-  ip_long = int(ip_array[0]) * 16777216 + int(ip_array[1]) * 65536 + int(ip_array[2]) * 256 + int(ip_array[3])
-  return ip_long
+  if len(ip_array) == 4:
+    ip_long = int(ip_array[0]) * 16777216 + int(ip_array[1]) * 65536 + int(ip_array[2]) * 256 + int(ip_array[3])
+    return ip_long
+  else:
+    return 0
 
 def country_code_by_addr(ip):
   ipnum = ip2long(ip)
