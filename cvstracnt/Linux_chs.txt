@@ -1,0 +1,46 @@
+CVSTrac Unix/Linux 中文版源码编译说明
+=====================================
+
+CnPack 开发组 周劲羽
+http://www.cnpack.org
+
+1. 编译环境
+-----------
+CVSTrac 源码可在 Unix/Linux 等平台上编译使用。
+
+
+2. 编译方法
+-----------
+1) 以 root 身份登录到服务器
+
+2) 从 sqlite 官方网站下载一份 sqlite 源代码
+http://www.sqlite.org/download.html
+并解压到目录 /home/sqlite 下
+
+3) 编译 sqlite
+cd /home
+mkdir sqlite_bin
+cd sqlite_bin
+../sqlite/configure
+make install
+
+4) 取出最新的 cvstrac 源代码
+cd /home
+export CVSROOT=:pserver:anoncvs@www.cnpack.org/var/cvshome/cnpack
+cvs login
+输入密码：anoncvs
+cvs co -r CVSTracNT_CHS -d cvstrac cvstracnt/Source/cvstrac
+
+5) 编译及安装 cvstrac
+cd /home
+mkdir cvstrac_bin
+cd cvstrac_bin
+cp ../cvstrac/linux-gcc.mk Makefile
+此时可能需要修改 Makefile 中的 SRCDIR 和 INSTALLDIR 路径为真实的源路径和安装路径
+make install
+
+
+3. 配置使用
+-----------
+Unix/Linux 下配置及使用 CVSTrac 的方法参见官方网站上的相关文档：
+http://www.cvstrac.org

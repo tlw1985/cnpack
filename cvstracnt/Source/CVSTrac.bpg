@@ -1,0 +1,36 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = CVSTracOption.exe CVSTracSvc.exe CTSender.exe CTMailer.dll CTRTX.dll \
+  CTNetSend.dll
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+CVSTracOption.exe: CVSTracOption\CVSTracOption.dpr
+  $(DCC)
+
+CVSTracSvc.exe: CVSTracService\CVSTracSvc.dpr
+  $(DCC)
+
+CTSender.exe: CTSender\CTSender.dpr
+  $(DCC)
+
+CTMailer.dll: CTMailer\CTMailer.dpr
+  $(DCC)
+
+CTRTX.dll: CTRTX\CTRTX.dpr
+  $(DCC)
+
+CTNetSend.dll: CTNetSend\CTNetSend.dpr
+  $(DCC)
+
+
