@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2004-04-08
 **
 *******************************************************************************
 **
@@ -69,9 +71,9 @@ static void captcha_clear_cookie(void){
 static void lockout(){
   cgi_reset_content();
   common_standard_menu(0,0);
-  common_header("Access denied");
-  @ <p>Your access to this website has been temporarily suspended because
-  @ you are using it excessively.  You can retry your request later.</p>
+  common_header("拒绝访问");
+  @ <p>由于过于频繁地访问该网站，您的访问被暂时禁止了！
+  @ 请稍侯再试。</p>
   common_footer();
   cgi_append_header("Pragma: no-cache\r\n");
   cgi_set_status(403,"Forbidden");
@@ -81,7 +83,7 @@ static void lockout(){
 
 /*
 ** Check to see if there have been too many recent accesses from the
-** same IP address. 
+** same IP address.
 **
 ** If there is an overload, the resulting action depends on the exitOnOverload
 ** parameter.  If that parameter is true, an error reply is constructed
@@ -184,15 +186,15 @@ void honeypot(void){
   if( !g.isAnon ){
     cgi_redirect("index");
   }
-  common_add_action_item("stopper","I am a spider");
-  common_add_action_item("index","I am human");
+  common_add_action_item("stopper","我是网络蜘蛛");
+  common_add_action_item("index","我是用户");
   common_add_help_item("CvstracAdminAbuse");
-  common_header("Honey Pot");
-  @ <p>This page is intended to capture spiders that
-  @ ignore the "robots.txt" file.
-  @ If you are not a spider, click on the "I am human" link
-  @ above.  If you click on the "I am a spider" link, your access to this
-  @ server will be suspended for about an hour.</p>
+  common_header("陷阱");
+  @ <p>这个页面是故意放置的，用来捕获那些忽略
+  @ "robots.txt" 文件的网络蜘蛛。
+  @ 如果您不是网络蜘蛛，请点击上面的 "我是用户" 链接。
+  @ 如果您点击了 "我是网络蜘蛛" 链接，您对该
+  @ 服务器的访问将中断大约一小时。</p>
   common_footer();
 }
 
@@ -250,21 +252,21 @@ void throttle_info(void){
     time(&now);
     db_execute("DELETE FROM access_load WHERE lastaccess<%d", now-86400);
   }
-  common_add_nav_item("setup", "Main Setup Menu"); 
+  common_add_nav_item("setup", "主设置菜单"); 
   common_add_help_item("CvstracAdminAbuse");
-  common_add_action_item("info_throttle?reset=1","Remove Older Entries");
+  common_add_action_item("info_throttle?reset=1","删除旧的条目");
   if( limit>0 ){
-    common_add_action_item("info_throttle?limit=-1","View All");
+    common_add_action_item("info_throttle?limit=-1","查看全部");
   }else{
-    common_add_action_item("info_throttle?limit=50","View Top 50");
+    common_add_action_item("info_throttle?limit=50","查看最近50条");
   }
-  common_header("Throttle Results");
-  @ Contents of the ACCESS_LOAD table:
+  common_header("限制结果");
+  @ 表 ACCESS_LOAD 中的内容:
   @ <table border="1" cellspacing="0" cellpadding="2">
   @ <tr>
-  @ <th><a href="info_throttle?ob=2">IP Address</a></th>
-  @ <th><a href="info_throttle?ob=3">Last Access</a></th>
-  @ <th><a href="info_throttle?ob=1">Load</a></th></tr>
+  @ <th><a href="info_throttle?ob=2">IP地址</a></th>
+  @ <th><a href="info_throttle?ob=3">最近访问</a></th>
+  @ <th><a href="info_throttle?ob=1">负载值</a></th></tr>
   az = db_query("SELECT ipaddr, lastaccess, load FROM access_load %s LIMIT %d",
                zOrderBy, limit);
   for(i=0; az[i]; i+=3){
@@ -280,7 +282,7 @@ void throttle_info(void){
   }
   @ </table>
   @ <p>
-  @ <a href="info_throttle?reset=1">Remove older entries</a>
+  @ <a href="info_throttle?reset=1">删除旧的条目</a>
   common_footer();
 }
 
@@ -313,21 +315,21 @@ void captcha_page(void){
 
   common_standard_menu(0, 0);
   common_add_help_item("CvstracAdminAbuse");
-  common_header("Abbreviated Turing Test");
+  common_header("简单的图灵测试");
 
   /* small numbers */
   srand(now);
   q1 = (rand()%5)+1;
   q2 = (rand()%5)+1;
 
-  @ In order to continue, you must show you're a human. Please answer
-  @ the following mathematical skill testing question (and ensure cookies
-  @ are enabled):
+  @ 如果要继续，您必须证明您是有智慧的人。
+  @ 请回答以下一些数学技能方面的测试 (并且确认
+  @ Cookies 是允许的):
   @ <p>
   @ <form action="captcha" method="POST">
-  @ What is <tt>%d(q1) + %d(q2)</tt>?
+  @ <tt>%d(q1) + %d(q2) 是多少</tt>？
   @ <input type="text" name="a" value="" size=4>
-  @ <small>Hint: %d(q1+q2)</small>
+  @ <small>提示: %d(q1+q2)</small>
   @ <input type="hidden" name="q1" value="%d(q1)">
   @ <input type="hidden" name="q2" value="%d(q2)">
   if( P("nxp") ){
@@ -335,7 +337,7 @@ void captcha_page(void){
   }
   @ </p>
   @ <p>
-  @ <input type="submit" name="in" value="Submit"></td>
+  @ <input type="submit" name="in" value="提交"></td>
   @ </p>
   @ </form>
   common_footer();
@@ -416,7 +418,7 @@ char *is_edit_allowed(const char *zOld, const char *zNew){
       db_add_functions();
       if( db_exists("SELECT 1 WHERE search('%q','%q')>%d",zKeys,zNew,nMscore)){
         increase_load();
-        return "Forbidden keywords!";
+        return "受限的关键字！";
       }
     }
 
@@ -435,7 +437,7 @@ char *is_edit_allowed(const char *zOld, const char *zNew){
       */
       if( nNew - nOld >= nMax ){
         increase_load();
-        return "Too many external links for one edit!";
+        return "一次编辑中包含太多的外部链接！";
       }
     }
   }

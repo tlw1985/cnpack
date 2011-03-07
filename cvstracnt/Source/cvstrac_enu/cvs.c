@@ -1132,6 +1132,9 @@ static int cvs_user_write(const char *zOmit){
   zWriteEnable = db_config("write_cvs_passwd","yes");
   if( zWriteEnable[0]=='n' ) return 1;
 
+#if CVSNT
+  zUser = db_config("cvs_user_id","nobody");
+#else
   /*
   ** Map the CVSTrac process owner to a real user id. This, presumably,
   ** will be someone with CVS read/write access.

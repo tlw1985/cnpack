@@ -20,6 +20,8 @@
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
 **
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
+**
 *******************************************************************************
 **
 ** This file contains code used to read the CVSROOT/history file from
@@ -42,7 +44,7 @@ static void err_pipe(const char* zMsg,const char* zCmd){
   int nErr = 0;
   error_init(&nErr);
   @ <b class="error">%h(zMsg)</b>
-  @ <li><p>Unable to execute the following command:
+  @ <li><p>执行以下命令失败:
   @ <blockquote><pre>
   @ %h(zCmd)
   @ </pre></blockquote></p></li>

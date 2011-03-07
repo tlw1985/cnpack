@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -141,7 +143,7 @@ void cgi_append_header(const char *zLine){
     zExtraHeader = mprintf("%z%s", zExtraHeader, zLine);
   }else{
     zExtraHeader = mprintf("%s", zLine);
-  }  
+  }
 }
 
 /*
@@ -282,7 +284,7 @@ void cgi_reply(void){
 #if CVSTRAC_I18N
   printf( "Content-Type: %s; charset=%s\r\n", zContentType, nl_langinfo(CODESET));
 #else
-  printf( "Content-Type: %s; charset=ISO-8859-1\r\n", zContentType);
+  printf( "Content-Type: %s; charset=%s\r\n", zContentType, db_config("charset",DEF_CHARSET));
 #endif
 
   if( iReplyStatus != 304 ) {
@@ -394,7 +396,7 @@ void cgi_redirect(const char *zURL){
       cgi_reset_content();
       cgi_printf(
         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n"
-        "<html>\n<p>Cyclic redirection in %s</p>\n</html>\n", zURL
+        "<html>\n<p>在 %s 中出现循环跳转</p>\n</html>\n", zURL
       );
       cgi_set_status(500, "Internal Server Error");
       cgi_reply();
@@ -425,7 +427,7 @@ void cgi_redirect(const char *zURL){
 #endif
   {
     char *zHost;
-    if( strncmp(zURL,"http:",5)!=0 && strncmp(zURL,"https:",6)!=0 
+    if( strncmp(zURL,"http:",5)!=0 && strncmp(zURL,"https:",6)!=0
          && (zHost = getenv("HTTP_HOST"))!=0 ){
       char *zMode = getenv("HTTPS");
       if( zMode && strcmp(zMode,"on")==0 ){
@@ -441,7 +443,7 @@ void cgi_redirect(const char *zURL){
   cgi_reset_content();
   cgi_printf(
     "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n"
-    "<html>\n<p>Redirect to %h</p>\n</html>\n", zURL
+    "<html>\n<p>重定向到 %h</p>\n</html>\n", zURL
   );
   cgi_set_status(302, "Moved Temporarily");
   free(zLocation);
@@ -593,7 +595,7 @@ static char *get_bounded_content(
   }
   *pz = &z[i];
   get_line_from_string(pz, pLen);
-  return z;      
+  return z;
 }
 
 /*
@@ -699,7 +701,7 @@ static void process_multipart_form_data(char *z, int len){
         }
       }
     }
-  }        
+  }
 }
 
 /*
@@ -720,8 +722,8 @@ void cgi_init(void){
   z = getenv("CONTENT_LENGTH");
   len = z ? atoi(z) : 0;
   zType = getenv("CONTENT_TYPE");
-  if( len>0 && zType && 
-    (strcmp(zType,"application/x-www-form-urlencoded")==0 
+  if( len>0 && zType &&
+    (strcmp(zType,"application/x-www-form-urlencoded")==0
       || strncmp(zType,"multipart/form-data",19)==0) ){
     z = malloc( len+1 );
     if( z==0 ) exit(1);
@@ -1460,8 +1462,8 @@ typedef struct et_info {   /* Information about each format field */
 */
 static et_info fmtinfo[] = {
   { 'd',  10,  "0123456789",       1,    0, etRADIX,      },
-  { 's',   0,  0,                  0,    0, etSTRING,     }, 
-  { 'z',   0,  0,                  0,    0, etDYNAMIC,    }, 
+  { 's',   0,  0,                  0,    0, etSTRING,     },
+  { 'z',   0,  0,                  0,    0, etDYNAMIC,    },
   { 'h',   0,  0,                  0,    0, etHTMLIZE,    },
   { 't',   0,  0,                  0,    0, etHTTPIZE,    }, /* / -> %2F */
   { 'T',   0,  0,                  0,    0, etURLIZE,     }, /* / -> / */
@@ -1606,7 +1608,7 @@ static int vxprintf(
       break;
     }
     /* Find out what flags are present */
-    flag_leftjustify = flag_plussign = flag_blanksign = 
+    flag_leftjustify = flag_plussign = flag_blanksign =
      flag_alternateform = flag_zeropad = flag_center = 0;
     do{
       switch( c ){
@@ -1909,7 +1911,7 @@ static int vxprintf(
       case etCHARX:
         c = buf[0] = (xtype==etCHARX ? va_arg(ap,int) : *++fmt);
         if( precision>=0 ){
-          if( precision>etBUFSIZE-1 ) precision = etBUFSIZE-1; 
+          if( precision>etBUFSIZE-1 ) precision = etBUFSIZE-1;
           for(idx=1; idx<precision; idx++) buf[idx] = c;
           length = precision;
 	}else{
@@ -2016,8 +2018,8 @@ struct sgMprintf {
   int  nAlloc;     /* Amount of space allocated in zText */
 };
 
-/* 
-** This function implements the callback from vxprintf. 
+/*
+** This function implements the callback from vxprintf.
 **
 ** This routine add nNewChar characters of text in zNewText to
 ** the sgMprintf structure pointed to by "arg".
@@ -2078,7 +2080,7 @@ char *mprintf(const char *zFormat, ...){
   return zNew;
 }
 
-/* This is the varargs version of mprintf.  
+/* This is the varargs version of mprintf.
 */
 char *vmprintf(const char *zFormat, va_list ap){
   struct sgMprintf sMprintf;
@@ -2103,8 +2105,8 @@ char *vmprintf(const char *zFormat, va_list ap){
   return sMprintf.zText;
 }
 
-/* 
-** This function implements the callback from vxprintf. 
+/*
+** This function implements the callback from vxprintf.
 **
 ** This routine add nNewChar characters of text in zNewText to
 ** the sgMprintf structure pointed to by "arg". Unlink mout(), it
@@ -2232,26 +2234,26 @@ char *htmlize(const char *zIn, int n){
   if( zOut==0 ) return 0;
   while( n-->0 && (c = *zIn)!=0 ){
     switch( c ){
-      case '<':   
+      case '<':
         zOut[i++] = '&';
         zOut[i++] = 'l';
         zOut[i++] = 't';
         zOut[i++] = ';';
         break;
-      case '>':   
+      case '>':
         zOut[i++] = '&';
         zOut[i++] = 'g';
         zOut[i++] = 't';
         zOut[i++] = ';';
         break;
-      case '&':   
+      case '&':
         zOut[i++] = '&';
         zOut[i++] = 'a';
         zOut[i++] = 'm';
         zOut[i++] = 'p';
         zOut[i++] = ';';
         break;
-      case '"':   
+      case '"':
         zOut[i++] = '&';
         zOut[i++] = 'q';
         zOut[i++] = 'u';
@@ -2332,7 +2334,7 @@ char *httpize(const char *z, int n){
 ** a token in the HTTP protocol.  Spaces are encoded as '+' and special
 ** characters are encoded as "%HH" where HH is a two-digit hexidecimal
 ** representation of the character.  The "/" character is not encoded
-** by this routine. 
+** by this routine.
 */
 char *urlize(const char *z, int n){
   return EncodeHttp(z, n, 0);
@@ -2386,7 +2388,7 @@ void dehttpize(char *z){
 /*
 ** The characters used for HTTP base64 encoding.
 */
-static unsigned char zBase[] = 
+static unsigned char zBase[] =
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~";
 
 /*
@@ -2543,7 +2545,7 @@ void cgi_handle_http_request(void){
   if( getpeername(fileno(stdin), (struct sockaddr*)&remoteName, &size)>=0 ){
     putenv(mprintf("REMOTE_ADDR=%s", inet_ntoa(remoteName.sin_addr)));
   }
- 
+
   /* Get all the optional fields that follow the first line.
   */
   while( fgets(zLine,sizeof(zLine),stdin) ){
@@ -2646,7 +2648,7 @@ void cgi_http_server(int iPort){
       nchildren--;
     }
   }
-  /* NOT REACHED */  
+  /* NOT REACHED */
   exit(1);
 }
 

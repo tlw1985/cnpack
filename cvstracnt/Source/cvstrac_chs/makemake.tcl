@@ -100,7 +100,7 @@ $(APPNAME):	headers $(OBJ)
 index.html:	$(SRCDIR)/webpage.html $(SRCDIR)/VERSION
 	sed -f $(SRCDIR)/VERSION $(SRCDIR)/webpage.html >index.html
 
-clean:	
+clean:
 	rm -f *.o *_.c $(APPNAME)
 	rm -f makewikiinit maketestdb makecss
 	rm -f translate makeheaders mkindex page_index.h index.html headers}

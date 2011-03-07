@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -134,7 +134,7 @@ static void scan_for_func(char *zLine){
   nFixed = nUsed;
   return;
 
-page_skip:   
+page_skip:
    for(i=nFixed; i<nUsed; i++){
       fprintf(stderr,"%s:%d: skipping page \"%s\"\n",
          zFile, nLine, aEntry[i].zPath);
@@ -193,7 +193,7 @@ static void process_file(void){
     scan_for_func(zLine);
   }
   fclose(in);
-  nUsed = nFixed; 
+  nUsed = nFixed;
 }
 
 int main(int argc, char **argv){

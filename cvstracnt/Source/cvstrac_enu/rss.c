@@ -37,10 +37,11 @@ static void common_rss_header(char *zTitle, char *zDescription, int nBuildDate){
   cgi_set_content_type("text/xml");
   g.zLinkURL = g.zBaseURL;  /* formatting for output links... */
 #if CVSTRAC_I18N
-  @ <?xml version="1.0" encoding="%h(nl_langinfo(CODESET))"?>
+  char * charset = db_config("charset",nl_langinfo(CODESET));
 #else
-  @ <?xml version="1.0" encoding="ISO-8859-1"?>
+  char * charset = db_config("charset",ISO-8859-1);
 #endif
+  @ <?xml version="1.0" encoding="%h(charset)"?>
   @ <rss version="2.0">
   @ <channel>
   @ <title>%h(g.zName) - %h(zTitle)</title>

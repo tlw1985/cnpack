@@ -20,6 +20,8 @@ char *crypt(const char *key, const char *salt);
 #include <io.h>
 #endif
 
+#include <time.h>
+#include <sys/types.h>
 /*
 ** Standard colors.  These colors can also be changed using a stylesheet.
 */
@@ -86,6 +88,18 @@ char *crypt(const char *key, const char *salt);
 */
 #define MN_CKIN_MSG   100
 #define MX_CKIN_MSG   300
+
+/* Work with cvsnt on windows.
+*/
+#ifndef CVSNT
+# define CVSNT       0
+#endif
+
+#if CVSNT
+# define popen popen2
+# define pclose pclose2
+# define system system2
+#endif
 
 /* Maximum number of seconds for any HTTP or CGI handler to live. This
 ** prevents denials of service caused by bad queries, endless loops, or

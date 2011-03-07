@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -65,57 +67,57 @@ void setup_page(void){
 
   common_standard_menu("setup", 0);
   common_add_help_item("CvstracAdmin");
-  common_header("Setup Menu");
+  common_header("设置菜单");
 
   @ <dl id="setup">
   if( g.okSetup ){
-    menu_entry(mprintf("%s Repository",g.scm.zName), "setup_repository",
-      "Identify the repository to which this server is linked.");
+    menu_entry(mprintf("%s 仓库",g.scm.zName), "setup_repository",
+      "指定该服务器连接到的仓库路径。");
     if( g.scm.pxUserWrite || g.scm.pxUserRead ){
-      menu_entry("User Database", "setup_user", 
-        mprintf("Control how CVSTrac interacts with the %h user "
-                "and password database", g.scm.zName));
+      menu_entry("用户数据库", "setup_user", 
+        mprintf("控制 CVSTrac 如何处理 %h 用户"
+                "及密码数据库。", g.scm.zName));
     }
-    menu_entry("Log File", "setup_log",
-      "Turn the access log file on and off.");
-    menu_entry("Attachments", "setup_attach",
-      "Set the maximum allowable size for attachments.");
-    menu_entry("Abuse Control", "setup_throttle",
-      "Options to control bandwidth abuse and wiki spam.");
+    menu_entry("日志文件", "setup_log",
+      "控制访问日志文件开启或关闭。");
+    menu_entry("附件", "setup_attach",
+      "设置允许的附件文件最大长度。");
+    menu_entry("带宽限制", "setup_throttle",
+      "控制网络带宽及防止 wiki 垃圾。");
   }
-  menu_entry("Ticket Types", "setup_enum?e=type",
-    "Enumerate the different types of tickets that can be entered into "
-    "the system.");
-  menu_entry("Ticket States", "setup_enum?e=status",
-    "Configure the allowed values for the \"status\" attribute of tickets.");
-  menu_entry("New Tickets Defaults", "setup_newtkt",
-    "Specify the default values assigned to various ticket attributes when "
-    "a new ticket is created.");
-  menu_entry("Subsystem Names", "setup_enum?e=subsys",
-    "List the names of subsystems that can be used in the \"subsystem\" "
-    "attribute of tickets.");
-  menu_entry("User-Defined Fields", "setup_udef",
-    "Create user-defined database columns in the TICKET table");
+  menu_entry("任务单类型", "setup_enum?e=type",
+    "列出能被插入到系统中的任务单"
+    "类型。");
+  menu_entry("任务单状态", "setup_enum?e=status",
+    "设置任务单 \"状态\" 属性允许的值。");
+  menu_entry("新任务单默认值", "setup_newtkt",
+    "指定当创建一个新的任务单时，自动设定的"
+    "属性默认值。");
+  menu_entry("子系统名称", "setup_enum?e=subsys",
+    "列出在任务单中 \"子系统\" 属性"
+    "所能使用的名称。");
+  menu_entry("自定义字段", "setup_udef",
+    "创建任务单表中可由用户自定义的数据库栏目。");
   if( g.okSetup ){
-    menu_entry("Diff and Filter Programs", "setup_diff",
-      "Specify commands or scripts used to compute the difference between "
-      "two versions of a file and pretty print files.");
-    menu_entry("External Tools", "setup_tools",
-      "Manage tools for processing CVSTrac objects." );
-    menu_entry("Change Notification", "setup_chng",
-      "Define an external program to run whenever a ticket is created "
-      "or modified.");
-    menu_entry("Customize Style", "setup_style",
-      "Headers, footers, stylesheets, other web page elements.");
-    menu_entry("User Interface", "setup_interface",
-      "Control the user interface functionality." );
-    menu_entry("Wiki Markup", "setup_markup",
-      "Manage custom Wiki markups" );
-    menu_entry("Backup & Restore", "setup_backup",
-      "Make a backup copy of the database or restore the database from a "
-      "backup copy.");
-    menu_entry("Timeline & RSS", "setup_timeline", 
-      "Set timeline cookie lifetime and RSS \"Time To Live\".");
+    menu_entry("比较和过滤程序", "setup_diff",
+      "指定一个外部命令或脚本用来比较同一文件两个版本"
+      "之间的差异以及美化输出文件。");
+    menu_entry("外部工具", "setup_tools",
+      "管理处理 CVSTrac 对象的外部工具。" );
+    menu_entry("更新通知", "setup_chng",
+      "定义一个外部程序在任务单创建或修改时"
+      "自动运行以获得通知。");
+    menu_entry("定制样式", "setup_style",
+      "设置页眉、页脚、样式表和其它页面元素。");
+    menu_entry("用户界面", "setup_interface",
+      "控制用户界面功能。" );
+    menu_entry("Wiki 标记", "setup_markup",
+      "管理可定制的 Wiki 标记。" );
+    menu_entry("备份和恢复", "setup_backup",
+      "创建数据库备份文件或从备份文件中"
+      "恢复数据库。");
+    menu_entry("时间线和 RSS", "setup_timeline", 
+      "设置时间线 Cookie 生命期和 RSS \"Time To Live\"。");
   }
   @ </dl>
   common_footer();
@@ -172,35 +174,35 @@ void setup_repository_page(void){
   ** setup user can do this.
   */
   if( P("rrh") ){
-    common_add_action_item("setup_repository", "Cancel");
-    common_header("Confirm Reread Of Repository");
-    @ <h3>WARNING!</h3>
+    common_add_action_item("setup_repository", "取消");
+    common_header("确认重新读取仓库数据文件");
+    @ <h3>警告！</h3>
     @ <p>
-    @ If you decide to <b>Reconstruct</b> the change history database all
-    @ of your check-ins will be renumbered.  This might break links between
-    @ tickets and wiki pages and check-ins.  Any edits you may have made
-    @ to check-in messages will be undone as well.</p>
+    @ 如果您决定以 <b>重新构造</b> 方式更新历史数据库，
+    @ 所有提交记录都将被重新编号。这可能会打断任务单和
+    @ wiki 页面与提交记录之间的关系。您自己对提交注
+    @ 释的修改同样会丢失。</p>
     @
-    @ <p> A safer alternative is to select <b>Rescan</b> which will attempt
-    @ to preserve existing check-in numbers and check-in message changes.
+    @ <p> 一个更安全办法是选择 <b>重新扫描</b>，这样
+    @ 将尝试保留已存在的提交编号和提交注释修改。
     @ </p>
     @
-    @ <p>In either case, you may want to make a <a href="setup_backup">
-    @ backup copy</a> of the database so that you can recover if something
-    @ goes wrong.</p>
+    @ <p>无论怎样，您可以先创建一个数据库 <a href="setup_backup">
+    @ 备份</a> 这样如果您发现有任何错误时，可以恢复
+    @ 到原来的状态。</p>
     @
     @ <form action="%s(g.zPath)" method="POST">
     @ <p>
-    @ <input type="submit" name="rrh2" value="Reconstruct">
-    @ Reconstruct the check-in database from scratch.
+    @ <input type="submit" name="rrh2" value="重新构造">
+    @ 重新开始建造提交记录数据库。
     @ </p>
     @ <p>
-    @ <input type="submit" name="rrh3" value="Rescan">
-    @ Attempt to reuse existing check-in numbers.
+    @ <input type="submit" name="rrh3" value="重新扫描">
+    @ 尝试使用现有的提交记录编号。
     @ </p>
     @ <p>
-    @ <input type="submit" name="cancel" value="Cancel">
-    @ Do no do anything.
+    @ <input type="submit" name="cancel" value="取消">
+    @ 取消此次操作。
     @ </p>
     @ </form>
     common_footer();
@@ -245,48 +247,48 @@ void setup_repository_page(void){
     history_update(1);
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminRepository");
-  common_header("Configure Repository");
+  common_header("配置仓库");
   @ <form action="%s(g.zPath)" method="POST">
-  @ <p>Enter the full pathname of the root directory of the
-  @ %s(g.scm.zName) repository in the space provided below.
+  @ <p>在下面的编辑框中输入
+  @ %s(g.scm.zName) 仓库根目录的完整路径。
   if( g.scm.canFilterModules ){
-    @ If you want to restrict this 
-    @ server to see only a subset of the files contained in the
-    @ %s(g.scm.zName) repository
-    @ (for example, if you want to see only one module in a 
-    @ repository that contains many unrelated modules) then
-    @ enter a pathname prefix for the files you want to see in the
-    @ second entry box. The module prefix may also be a regular expression
-    @ which can be used to match multiple modules. Note that a regex must
-    @ be anchored to the start of the line (must start with '^') to be
-    @ recognized as such.
+    @ 如果您想要限制
+    @ 该服务只能看
+    @ 到此 %s(g.scm.zName) 仓库中一个子集的文件
+    @ （例如，如果您希望只能看到一个模块，
+    @ 而仓库还包含其它几个不相关的模块），
+    @ 请在第二个输入框中输入您想看到的文件集的
+    @ 路径前缀。模块前缀可以使用正则表达式以用于
+    @ 匹配多个模块。请注意，一个正则表达式必须从
+    @ 行首开始标记(必须以 ^ 开头)才会被认为是有
+    @ 效的。
   }
   @ </p>
   @ <table>
   @ <tr>
-  @   <td align="right">%s(g.scm.zName) repository:</td>
+  @   <td align="right">%s(g.scm.zName) 仓库:</td>
   @   <td><input type="text" name="r" size="40" value="%h(zOldRoot)"></td>
   @ </tr>
 
   if( g.scm.canFilterModules ){
     @ <tr>
-    @   <td align="right">Module prefix:</td>
+    @   <td align="right">模块前缀:</td>
     @   <td><input type="text" name="m" size="40" value="%h(zOldModule)"></td>
     @ </tr>
   }
 
   @ </table><br>
-  @ <input type="submit" value="Submit">
+  @ <input type="submit" value="提交">
   @
   @ <p>
-  @ After changing the %s(g.scm.zName) repository above, you will generally
-  @ want to press the following button to cause the repository history to be
-  @ reread from the new repository.  You can also use this button to
-  @ resynchronize the database if a prior read
-  @ failed or if you have manually changed it (always a bad idea).
-  @ <p><input type="submit" name="rrh" value="Reread Repository"></p>
+  @ 在前面修改了 %s(g.scm.zName) 仓库路径后，通常您可能还想要
+  @ 点击下面的按钮来从新的仓库中重新
+  @ 读取数据文件。您也可以使用这个按钮
+  @ 来重新同步由于原来读取数据失败或
+  @ 您手工修改了数据文件引起的问题(这并不是一个好主意)。
+  @ <p><input type="submit" name="rrh" value="重新读取仓库"></p>
   @ </form>
   @ <hr>
   common_footer();
@@ -309,7 +311,7 @@ void setup_user_page(void){
 
   /*
   ** The "wpw" query parameter is "yes" if the CVSROOT/passwd file is
-  ** writable and "no" if not.  
+  ** writable and "no" if not.
   ** Change it if it has changed.
   */
   zOldWPswd = db_config("write_cvs_passwd","yes");
@@ -331,27 +333,27 @@ void setup_user_page(void){
     g.scm.pxUserRead();
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminUserDatabase");
-  common_header("Configure User Database Linkage");
+  common_header("设置用户数据库联接");
   if( g.scm.pxUserWrite ){
     @ <form action="%s(g.zPath)" method="POST">
-    @ <p>CVSTrac can update the CVSROOT/passwd file with the usernames and
-    @ passwords of all CVSTrac users.  Enable or disable this feature
-    @ below.</p>
-    @ <p>Write User Changes to CVSROOT/passwd?
-    cgi_optionmenu(0, "wpw", zOldWPswd, "Yes", "yes", "No", "no", NULL);
-    @ <input type="submit" value="Submit">
+    @ <p>CVSTrac 能根据 CVSTrac 的所有用户名和密码
+    @ 自动更新 CVSROOT/passwd 文件。在下面可以
+    @ 允许或禁止这一功能。</p>
+    @ <p>将用户变更写入 CVSROOT/passwd？
+    cgi_optionmenu(0, "wpw", zOldWPswd, "是", "yes", "否", "no", NULL);
+    @ <input type="submit" value="提交">
     @ </p>
     @ </form>
   }
   if( g.scm.pxUserRead ){
     @ <form action="%s(g.zPath)" method="POST">
-    @ <p>Use the following button to automatically create a CVSTrac user ID
-    @ for every user currently named in CVSROOT/passwd.  The new users will
-    @ be given the same access permissions as user "anonymous" plus check-out
-    @ permission and check-in permission if CVS allows the user to write.</p>
-    @ <p><input type="submit" name="import_users" value="Import CVS Users"></p>
+    @ <p>使用下面的按钮自动根据当前 CVSROOT/passwd 文件为
+    @ 每一个已有的用户创建 CVSTrac 帐号。新的用户将获得
+    @ 与 anonymous 匿名帐号相同的权限，如果 CVS 允许用户
+    @ 读写，还将获得取出和提交的权限。</p>
+    @ <p><input type="submit" name="import_users" value="导入 CVS 用户"></p>
     @ </form>
   }
   common_footer();
@@ -372,7 +374,7 @@ void setup_logfile_page(void){
     return;
   }
 
-  /* 
+  /*
   ** The "log" query parameter specifies a log file into which a record
   ** of all HTTP hits is written.  Write this value if this has changed.
   ** Only setup can make this change.
@@ -388,15 +390,15 @@ void setup_logfile_page(void){
     db_config(0,0);
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminLog");
-  common_header("Configure Log File");
+  common_header("设置日志文件");
   @ <form action="%s(g.zPath)" method="POST">
-  @ <p>Enter the name of file into which is written a log of all accesses
-  @ to this server.  Leave the entry blank to disable logging:
+  @ <p>输入一个文件名，用来保存所有对该服务
+  @ 器的访问日志。留空将禁用日志功能:
   @ </p>
-  @ <p>Log File: <input type="text" name="log" size="40" value="%h(zOldLog)">
-  @ <input type="submit" value="Submit"></p>
+  @ <p>日志文件: <input type="text" name="log" size="40" value="%h(zOldLog)">
+  @ <input type="submit" value="提交"></p>
   @ </form>
   common_footer();
 }
@@ -455,7 +457,7 @@ void setup_newticket_page(void){
   ** The "type" query parameter specifies the initial type for new
   ** tickets.  Record any changes to this value.
   */
-  zOldType = db_config("dflt_tkt_type","code");
+  zOldType = db_config("dflt_tkt_type","");
   zType = P("type");
   if( zType && strcmp(zOldType,zType)!=0 ){
     db_execute(
@@ -496,47 +498,47 @@ void setup_newticket_page(void){
     db_config(0,0);
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminNewTicket");
-  common_header("Configure New Ticket Defaults");
+  common_header("设置新任务单默认值");
   @ <form action="%s(g.zPath)" method="POST">
   @ <p>
-  @ Select a user to whom new tickets will be assigned by default:</p><p>
-  @ Assigned To:
+  @ 选择当创建新任务单时默认分配到的用户名:</p><p>
+  @ 默认分配:
   azResult = db_query("SELECT id FROM user UNION SELECT '' ORDER BY id");
   cgi_v_optionmenu(0, "asgnto", zOldAsgnto, (const char**)azResult);
   @ </p>
   @
   @ <p>
-  @ Select the initial state that new tickets are created in:</p><p>
-  @ Initial State:
+  @ 选择当创建新任务单时的初始状态:</p><p>
+  @ 初始状态:
   cgi_v_optionmenu2(0, "istate", zOldState, (const char**)db_query(
      "SELECT name, value FROM enums WHERE type='status'"));
   @ </p>
   @
   @ <p>
-  @ Select the default type for new tickets:</p><p>
-  @ Default Type:
+  @ 选择新任务单的默认类型:</p><p>
+  @ 默认类型:
   cgi_v_optionmenu2(0, "type", zOldType, (const char**)db_query(
      "SELECT name, value FROM enums WHERE type='type'"));
   @ </p>
   @
   @ <p>
-  @ Select the default priority for new tickets:</p><p>
-  @ Default Priority:
+  @ 选择新任务单的默认优先级:</p><p>
+  @ 默认优先级:
   cgi_optionmenu(0, "pri", zOldPri, "1", "1", "2", "2", "3", "3", "4", "4",
       "5", "5", NULL);
   @ </p>
   @
   @ <p>
-  @ Select the default severity for new tickets:</p><p>
-  @ Default Severity:
+  @ 选择新任务单的默认严重度:</p><p>
+  @ 默认严重度:
   cgi_optionmenu(0, "sev", zOldSev, "1", "1", "2", "2", "3", "3", "4", "4",
       "5", "5", NULL);
   @ </p>
   @
   @ <p>
-  @ <input type="submit" value="Submit">
+  @ <input type="submit" value="提交">
   @ </p>
   @ </form>
   common_footer();
@@ -603,117 +605,117 @@ void setup_interface_page(void){
   zBrowseUrl = db_config("default_browse_url","dir");
   nCookieLife = atoi(db_config("browse_url_cookie_life", "90"));
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminInterface");
-  common_header("Configure User Interface");
+  common_header("设置用户界面");
 
-  @ <form class="setup-section" action="%s(g.zPath)" method="POST">
-  @ <h1>Ticket and Check-in/Milestone Links</h1>
-  @ <p>Ticket and check-in/milestone link information enables link tooltips
-  @ in most browsers. For example,
-  @ <a href="tktview?tn=1" title="First ticket">#1</a> and
-  @ <a href="chngview?cn=1" title="Check-in [1]: First check-in
-  @   (By anonymous)">[1]</a>. While this provides information to the
-  @ user without having to follow a link, it is additional database
-  @ load for the server and can increase the size of the web
-  @ pages considerably. Check-in link information is usually only useful
-  @ if your users put a lot of check-in links within wikis or
-  @ remarks.
+  @ <form action="%s(g.zPath)" method="POST">
+  @ <h1>任务单和提交/里程碑链接信息</h1>
+  @ <p>任务单和提交/里程碑链接信息允许在大多数浏览器中实现
+  @ 工具提示。例如，
+  @ <a href="tktview?tn=1" title="第一个任务单">#1</a> 和
+  @ <a href="chngview?cn=1" title="提交 [1]: 第一次提交
+  @ (由 anonymous)">[1]</a>。这个功能将提供给用户更多
+  @ 的信息而不需要点击这个链接，这将加重一
+  @ 点服务器的负担并导致页面大小增加。
+  @ 提交链接信息功能通常当你的用户在 Wiki
+  @ 或注释中加入了大量的提交链接时很
+  @ 有用。
   @ </p>
   @ <p>
   @ <label for="atkt"><input type="checkbox" name="atkt" id="atkt"
   @   %s(atkt?" checked":"") value="1">
-  @ Turn on ticket link information for anonymous users.</label>
+  @ 为匿名用户开启任务单链接信息功能。</label>
   @ <br>
   @ <label for="ack"><input type="checkbox" name="ack" id="ack"
   @   %s(ack?" checked":"") value="1">
-  @ Turn on check-in/milestone link information for anonymous users.</label>
+  @ 为匿名用户开启提交/里程碑链接信息功能。</label>
   @ <br>
   @ <label for="tkt"><input type="checkbox" name="tkt" id="tkt"
   @   %s(tkt?" checked":"") value="1">
-  @ Turn on ticket link information for logged in users.</label>
+  @ 为登录用户开启任务单链接信息功能。</label>
   @ <br>
   @ <label for="ck"><input type="checkbox" name="ck" id="ck"
   @   %s(ck?" checked":"") value="1">
-  @ Turn on check-in/milestone link information for logged in users.</label>
+  @ 为登录用户开启提交/里程碑链接信息功能。</label>
   @ </p>
   @ <p>
-  cgi_submit("update", 0, 0, 0, 0, "Set");
+  cgi_submit("update", 0, 0, 0, 0, "提交");
   @ </p>
   @ </form>
 
   @ <form class="setup-section" action="%s(g.zPath)" method="POST">
-  @ <h1>Repository</h1>
-  @ <p>When browsing the repository there are two ways to list files and
-  @ directories. The <em>Short</em> view is a compact listing combining
-  @ all files and directories into just four columns. The <em>Long</em> view
-  @ shows the most recent repository information for each file.</p>
+  @ <h1>仓库</h1>
+  @ <p>在浏览仓库时有两种显示文件和目录的方法。
+  @ <em>简短</em> 视图采用压缩列表的方式将所有文件
+  @ 和目录显示在四列中。<em>详细</em> 视图
+  @ 为每一个文件都显示其在仓库中最近的信息。</p>
   @ <p><label for="bu0"><input type="radio" name="bu" id="bu0"
   @    %s(strcmp("dirview",zBrowseUrl)==0?" checked":"") value="dirview">
-  @ Long view</label><br>
+  @ 详细视图</label><br>
   @ <label for="bu1"><input type="radio" name="bu" id="bu1"
   @   %s(strcmp("dir",zBrowseUrl)==0?" checked":"") value="dir">
-  @ Short</label>
+  @ 简短视图</label>
   @ <p>
-  cgi_submit("update", 0, 0, 0, 0, "Set");
+  cgi_submit("update", 0, 0, 0, 0, "提交");
   @ </p>
   @ </form>
 
   @ <form class="setup-section" action="%s(g.zPath)" method="POST">
   @ <h1>Cookies</h1>
   @ <p>
-  @ Enter number of days browse mode cookie should be kept by users browser.
-  @ This cookie keeps track of user's preferred browse mode across user's
-  @ multiple visits.<br>
-  @ This applies to all users.<br>
-  @ Set it to 0 to disable browse mode cookie.
+  @ 输入在用户浏览器中 Cookie 需要保存的天数。
+  @ 该 Cookie 用来保存用户的浏览方式并作为以后访问的首选
+  @ 浏览方式。<br>
+  @ 该功能对所有用户有效。<br>
+  @ 设置为 0 将禁用浏览器 Cookie。
   @ </p>
   @ <p>
-  @ Cookie lifetime: 
-  @ <input type="text" name="cl" value="%d(nCookieLife)" size=5> days
+  @ Cookie 生命期:
+  @ <input type="text" name="cl" value="%d(nCookieLife)" size=5> 天
   @ </p>
   @ <p>
-  cgi_submit("update", 0, 0, 0, 0, "Set");
+  cgi_submit("update", 0, 0, 0, 0, "提交");
   @ </p>
   @ </form>
 
   @ <form class="setup-section" action="%s(g.zPath)" method="POST">
-  @ <h1>Wikitext Input</h1>
-  @ <p>Configure the wikitext input/editing dialog by setting the parameters
-  @ below. The input area wrap method configures the way input text will be
-  @ submitted to the program.  If input wrapping is set to <em>physical</em>
-  @ then hard returns will be inserted into the text wherever a line of
-  @ text wraps in the box. <em>Virtual</em> wrapping does not insert hard
-  @ returns. This option should be set to <em>virtual</em> when for
-  @ inputting text that should be reproduced verbatim.</p>
-  @ <p>The input area size on the screen can also be configured. Note that
-  @ the configured number of rows is a <i>maximum</i>. Some text areas
-  @ will be smaller.</p>
-  @ <p>Wikitext input wrapping:
+  @ <h1>Wiki 文本输入</h1>
+  @ <p>通过设置以下的参数来定制 Wiki 文本输入/编辑对话框。
+  @ 输入区域换行方式指定输入文本提交给程序的方式。
+  @ 如果换行方式设置为 <em>硬换行</em>
+  @ 则当输入框内的单行文本自动换行时将自动插入硬回车符。
+  @ <em>软换行</em> 换行方式则不会自动插入硬回车符。
+  @ 如果输入的文本需要保持原始格式，则该选项应设置为
+  @ <em>软换行</em> 方式。</p>
+  @ <p>输入区域的屏幕大小也可以配置。请注意，
+  @ 配置的行数只是一个 <i>最大值</i>。某些文本编辑框
+  @ 可能更小一些。</p>
+  @ <p>Wiki 文本输入换行:
   cgi_optionmenu(0, "wrap", zWrap,
-                 "physical", "physical", "virtual", "virtual", NULL);
+                 "physical", "硬换行", "virtual", "软换行", NULL);
   @ </p>
-  @ <p>Input area size:
-  @ <input name="cols" size="3" value="%d(cols)"/> columns by 
-  @ <input name="rows" size="3" value="%d(rows)"/> rows
+  @ <p>输入区域大小:
+  @ <input name="cols" size="3" value="%d(cols)"/> 列 
+  @ <input name="rows" size="3" value="%d(rows)"/> 行
   @ </p>
   @ <p>
-  cgi_submit("update", 0, 0, 0, 0, "Set");
+  cgi_submit("update", 0, 0, 0, 0, "提交");
   @ </p>
   @ </form>
 
   @ <form class="setup-section" action="%s(g.zPath)" method="POST">
-  @ <h1>Safe Ticket Editting</h1>
-  @ <p>Enabling this option will cause CVSTrac to generate an error if
-  @ a ticket change conflicts with another change which may have happened
-  @ while an update was being prepared.
+  @ <h1>安全的任务单编辑</h1>
+  @ <p>启用该选项将允许 CVSTrac 在准备编辑
+  @ 任务单前进行检查，如果发现与另一个正在更新任务单的操作冲突，
+  @ 将产生一个错误。
   @ </p>
   @ <p>
   @ <label for="st">
   @ <input type="checkbox" name="st" id="st" %s(st?" checked":"") value="1"/>
-  @ Turn on safe ticket editting mode.</label>
+  @ 开启安全任务单编辑模式。</label>
   @ <br>
-  cgi_submit("update", 0, 0, 0, 0, "Set");
+  cgi_submit("update", 0, 0, 0, 0, "设置");
   @ </p>
   @ </form>
 
@@ -882,30 +884,30 @@ void setup_enum_page(void){
   zEnum = P("e");
   if( zEnum==0 ){ zEnum = "subsys"; }
   if( strcmp(zEnum,"subsys")==0 ){
-    zTitle = "Configure Subsystem Names";
-    zName = "subsystem";
+    zTitle = "设置子系统名称";
+    zName = "子系统";
     nRow = 20;
     common_add_help_item("CvstracAdminSubsystem");
   }else
   if( strcmp(zEnum,"type")==0 ){
-    zTitle = "Configure Ticket Types";
-    zName = "type";
+    zTitle = "设置任务单类型";
+    zName = "类型";
     nRow = 6;
     common_add_help_item("CvstracAdminTicketType");
   }else
   if( strcmp(zEnum,"status")==0 ){
-    zTitle = "Configure Ticket States";
-    zName = "status";
+    zTitle = "设置任务单状态";
+    zName = "状态";
     nRow = 10;
     common_add_help_item("CvstracAdminTicketState");
   }else
   {
-    common_add_nav_item("setup", "Main Setup Menu");
-    common_header("Unknown Enumeration");
-    @ <p>URL error:  The "e" query parameter specifies an unknown
-    @ enumeration type: "%h(zEnum)".</p>
+    common_add_nav_item("setup", "主设置菜单");
+    common_header("未知的枚举类型");
+    @ <p>URL 错误:  "e" 查询参数指定了一个
+    @ 未知的枚举类型: "%h(zEnum)".</p>
     @
-    @ <p>Press the "Back" link above to return to the setup menu.</p>
+    @ <p>点击 "后退" 链接返回到设置菜单。</p>
     common_footer();
     return;
   }
@@ -924,27 +926,27 @@ void setup_enum_page(void){
 
   /* Genenerate the page.
   */
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_header(zTitle);
   zText = enum_to_string(zEnum);
   @ <p>
-  @ The allowed values of the "%s(zName)" attribute of tickets
-  @ are listed below.
-  @ You may edit this text and press apply to change the set of
-  @ allowed values.
+  @ 下面列出的是任务单的 "%s(zName)" 属性
+  @ 所允许的值。
+  @ 您可以编辑下面的文本并点击应用来修改所
+  @ 允许的值。
   @ </p>
   @
   @ <p>
-  @ The token on the left is the value as it is stored in the database.
-  @ The text that follows is a human-readable description for the meaning
-  @ of the token.  A color name for use in reports may optionally appear
-  @ in parentheses after the description.
+  @ 左边的标记是保存到数据库中的值。
+  @ 随后的标记是用来显示的可读的描述文本。
+  @ 描述文本后面是一个可选的用圆括号包
+  @ 含的颜色名，用在报表显示中。
   @ </p>
   @
   @ <form action="%s(g.zPath)" method="POST">
   @ <p><input type="hidden" name="e" value="%s(zEnum)">
   @ <textarea cols=60 rows=%d(nRow) name="x">%h(zText)</textarea></p>
-  @ <p><input type="submit" value="Submit"></p>
+  @ <p><input type="submit" value="提交"></p>
   @ </form>
   common_footer();
 }
@@ -1003,48 +1005,48 @@ void setup_udef_page(void){
 
   /* Genenerate the page.
   */
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminUserField");
-  common_header("Configure User-Defined Fields");
+  common_header("设置用户自定义字段");
   @ <p>
-  @ Five extra columns named "extra1" through "extra5" exist in the 
-  @ TICKET table of the database.  These columns can be defined for
-  @ application specific use using this configuration page.
+  @ 数据库任务单表 TICKET 中包含了五个命名为 "extra1" 到 "extra5"
+  @ 的扩展字段。这些字段栏目的含义可以在本设置页中由用户根据特定的
+  @ 应用自己定义。
   @ </p>
   @
   @ <p>
-  @ Each column is controlled by a separate form below.  The column will
-  @ be displayed on ticket reports if and only if its has a non-blank
-  @ display name.  User's see the column as its display name, not as
-  @ "extra1".
+  @ 每一个栏目都可以在下面独立地控制。当且仅当该栏目
+  @ 的显示名不为空时，它将显示在任务单报表中。用户
+  @ 在报表中看到的栏目是显示名，而不是类似的
+  @ "extra1"。
   @ </p>
   @
   @ <p>
-  @ Allowed values for the column can be specified in the text box.
-  @ The same format is used here
-  @ as when specifying <a href="setup_enum?e=type">ticket types</a>,
-  @ <a href="setup_enum?e=status">ticket states</a> and
-  @ <a href="setup_enum?e=subsys">subsystem names</a>.
-  @ There is one allowed value per line.  
-  @ The token on the left is the value as it is stored in the database.
-  @ The text that follows is a human-readable description for the meaning
-  @ of the token.  A color name for use in reports may optionally appear
-  @ in parentheses after the description.
+  @ 每个栏目允许的值可以在下面的编辑框中指定。
+  @ 此处可使用的格式等同于在
+  @ 指定 <a href="setup_enum?e=type">任务单类型</a>、
+  @ <a href="setup_enum?e=status">任务单状态</a> 和
+  @ <a href="setup_enum?e=subsys">子系统名称</a> 时的格式。
+  @ 每行对应一个允许的值。
+  @ 左边的标记是保存到数据库中的值。
+  @ 随后的标记是用来显示的可读的描述文本。
+  @ 描述文本后面是一个可选的用圆括号包
+  @ 含的颜色名，用在报表显示中。
   @ </p>
   @
   @ <p>
-  @ The Allowed Values box may be left blank.
-  @ If allowed values are defined for the column, then users will restricted
-  @ to the values specified when changing the value of the column.
-  @ If no allowed values are defined, then the column can be set to
-  @ arbitrary text.
+  @ 允许值编辑框也可以留空。
+  @ 如果为一个栏目定义了允许值列表，用户对该栏目内容的
+  @ 修改将限制在这些值之中。
+  @ 如果没有定义允许值列表，则栏目的内容可以为
+  @ 任意的文本。
   @ </p>
   @
   @ <p>
-  @ The Description box may be left blank. 
-  @ If a description is provided, then this field may be entered on the
-  @ new ticket page.  If no description is given, this field can be modified 
-  @ on the edit ticket page but will not appear on the new ticket page.
+  @ 描述编辑框可以为空。
+  @ 如果提供了描述信息，则该字段会在新建任务单页面中显示并输入。
+  @ 如果没有描述信息，则该字段内容能在编辑任务单页面中显示和修改，
+  @ 但不会出现在新建任务单页面中。
   @ </p>
   for(i=0; i<5; i++){
     const char *zOld;
@@ -1058,16 +1060,16 @@ void setup_udef_page(void){
     bprintf(zEnumName,sizeof(zEnumName),"extra%d_desc",i+1);
     zDesc = db_config(zEnumName,"");
     @ <hr>
-    @ <h3>Database column "extra%d(i+1)":</h3>
+    @ <h3>数据库栏目 "extra%d(i+1)":</h3>
     @ <form action="%s(g.zPath)" method="POST">
     @ <input type="hidden" name="idx" value="%d(i+1)">
-    @ Display Name:
+    @ 显示名:
     @ <input type="text" name="n" value="%h(zOld)"><br>
-    @ Allowed Values: (<i>Name Desc Color</i> - omit for free text)<br>
+    @ 允许值列表: (<i>名称 描述 颜色</i> - 忽略剩余的文本)<br>
     @ <textarea cols=60 rows=15 name="x">%h(zAllowed)</textarea><br>
-    @ Description: (HTML - Leave blank to omit from new-ticket page)<br>
+    @ 描述信息: (HTML - 留空将从新建任务单页面中忽略)<br>
     @ <textarea cols=60 rows=5 name="d">%h(zDesc)</textarea><br>
-    @ <input type="submit" value="Submit">
+    @ <input type="submit" value="提交">
     @ </form>
   }
   common_footer();
@@ -1104,72 +1106,72 @@ void setup_chng_page(void){
     db_config(0,0);
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminNotification");
-  common_header("Configure Ticket Change Notification");
+  common_header("设置任务单变更通知");
   @ <form action="%s(g.zPath)" method="POST">
-  @ <p>Enter a shell command to run whenever a ticket is
-  @ created or modified.  The following substitutions are made
-  @ on the string before it is passed to /bin/sh:</p>
+  @ <p>输入一个外部命令，当一个任务单被创建或修改时
+  @ 会自动调用。 在传给 /bin/sh 前，下面的符号会
+  @ 替换成相应的字符串:
   @
   @ <table border=1 cellspacing=0 cellpadding=5 align="right" width="45%%">
   @ <tr><td bgcolor="#e0c0c0">
-  @ <big><b>Important Security Note</b></big>
+  @ <big><b>重要的安全提示</b></big>
   @
 #ifdef CVSTRAC_WINDOWS
-  @ <p>Be sure to enclose all text substitutions in double-quotes.
-  @ (ex <tt>"%%d"</tt>)  Otherwise, a user could cause arbitrary shell
-  @ commands to be run on your system.</p>
-  @  
-  @ <p>Text is stripped of all double-quotes before it is
-  @ substituted, so if the substitution is itself enclosed in double-quotes,
-  @ it will always be treated as a single token by the shell.</p>
+  @ <p>请保证所有的替换符号都使用双引号包含起来。
+  @ (如 <tt>"%%d"</tt>) 否则，用户可能会使用其它任意
+  @ 的外部命令在您的系统上运行。</p>
+  @
+  @ <p>文本在替换前会除去所有的单引号和反斜杆，
+  @ 所以如果替换符号自身用双引号包含时，它会被
+  @ 外壳当作一个标记来看待。</p>
 #else
-  @ <p>Be sure to enclose all text substitutions in single-quotes.
-  @ (ex <tt>'%%d'</tt>)  Otherwise, a user could cause arbitrary shell
-  @ commands to be run on your system.</p>
-  @  
-  @ <p>Text is stripped of all single-quotes and backslashs before it is
-  @ substituted, so if the substitution is itself enclosed in single-quotes,
-  @ it will always be treated as a single token by the shell.</p>
+  @ <p>请保证所有的替换符号都使用单引号包含起来。
+  @ (如 <tt>'%%d'</tt>) 否则，用户可能会使用其它任意
+  @ 的外部命令在您的系统上运行。</p>
+  @
+  @ <p>文本在替换前会除去所有的单引号和反斜杆，
+  @ 所以如果替换符号自身用单引号包含时，它会被
+  @ 外壳当作一个标记来看待。</p>
 #endif
   @
-  @ <p>For best security, use only the <b>%%n</b> substitution and have
-  @ a Tcl or Perl script extract other fields directly from the database.</p>
+  @ <p>最安全的方法是，只使用一个 <b>%%n</b> 替换符号，
+  @ 然后用一个 Tcl 或 Perl 脚本从数据库中直接读取出其它的字段内容。</p>
   @ </td></tr></table>
   @
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
   @ <tr><td width="40"><b>%%a</b></td>
-  @     <td>UserID of the person the ticket is assigned to</td></tr>
-  @ <tr><td><b>%%A</b></td><td>E-mail address of person assigned to</td></tr>
-  @ <tr><td><b>%%c</b></td><td>Contact information for the originator</td></tr>
-  @ <tr><td><b>%%d</b></td><td>The description, Wiki format</td></tr>
-  @ <tr><td><b>%%D</b></td><td>The description, HTML format</td></tr>
-  @ <tr><td><b>%%n</b></td><td>The ticket number</td></tr>
-  @ <tr><td><b>%%p</b></td><td>The project name</td></tr>
-  @ <tr><td><b>%%r</b></td><td>The remarks section, Wiki format</td></tr>
-  @ <tr><td><b>%%R</b></td><td>The remarks section, HTML format</td></tr>
-  @ <tr><td><b>%%s</b></td><td>The status of the ticket</td></tr>
-  @ <tr><td><b>%%t</b></td><td>The title of the ticket</td></tr>
+  @     <td>该任务单分配给的用户名</td></tr>
+  @ <tr><td><b>%%A</b></td><td>任务分配人的邮件地址</td></tr>
+  @ <tr><td><b>%%c</b></td><td>任务负责人的联系方式</td></tr>
+  @ <tr><td><b>%%d</b></td><td>描述信息</td></tr>
+  @ <tr><td><b>%%D</b></td><td>HTML 格式的描述信息</td></tr>
+  @ <tr><td><b>%%n</b></td><td>任务单编号</td></tr>
+  @ <tr><td><b>%%p</b></td><td>项目名称</td></tr>
+  @ <tr><td><b>%%r</b></td><td>备注信息</td></tr>
+  @ <tr><td><b>%%R</b></td><td>HTML 格式的备注信息</td></tr>
+  @ <tr><td><b>%%s</b></td><td>任务单的状态</td></tr>
+  @ <tr><td><b>%%t</b></td><td>任务单的标题</td></tr>
   @ <tr><td><b>%%u</b></td>
-  @     <td>UserID of the person who made this change</td></tr>
-  @ <tr><td><b>%%w</b></td><td>UserID of the originator of the ticket</td></tr>
-  @ <tr><td><b>%%y</b></td><td>Type of ticket</td></tr>
-  @ <tr><td><b>%%f</b></td><td>First TKTCHNG rowid of change set; zero if new record</td></tr>
-  @ <tr><td><b>%%l</b></td><td>Last TKTCHNG rowid of change set; zero if new record</td></tr>
-  @ <tr><td><b>%%h</b></td><td>attacHment number if change is a new attachment; zero otherwise</td></tr>
-  @ <tr><td><b>%%1</b></td><td>First user-defined field</td></tr>
-  @ <tr><td><b>%%2</b></td><td>Second user-defined field</td></tr>
-  @ <tr><td><b>%%3</b></td><td>Third user-defined field</td></tr>
-  @ <tr><td><b>%%4</b></td><td>Fourth user-defined field</td></tr>
-  @ <tr><td><b>%%5</b></td><td>Fifth user-defined field</td></tr>
-  @ <tr><td><b>%%%%</b></td><td>The literal character "<b>%%</b>"</td></tr>
+  @     <td>修改该任务单的用户名</td></tr>
+  @ <tr><td><b>%%w</b></td><td>任务单的创建人用户名</td></tr>
+  @ <tr><td><b>%%y</b></td><td>任务单的类型</td></tr>
+  @ <tr><td><b>%%f</b></td><td>第一次变更的 TKTCHNG 记录 ID；如果是新记录则为 0。</td></tr>
+  @ <tr><td><b>%%l</b></td><td>最后一次变更的 TKTCHNG 记录 ID；如果是新记录则为 0。</td></tr>
+  @ <tr><td><b>%%h</b></td><td>如果变更内容是增加新附件，则为附件编号，否则为 0。</td></tr>
+  @ <tr><td><b>%%1</b></td><td>第一个用户自定义字段</td></tr>
+  @ <tr><td><b>%%2</b></td><td>第二个用户自定义字段</td></tr>
+  @ <tr><td><b>%%3</b></td><td>第三个用户自定义字段</td></tr>
+  @ <tr><td><b>%%4</b></td><td>第四个用户自定义字段</td></tr>
+  @ <tr><td><b>%%5</b></td><td>第五个用户自定义字段</td></tr>
+  @ <tr><td><b>%%%%</b></td><td>原样输出字符 "<b>%%</b>"</td></tr>
   @ </table>
   @ </blockquote>
   @
   @ <input type="text" name="notify" size="70" value="%h(zOldNotify)">
-  @ <input type="submit" value="Submit">
+  @ <input type="submit" value="提交">
   @ </form>
   common_footer();
 }
@@ -1250,55 +1252,55 @@ void setup_diff_page(void){
     db_config(0,0);
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminFilter");
-  common_header("Configure Source Code Diff Program");
+  common_header("设置源代码比较程序");
   @ <form action="%s(g.zPath)" method="POST">
-  @ <h2>File Diff</h2>
-  @ <p>Enter a shell command to run in order to compute the difference between
-  @ two versions of the same file.  The output can be either plain text
-  @ or HTML.  If HTML, then the first non-whitespace character of output
-  @ should be a "<".  Otherwise the output will be assumed to be plain text.</p>
+  @ <h2>文件比较</h2>
+  @ <p>输入一个外部命令用来对同一个文件的两个不同版本进行比较，
+  @ 输出方式可以是纯文本或 HTML 格式。
+  @ 如果使用 HTML，则第一个非空白字符要求是
+  @ 字符 "<"。否则会认为输出内容为纯文本格式。</p>
   @
   @ <table border=1 cellspacing=0 cellpadding=5 align="right" width="33%%">
   @ <tr><td bgcolor="#e0c0c0">
-  @ <big><b>Important Security Note</b></big>
+  @ <big><b>重要的安全提示</b></big>
   @
-  @ <p>Be sure to enclose the substitutions in single-quotes.
-  @ (examples: <tt>'%%F'</tt> or <tt>'%%V2'</tt>)
-  @ Otherwise, a user who can check in new files
-  @ (with unusual names) can cause arbitrary shell
-  @ commands to be run on your system.</p>
-  @  
-  @ <p>CVSTrac will not attempt to diff a file whose name contains a
-  @ single-quote or backslash
-  @ so if the substitution is itself enclosed in single-quotes, it will always
-  @ be treated as a single token by the shell.</p>
+  @ <p>请保证所有的替换符号都使用单引号包含起来。
+  @ (如 <tt>'%%F'</tt> 或 <tt>'%%V2'</tt>)
+  @ 否则，如果用户提交一些新文件
+  @ （使用非常规的文件名）将可能在您的系统上执行任意
+  @ 的外部命令。</p>
+  @
+  @ <p>CVSTrac 将不尝试比较一个名字中包含单引号或反斜杆的
+  @ 文件。
+  @ 所以如果替换符号自身用单引号包含时，它会被
+  @ 外壳当作一个标记来看待。</p>
   @ </td></tr></table>
   @
-  @ <p>The following substitutions are made prior to executing the program:</p>
+  @ <p>下面替换符号将在执行程序前处理:</p>
   @
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
   @ <tr><td width="40" valign="top"><b>%%F</b></td>
   if( !strcmp(g.scm.zSCM,"cvs") ){
-    @     <td>The name of the RCS file to be diffed.  This is a full
-    @         pathname including the "<b>,v</b>" suffix.</td>
+    @     <td>需要比较的 RCS 文件名。这是一个包含
+    @         "<b>,v</b>" 后缀的完整路径的文件名。</td></tr>
   }else{
-    @     <td>The name of the file to be diffed.</td>
+    @     <td>需要进行比较的文件名。</td>
   }
   @ </tr>
-  @ <tr><td><b>%%V1</b></td><td>The oldest version to be diffed</td></tr>
-  @ <tr><td><b>%%V2</b></td><td>The newest version to be diffed</td></tr>
-  @ <tr><td><b>%%RP</b></td><td>Path to repository</td></tr>
-  @ <tr><td><b>%%%%</b></td><td>The literal character "<b>%%</b>"</td></tr>
+  @ <tr><td><b>%%V1</b></td><td>需要比较的第一个版本</td></tr>
+  @ <tr><td><b>%%V2</b></td><td>需要比较的第二个版本</td></tr>
+  @ <tr><td><b>%%RP</b></td><td>仓库根路径</td></tr>
+  @ <tr><td><b>%%%%</b></td><td>原样输出字符 "<b>%%</b>"</td></tr>
   @ </table>
   @ </blockquote>
   @
   @ <input type="text" name="diff" size="70" value="%h(zOldDiff)">
-  @ <input type="submit" value="Submit">
+  @ <input type="submit" value="提交">
   @
-  @ <p>If you leave the above entry blank, the following command is used:</p>
+  @ <p>如果留空，将使用以下命令:</p>
   @
   @ <blockquote><pre>
   if( !strcmp(g.scm.zSCM,"cvs") ){
@@ -1311,38 +1313,38 @@ void setup_diff_page(void){
   @ <hr>
 
   @ <form action="%s(g.zPath)" method="POST">
-  @ <h2>File List</h2>
-  @ <p>Enter below a shell command to run in order to list the content
-  @ of a single version of a file <i>as a diff</i> (i.e. for the first
-  @ revision of a file).  The output can be either plain text
-  @ or HTML.  If HTML, then the first non-whitespace character of output
-  @ should be a "<".  Otherwise the output will be assumed to be plain text.</p>
+  @ <h2>文件列表</h2>
+  @ <p>输入一个外部命令用来<i>类似于比较方式</i>
+  @ 显示一个文件指定版本的内容
+  @ (即显示文件的第一个版本)。输出方式可以是纯文本或 HTML 格式。
+  @ 如果使用 HTML，则第一个非空白字符要求是
+  @ 字符 "<"。否则会认为输出内容为纯文本格式。</p>
   @
-  @ <p>This command is used to show the content 
-  @ of files that are newly added to the repository.</p>
+  @ <p>该命令用于在显示一个最近被加入到
+  @ 仓库中的文件内容。</p>
   @
-  @ <p>The following substitutions are made prior to executing the program:</p>
+  @ <p>下面替换符号将在执行程序前处理:</p>
   @
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
   @ <tr><td width="40" valign="top"><b>%%F</b></td>
   if( !strcmp(g.scm.zSCM,"cvs") ){
-    @     <td>The name of the RCS file to be listed.  This is a full
-    @         pathname including the "<b>,v</b>" suffix.</td>
+    @     <td>需要比较的 RCS 文件名。这是一个包含
+    @         "<b>,v</b>" 后缀的完整路径的文件名。</td>
   }else{
-    @     <td>The name of the file to be listed.</td>
+    @     <td>需要进行比较的文件名。</td>
   }
   @ </tr>
-  @ <tr><td><b>%%V</b></td><td>The version to be listed</td></tr>
-  @ <tr><td><b>%%RP</b></td><td>Path to repository</td></tr>
-  @ <tr><td><b>%%%%</b></td><td>The literal character "<b>%%</b>"</td></tr>
+  @ <tr><td><b>%%V</b></td><td>要显示内容的版本号</td></tr>
+  @ <tr><td><b>%%RP</b></td><td>仓库根路径</td></tr>
+  @ <tr><td><b>%%%%</b></td><td>原样输出字符 "<b>%%</b>"</td></tr>
   @ </table>
   @ </blockquote>
   @
   @ <input type="text" name="list" size="70" value="%h(zOldList)">
-  @ <input type="submit" value="Submit">
+  @ <input type="submit" value="提交">
   @
-  @ <p>If you leave the above entry blank, the following command is used:</p>
+  @ <p>如果留空，将使用以下命令:</p>
   @
   @ <blockquote><pre>
   if( !strcmp(g.scm.zSCM,"cvs") ){
@@ -1355,38 +1357,38 @@ void setup_diff_page(void){
   @ <hr>
 
   @ <form action="%s(g.zPath)" method="POST">
-  @ <h2>File Filter</h2>
-  @ <p>Enter below a shell command to run in order to filter the contents
-  @ of a single version of a file.  The filter should expect the file contents
-  @ on standard input. The output can be either plain text
-  @ or HTML.  If HTML, then the first non-whitespace character of output
-  @ should be a "<".  Otherwise the output will be assumed to be plain text.</p>
+  @ <h2>文件过滤器</h2>
+  @ <p>输入一个外部命令用来对文件的单个版本进行内容过滤。
+  @ 这个过滤器将从标准输入中取得文件内容，
+  @ 输出方式可以是纯文本或 HTML 格式。
+  @ 如果使用 HTML，则第一个非空白字符要求是
+  @ 字符 "<"。否则会认为输出内容为纯文本格式。</p>
   @
-  @ <p>This command is used to show the content of files</p>
+  @ <p>该命令用于显示文件的内容。</p>
   @
-  @ <p>The following substitutions are made prior to executing the program:</p>
+  @ <p>下面替换符号将在执行程序前处理:</p>
   @
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
   @ <tr><td width="40" valign="top"><b>%%F</b></td>
   if( !strcmp(g.scm.zSCM,"cvs") ){
-    @     <td>The name of the file to be diffed.  This is a relative
-    @         pathname intended for display and content detection purposes.</td>
+    @     <td>将进行处理的文件名。这是一个相对路径的文件名，
+    @         可用来显示或检查文件内容。</td>
   }else{
-    @     <td>The name of the file to be diffed.</td>
+    @     <td>将进行处理的文件名。</td>
   }
   @ </tr>
-  @ <tr><td><b>%%V</b></td><td>The version to be listed</td></tr>
-  @ <tr><td><b>%%RP</b></td><td>Path to repository</td></tr>
-  @ <tr><td><b>%%%%</b></td><td>The literal character "<b>%%</b>"</td></tr>
+  @ <tr><td><b>%%V</b></td><td>需要显示的版本号</td></tr>
+  @ <tr><td><b>%%RP</b></td><td>仓库根路径</td></tr>
+  @ <tr><td><b>%%%%</b></td><td>原样输出字符 "<b>%%</b>"</td></tr>
   @ </table>
   @ </blockquote>
   @
   @ <input type="text" name="filter" size="70" value="%h(zOldFilter)">
-  @ <input type="submit" value="Submit">
+  @ <input type="submit" value="提交">
   @
-  @ <p>If you leave the above entry blank, output will simply be wrapped with
-  @ HTML &lt;PRE&gt; tags and encoded as simple HTML.</p>
+  @ <p>如果留空，输出内容将直接使用
+  @ HTML &lt;PRE&gt; 标签来作为简单的 HTML 显示。</p>
   @ </form>
   common_footer();
 }
@@ -1421,43 +1423,43 @@ void setup_style_page(void){
     db_config(0,0);
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminStyle");
   if( attachment_max()>0 ){
-    common_add_action_item("attach_add?tn=0", "Attach");
+    common_add_action_item("attach_add?tn=0", "附件");
   }
-  common_header("Configure Style");
+  common_header("设置样式");
   @ <p>
-  @ Enter HTML used for the header and footer of every page.
-  @ If you leave these entries blank, default headers and/or footers
-  @ are used.  If you enter a filename (beginning with a "/" character)
-  @ instead of HTML text, then the
-  @ file is read at runtime and used for the header or footer.</p>
+  @ 输入用来显示在每个页面的页眉和页脚的 HTML 代码。
+  @ 如果留空，将使用默认的页眉和页脚。
+  @ 如果输入了一个文件名（由字符 "/" 开头的文件名）
+  @ 来代替 HTML 文本，则该文件会在运行
+  @ 期读入来作为页眉或页脚。</p>
   @
   @ <p>
-  @ You may attach files to this page which can then be referenced from within
-  @ your custom header/footer or from other pages. For example, stylesheets,
-  @ JavaScript files, logos, icons, etc can all be attached. These attachments
-  @ may be referenced directly by filename (i.e. <i>/filename.png</i>)
-  @ rather than using <i>attach_get/89/filename.png</i> links.</p>
+  @ 您可以在这个页面添加附件，这些附件可以被定制的页眉页
+  @ 脚或其它页面引用。例如，样式表、JavaScript 文件、
+  @ 网站标志、图标等都可以作为附件。这些附件可以直接通过
+  @ 文件名 (例如 <i>filename.png</i>) 来引用，而不需要
+  @ <i>attach_get/89/filename.png</i> 这种完整的链接。</p>
   @
-  @ <p>A default <a href="cvstrac.css">cvstrac.css</a> stylesheet is always
-  @ available. However, you may replace it by attaching a newer version to
-  @ this page. The original version is available at
-  @ <a href="cvstrac_default.css">cvstrac_default.css</a>.</p>
+  @ <p>一份默认的 <a href="cvstrac.css">cvstrac.css</a> 样式表始终是有效的。
+  @ 然而，您也可以附加一份更新的版本到这个页面。
+  @ 原始的版本可通过
+  @ <a href="cvstrac_default.css">cvstrac_default.css</a> 取得。</p>
   @
-  @ <p>Substitutions are made within the header and footer text.  These
-  @ substitutions are made to the HTML regardless of whether the HTML
-  @ is entered directly below or is read from a file.</p>
+  @ <p>以下替换用于页眉和页脚的文本中。这些替换内容是
+  @ HTML 无关的，不管这些 HTML 内容是直接在下面输入
+  @ 还是从文件中读取来的。</p>
   @
   @ <blockquote>
   @ <table>
-  @ <tr><td width="40"><b>%%N</b></td><td>The name of the project</td></tr>
-  @ <tr><td><b>%%T</b></td><td>The title of the current page</td></tr>
-  @ <tr><td><b>%%V</b></td><td>The version number of CVSTrac</td></tr>
-  @ <tr><td><b>%%B</b></td><td>CVSTrac base URL</td></tr>
-  @ <tr><td><b>%%D</b></td><td>Current document URL (without base URL)</td></tr>
-  @ <tr><td><b>%%%%</b></td><td>The literal character "<b>%%</b>"</td></tr>
+  @ <tr><td width="40"><b>%%N</b></td><td>项目的名称</td></tr>
+  @ <tr><td><b>%%T</b></td><td>当前页面的标题</td></tr>
+  @ <tr><td><b>%%V</b></td><td>CVSTrac 的版本号</td></tr>
+  @ <tr><td><b>%%B</b></td><td>CVSTrac 基础链接</td></tr>
+  @ <tr><td><b>%%D</b></td><td>当前文档链接 (不包含基本的链接)</td></tr>
+  @ <tr><td><b>%%%%</b></td><td>原样输出字符 "<b>%%</b>"</td></tr>
   @ </table>
   @ </blockquote>
   @
@@ -1472,13 +1474,13 @@ void setup_style_page(void){
     zFooter = FOOTER;
   }
 
-  @ Header:<br>
+  @ 页眉:<br>
   @ <textarea cols=80 rows=8 name="header">%h(zHeader)</textarea><br>
-  @ Footer:<br>
+  @ 页脚:<br>
   @ <textarea cols=80 rows=8 name="footer">%h(zFooter)</textarea><br>
-  @ <input type="submit" name="ok" value="Submit">
-  @ <input type="submit" name="def" value="Default">
-  @ <input type="submit" name="can" value="Cancel">
+  @ <input type="submit" name="ok" value="提交">
+  @ <input type="submit" name="def" value="默认">
+  @ <input type="submit" name="can" value="取消">
   @ </p>
   @ </form>
 
@@ -1499,7 +1501,7 @@ static const char *file_copy(const char *zFrom, const char *zTo){
   pIn = fopen(zFrom, "r");
   if( pIn==0 ){
     return mprintf(
-      "Unable to copy files - cannot open \"%h\" for reading.", zFrom
+      "无法复制文件 - 不能以读方式打开文件 \"%h\" 。", zFrom
     );
   }
   unlink(zTo);
@@ -1507,7 +1509,7 @@ static const char *file_copy(const char *zFrom, const char *zTo){
   if( pOut==0 ){
     fclose(pIn);
     return mprintf(
-      "Unable to copy files - cannot open \"%h\" for writing.", zTo
+      "无法复制文件 - 不能以写方式打开文件 \"%h\" 。", zTo
     );
   }
   while( (n = fread(zBuf, 1, sizeof(zBuf), pIn))>0 ){
@@ -1515,7 +1517,7 @@ static const char *file_copy(const char *zFrom, const char *zTo){
       fclose(pIn);
       fclose(pOut);
       return mprintf(
-        "Copy operation failed after %lld bytes.  Is the disk full?", total
+        "复制操作在完成 %lld 字节后失败。磁盘满了吗？", total
       );
     }
     total += n;
@@ -1545,19 +1547,19 @@ void setup_attachment_page(void){
     cgi_redirect("setup");
   }
  
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminAttachment");
-  common_header("Set Maximum Attachment Size");
+  common_header("设置附件文件最大长度");
   @ <p>
-  @ Enter the maximum attachment size below.  If you enter a size of
-  @ zero, attachments are disallowed.
+  @ 在下面输入附件文件允许的最大长度。如果输入零，
+  @ 将不允许上传附件。
   @ </p>
   @
   @ <form action="%s(g.zPath)" method="POST">
   @ <p>
-  @ Maximum attachment size in kilobytes: 
-  @ <input type="text" name="sz" value="%d(attachment_max()/1024)" size=5>
-  @ <input type="submit" value="Set">
+  @ 最大允许附件文件长度:
+  @ <input type="text" name="sz" value="%d(attachment_max()/1024)" size=5> KB。
+  @ <input type="submit" value="设置">
   @ </p>
   @ </form>
   common_footer();
@@ -1582,7 +1584,7 @@ void setup_throttle_page(void){
     cgi_redirect("setup");
     return;
   }
-  
+
 
   if( P("sz") && atoi(P("sz"))!=mxHit ){
     mxHit = atoi(P("sz"));
@@ -1620,135 +1622,135 @@ void setup_throttle_page(void){
     db_config(0, 0);
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminAbuse");
-  common_header("Abuse Controls");
-  @ <h2>Set Maximum Anonymous Hits Per Hour</h2>
+  common_header("带宽限制");
+  @ <h2>设置匿名用户每小时最高访问次数限制</h2>
   @ <p>
-  @ Enter the limit on the number of anonymous accesses from the same
-  @ IP address that can occur within one hour.  Enter zero to disable
-  @ the limiter.
+  @ 输入来自同一IP地址的匿名用户允许的
+  @ 每小时最高的访问次数。输入零表示不
+  @ 作限制。
   @ </p>
   @
   @ <form action="%s(g.zPath)" method="POST">
   @ <p>
-  @ Maximum hits per hour: 
+  @ 每小时最高访问量:
   @ <input type="text" name="sz" value="%d(mxHit)" size=5>
-  @ <input type="submit" value="Set">
+  @ <input type="submit" value="设置">
   @ </p>
   @ </form>
   @
   @ <p>
-  @ The limiter works by maintain a table in the database (the ACCESS_LOAD
-  @ table) that records the time of last access and a "load" for each
-  @ IP address.  The load reduces exponentially with a half-life of
-  @ one hour.  Each new access increases the load by 1.0.  When the
-  @ load exceeds the threshold above, the load automatically doubles and
-  @ the client is bounced to the <a href="captcha">captcha</a>
-  @ page. After this redirection happens a
-  @ few times, the user is denied access until the load decreases
-  @ below the threshold. If the user passes the
-  @ <a href="captcha">captcha</a> test, a cookie is set.
+  @ 限制器通过数据库中一张单独的表 (表 ACCESS_LOAD) 来工作，
+  @ 它记录了来自每个访问IP的最后访问时间和一个 "负载值"。
+  @ 负载值每隔一小时会按指数规律减半。
+  @ 每个新的访问会增加一个单位的负载值，
+  @ 当负载值增长到设定的上限时，负载值将自动翻倍，
+  @ 并且客户端将跳转到 <a href="captcha">智能验证</a>
+  @ 页面。当这样的跳转发生过几次后，
+  @ 用户将被禁止访问，直接负载值下降到极限值
+  @ 以下。如果用户通过了
+  @ <a href="captcha">智能验证</a> 测试，一个 Cookie 标志将被设置。
   @ </p>
   @
   @ <p>
-  @ When the limiter is enabled, the <a href="captcha">captcha</a>
-  @ page is also used to screen users before they try to do anything
-  @ that might change the database (create a <a href="tktnew">new ticket</a>,
-  @ <a href="wikiedit?p=WikiIndex">change a wiki page</a>, etc). This
-  @ feature is intended to block automated wiki spam.
+  @ 当使用限制器时，<a href="captcha">智能验证</a>
+  @ 页面同样会在用户试图做任何改动数据库
+  @ 的活动前显示 (如创建 <a href="tktnew">新的任务单</a>，
+  @ <a href="wikiedit?p=WikiIndex">修改 Wiki 页面</a> 等等)。这个
+  @ 功能用来阻止那些自动垃圾 Wiki 生成器。
   @
   @ <p>
-  @ Any attempt to access the page named "stopper" (reachable from
-  @ <a href="honeypot">honeypot</a>) automatically increases
-  @ the load to twice the threshold.  There are hyperlinks to the
-  @ honeypot on every page.  The idea is to trick spiders into visiting
-  @ this honeypot so that they can have their access terminated quickly.
+  @ 所有对 "禁止" 页(通过
+  @ <a href="honeypot">陷阱</a> 页)的访问自动将负载值增长到
+  @ 上限的两倍。每一个网页上都有一个隐藏的陷
+  @ 阱页超链接。这个方法用来欺骗那些网络蜘蛛去访问
+  @ 陷阱页，使得他们的访问很快地被禁止掉。
   @ </p>
   @
   @ <p>
-  @ The limiter and the honeypot only work for users that are not
-  @ logged in - anonymous users.  Users who are logged in can visit
-  @ any page (including the honeypot) as often as they want and will
-  @ never be denied access. The limiter (but not the honeypot) is also
-  @ disabled for any user with a valid <a href="captcha">captcha</a>
-  @ cookie.
+  @ 限制器和陷阱只针对那些没有登录的匿名用户有效。
+  @ 登录用户能任意次数地访问任何页面
+  @ (包括陷阱页)，并且永远不会被拒绝
+  @ 访问。另外，限制器(但不包含陷阱)对那些通过了
+  @ <a href="captcha">智能验证</a> 并设置了 Cookie
+  @ 的人失效。
   @ </p>
   @
-  @ <p>A summary of the <a href="info_throttle">Access Log</a> is available
-  @ separately.</p>
+  @ <p>一份对 <a href="info_throttle">访问日志</a> 的统计是
+  @ 单独可用的。</p>
 
   @ <hr>
-  @ <h2>Captcha</h2>
+  @ <h2>智能验证</h2>
   @ <form action="%s(g.zPath)" method="POST">
   @ <p>
-  @ By turning on this option, anonymous users will be required to pass a
-  @ simple <a href="http://en.wikipedia.org/wiki/Captcha">captcha</a>
-  @ test before being allowed to change content (tickets, wiki, etc). Passing
-  @ the test will set a cookie on the browser. Too many failures to pass
-  @ the test will trigger the throttler and lock the users IP address out.
-  @ Note that the rate limiter has to be enabled (non-zero) for this option
-  @ to be available.
+  @ 如果开启这个选项，匿名用户在被允许修改网站内容（任务单、wiki 等）
+  @ 之前，必须通过一个简单的 <a href="http://en.wikipedia.org/wiki/Captcha">智能验证</a>
+  @ 测试。通过测试后将会在浏览器中设置
+  @ Cookie 标志。如果测试失败次数太多
+  @ 将会触发限定器以锁定用户 IP 地址。
+  @ 注：如果要开启这个选项，流量限制功能必须已经开启
+  @ （非零值）。
   @ </p>
   @ <p>
   @ <label for="cp"><input type="checkbox" name="cp" id="cp"
   @    %s(cp?" checked":"") %s(mxHit?"":"disabled") value="1">
-  @ Turn on captcha for content changes.</label>
+  @ 为修改内容开启智能验证功能</label>
   @ </p>
-  @ <input type="submit" value="Set">
+  @ <input type="submit" value="设置">
   @ </form>
   @ <hr>
 
-  @ <h2>External Links</h2>
+  @ <h2>外部链接</h2>
   @ <form action="%s(g.zPath)" method="POST">
   @ <p>
-  @ By turning on this option, all links to external sites are tagged as
-  @ "nofollow". This provides a hint to search engines to ignore such links
-  @ and reduces the value of wiki spam. However, this may be of limited use
-  @ since wiki spammers aren't always smart enough to notice that they're
-  @ wasting their time.
+  @ 如果开启这个选项，所有链接到外部站点的超链接都将标记为
+  @ "不跟踪"。这将提供给搜索引擎一个提示来忽略这些链接，
+  @ 以达到抑制 wiki 垃圾的目的。无论如何，这只是个用处有限的功能，wiki
+  @ 垃圾制造者们并不总是有足够的聪明能认识到这种行为只是在浪费他们
+  @ 自己的时间。
   @ </p>
   @ <p>
   @ <label for="nf"><input type="checkbox" name="nf" id="nf"
   @    %s(nf?" checked":"") value="1">
-  @ Don't allow search engines to follow external links.</label>
+  @ 不允许搜索引擎跟踪访问外部链接。</label>
   @ </p>
-  @ <input type="submit" value="Set">
+  @ <input type="submit" value="设置">
   @ </form>
   @ 
   @ <form action="%s(g.zPath)" method="POST">
   @ <p>
-  @ Wiki spam generally works by inserting large numbers of links in a
-  @ single page edit. A simple way to prevent this is to simply impose a
-  @ maximum number of new external links in a single wiki edit.
-  @ A value of zero will disable this option.
+  @ Wiki 垃圾生成器通过向一个页面插入大量的外部链接
+  @ 来工作。一个简单的解决办法是强制在单个 wiki 编辑中
+  @ 限制外部链接的最大数。
+  @ 设置为零将禁用该选项。
   @ </p>
   @ <p>
-  @ Maximum external links per Wiki edit:
+  @ 每次 Wiki 编辑时允许的最大外部链接数:
   @ <input type="text" name="lnk" value="%d(lnk)" size=5>
   @ </p>
-  @ <input type="submit" value="Set">
+  @ <input type="submit" value="设置">
   @ </form>
   @ <hr>
-  @ <h2>Keyword Filtering</h2>
+  @ <h2>关键字过滤</h2>
   @ <form action="%s(g.zPath)" method="POST">
   @ <p>
-  @ Enter a space-separated list of keywords. All wiki edits will be
-  @ checked against this list and, if the maximum score is exceeded, 
-  @ the change will be denied. The scoring algorithm uses the standard
-  @ CVSTrac text <strong>search()</strong> function (where each matched
-  @ keyword scores from 6 to 10 points). Repeating a keyword in the
-  @ list will cause it to score higher.
+  @ 输入一个空格分隔的关键字列表。所有的 wiki 编辑都将
+  @ 检查这个列表，如果超过最大阈值限制，
+  @ 修改将会拒绝。评分算法使用标准的
+  @ CVSTrac 文本 <strong>search()</strong> 函数（其中每一个匹配的关键
+  @ 字将获得 6 到 10 个点）。重复出现列表中的一个关键字将导致
+  @ 更高的分值。
   @ </p>
   @ <p>
   cgi_text("mscore", 0, 0, 0, 0, 5, 8, 1, mprintf("%d",mscore),
-           "Maximum keyword score");
+           "最大关键字分值");
   @ </p>
-  @ <h3>Forbidden Keywords</h3>
+  @ <h3>关键字黑名单</h3>
   @ <p><textarea name="keys" rows="8" cols="80" class="wrapvirtual">
   @ %h(zKeys)
   @ </textarea></p>
-  @ <input type="submit" value="Set">
+  @ <input type="submit" value="设置">
   @ </form>
 
   common_footer();
@@ -1773,12 +1775,12 @@ void setup_markupedit_page(void){
     return;
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
-  common_add_action_item("setup_markup", "Cancel");
+  common_add_nav_item("setup", "主设置菜单");
+  common_add_action_item("setup_markup", "取消");
   common_add_action_item(mprintf("setup_markupedit?m=%h&del=1",zMarkup),
-                         "Delete");
+                         "删除");
   common_add_help_item("CvstracAdminMarkup");
-  common_header("Custom Wiki Markup");
+  common_header("定制 Wiki 标记");
 
   if( P("can") ){
     cgi_redirect("setup_markup");
@@ -1789,12 +1791,12 @@ void setup_markupedit_page(void){
     cgi_redirect("setup_markup");
     return;
   }else if( delete && zMarkup[0] ){
-    @ <p>Are you sure you want to delete markup <b>%h(zMarkup)</b>?</p>
+    @ <p>您确定要删除标记 <b>%h(zMarkup)</b>？</p>
     @
     @ <form method="POST" action="setup_markupedit">
     @ <input type="hidden" name="m" value="%h(zMarkup)">
-    @ <input type="submit" name="ok" value="Yes, Delete">
-    @ <input type="submit" name="can" value="No, Cancel">
+    @ <input type="submit" name="ok" value="是，删除">
+    @ <input type="submit" name="can" value="否，取消">
     @ </form>
     common_footer();
     return;
@@ -1828,79 +1830,79 @@ void setup_markupedit_page(void){
   }
 
   @ <form action="%s(g.zPath)" method="POST">
-  @ Markup Name: <input type="text" name="m" value="%h(zMarkup)" size=12>
-  cgi_optionmenu(0,"t",zType, "Markup","0", "Block","2",
-    "Program Markup","1", "Program Block","3",
-    "Trusted Program Markup","4", "Trusted Program Block","5",
+  @ 标记名称: <input type="text" name="m" value="%h(zMarkup)" size=12>
+  cgi_optionmenu(0,"t",zType, "标记","0", "块","2",
+    "程序标记","1", "程序块","3",
+    "可信任的程序标记","4", "可信任的程序块","5",
     NULL);
-  @ <br>Formatter:<br>
+  @ <br>格式:<br>
   @ <textarea name="f" rows="4" cols="60">%h(zFormat)</textarea><br>
-  @ Description:<br>
+  @ 描述:<br>
   @ <textarea name="d" rows="4" cols="60">%h(zDescription)</textarea><br>
   @ <input type="hidden" name="u">
-  @ <input type="submit" value="Set">
+  @ <input type="submit" value="设置">
   @ </form>
   @
   @ <table border=1 cellspacing=0 cellpadding=5 align="right" width="45%%">
   @ <tr><td bgcolor="#e0c0c0">
-  @ <big><b>Important Security Note</b></big>
+  @ <big><b>重要的安全提示</b></big>
   @
-  @ <p>Program formatters execute external scripts and programs and
-  @ improper configuration may result in a compromised server.</p>
+  @ <p>程序格式工具将执行外部脚本和程序，不适当的配置
+  @ 可能会危及服务器的安全。</p>
   @
-  @ <p>Be sure to enclose all text substitutions in single-quotes.
-  @ (ex <tt>'%%k'</tt>)  Otherwise, a user could cause arbitrary shell
-  @ commands to be run on your system.</p>
+  @ <p>请确认使用单引号来包含所有的文本
+  @ (如 <tt>'%%k'</tt>)。否则，别有用心的用户可能会
+  @ 在您的服务器上执行任意的命令。</p>
   @  
-  @ <p>Text is stripped of all single-quotes and backslashs before it is
-  @ substituted, so if the substitution is itself enclosed in single-quotes,
-  @ it will always be treated as a single token by the shell.</p>
+  @ <p>文本在被替换之前，已经被截去了所有的单引号和反斜杆，
+  @ 故如果替换结果本身使用单引号包含的话，
+  @ 它将始终被外壳程序作为一个单独的符号来处理。</p>
   @ </td></tr></table>
   @
-  @ The following substitutions are made on the custom markup:
+  @ 下列替换将应用于自定义标记中:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td width="40"><b>%%m</b></td><td>markup name</td></tr>
-  @ <tr><td><b>%%k</b></td><td>markup key</td></tr>
-  @ <tr><td><b>%%a</b></td><td>markup arguments</td></tr>
-  @ <tr><td><b>%%x</b></td><td>markup arguments or, if empty, key</td></tr>
-  @ <tr><td><b>%%b</b></td><td>markup block</td></tr>
-  @ <tr><td><b>%%r</b></td><td>%s(g.scm.zName) repository root</td></tr>
-  @ <tr><td><b>%%n</b></td><td>CVSTrac project name</td></tr>
-  @ <tr><td><b>%%u</b></td><td>Current user</td></tr>
-  @ <tr><td><b>%%c</b></td><td>User capabilities</td></tr>
+  @ <tr><td width="40"><b>%%m</b></td><td>标记名称</td></tr>
+  @ <tr><td><b>%%k</b></td><td>标记键值</td></tr>
+  @ <tr><td><b>%%a</b></td><td>标记参数</td></tr>
+  @ <tr><td><b>%%x</b></td><td>标记参数，如果为空则为键值</td></tr>
+  @ <tr><td><b>%%b</b></td><td>标记块</td></tr>
+  @ <tr><td><b>%%r</b></td><td>%s(g.scm.zName) 仓库根路径</td></tr>
+  @ <tr><td><b>%%n</b></td><td>CVSTrac 数据库名</td></tr>
+  @ <tr><td><b>%%u</b></td><td>当前用户</td></tr>
+  @ <tr><td><b>%%c</b></td><td>用户权限</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ Additionally, external programs have some or all the following
-  @ environment variables defined:<br>
+  @ 此外，外部程序还将拥有以下这些
+  @ 环境变量定义:<br>
   @ REQUEST_METHOD, GATEWAY_INTERFACE, REQUEST_URI, PATH_INFO,
   @ QUERY_STRING, REMOTE_ADDR, HTTP_USER_AGENT, CONTENT_LENGTH,
   @ HTTP_REFERER, HTTP_HOST, CONTENT_TYPE, HTTP_COOKIE
   @ <br>
   @
-  @ <h2>Notes</h2>
+  @ <h2>说明</h2>
   @ <ul>
-  @   <li>The markup name is the wiki formatting tag. i.e. a markup named
-  @   <b>echo</b> would be invoked using <tt>{echo: key args}</tt></li>
-  @   <li>Changing the name of an existing markup may break existing
-  @   wiki pages</li>
-  @   <li>"Markup" markups are simple string substitutions and are handled
-  @   directly by CVSTrac</li>
-  @   <li>"Block" markups are paired {markup} and {endmarkup} which get
-  @   all the text in between as arguments (%a), with no key.</li>
-  @   <li>"Program" markups are handled by running external scripts and
-  @   programs. These are more flexible, but there are security risks and
-  @   too many may slow down page creation. A Program Markup gets the
-  @   arguments on the command line while a Program Block also gets the block
-  @   from standard input. Both forms should write HTML to standard output</li>
-  @   <li>Output, except for trusted markups, has unsafe HTML tags/attributes
-  @   filtered out. Trusted markups are responsible for their own
-  @   filtering (which can only be done by programs, obviously).</li>
-  @   <li>The Description field is used when enumerating the list of available
-  @   custom markups using the {markups} tag. This is included in pages
-  @   such as <a href="wiki?p=WikiFormatting">WikiFormatting</a> in order to
-  @   document server-specific markups.</li>
+  @   <li>标记名称为 Wiki 格式化标签。如一个标记
+  @   <b>echo</b> 可以使用 <tt>{echo: key args}</tt> 来调用</li>
+  @   <li>对标记名的修改，将打乱已存在的使用了该标记的
+  @   Wiki 页面</li>
+  @   <li>"标记" 只是简单的字符串替换，并由
+  @   CVSTrac 直接处理</li>
+  @   <li>"块" 标记是由成对的 {markup} 和 {endmarkup} 块组成，在它们之
+  @   间的所有文本将作为参数 (%a)，不包含标记键值。</li>
+  @   <li>"程序" 标记通过运行外部脚本和程序来处理。
+  @   它们可以更为复杂，但同样也存在安全风险
+  @   并且会减慢页面生成的速度。程序标记从命令行中取得参数，
+  @   程序块则从标准输入中取得文本块内容。
+  @   这两种方式都需要将 HTML 结果输出到标准输出</li>
+  @   <li>输出时，除了可信任的标记，所有包含不安全的 HTML 标签/属性
+  @   将被过滤。可信任的标记由它们自己来负责过滤
+  @   (显然，这些也只能由程序来完成)。</li>
+  @   <li>描述信息用来在使用 {markups} 标签枚举所有可用的
+  @   标记列表时使用。这个列表包含在诸如
+  @   <a href="wiki?p=WikiFormatting">WikiFormatting</a> 这样的页面中，
+  @   以提供与服务器相关的文档。</li>
   @ </ul>
 
   common_footer();
@@ -1922,14 +1924,14 @@ void setup_markup_page(void){
     return;
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
-  common_add_action_item("setup_markupedit", "Add Markup");
+  common_add_nav_item("setup", "主设置菜单");
+  common_add_action_item("setup_markupedit", "增加标记");
   common_add_help_item("CvstracAdminMarkup");
-  common_header("Custom Wiki Markup");
+  common_header("定制 Wiki 标记");
 
   az = db_query("SELECT markup, description FROM markup ORDER BY markup;");
   if( az && az[0] ){
-    @ <p><big><b>Custom Markup Rules</b></big></p>
+    @ <p><big><b>定制标记规则</b></big></p>
     @ <dl>
     for(j=0; az[j]; j+=2){
       @ <dt><a href="setup_markupedit?m=%h(az[j])">%h(az[j])</a></dt>
@@ -1940,7 +1942,7 @@ void setup_markup_page(void){
         output_formatted(az[j+1],NULL);
         @ </dd>
       }else{
-        @ <dd>(no description)</dd>
+        @ <dd>(无描述)</dd>
       }
     }
     @ </dl>
@@ -1969,11 +1971,11 @@ void setup_toolsedit_page(void){
     return;
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
-  common_add_action_item("setup_tools", "Cancel");
+  common_add_nav_item("setup", "主设置菜单");
+  common_add_action_item("setup_tools", "取消");
   common_add_action_item(mprintf("setup_toolsedit?t=%h&del=1",zTool),
                          "Delete");
-  common_header("External Tools");
+  common_header("外部工具");
 
   if( P("can") ){
     cgi_redirect("setup_tools");
@@ -1984,12 +1986,12 @@ void setup_toolsedit_page(void){
     cgi_redirect("setup_tools");
     return;
   }else if( delete && zTool[0] ){
-    @ <p>Are you sure you want to delete tool <b>%h(zTool)</b>?</p>
+    @ <p>您确定要删除工具 <b>%h(zTool)</b>吗？</p>
     @
     @ <form method="POST" action="setup_toolsedit">
     @ <input type="hidden" name="t" value="%h(zTool)">
-    @ <input type="submit" name="ok" value="Yes, Delete">
-    @ <input type="submit" name="can" value="No, Cancel">
+    @ <input type="submit" name="ok" value="是，删除">
+    @ <input type="submit" name="can" value="否，取消">
     @ </form>
     common_footer();
     return;
@@ -2023,117 +2025,117 @@ void setup_toolsedit_page(void){
   }
 
   @ <form action="%s(g.zPath)" method="POST">
-  @ Tool Name: <input type="text" name="t" value="%h(zTool)" size=12>
+  @ 工具名称: <input type="text" name="t" value="%h(zTool)" size=12>
   cgi_optionmenu(0,"o",zObject,
-                 "File","file",
+                 "文件","file",
                  "Wiki","wiki",
-                 "Ticket","tkt",
-                 "Check-in","chng",
-                 "Milestone","ms",
-                 "Report", "rpt",
-                 "Directory", "dir",
+                 "任务单","tkt",
+                 "提交","chng",
+                 "里程碑","ms",
+                 "报表", "rpt",
+                 "目录", "dir",
                  NULL);
-  @ <br>Required Permissions:
+  @ <br>需要的权限:
   @ <input type="text" name="p" size=16 value="%h(zPerms)"><br>
-  @ <br>Command-line:<br>
+  @ <br>命令行:<br>
   @ <textarea name="c" rows="4" cols="60">%h(zCommand)</textarea><br>
-  @ Description:<br>
+  @ 描述:<br>
   @ <textarea name="d" rows="4" cols="60">%h(zDescription)</textarea><br>
   @ <input type="hidden" name="u">
-  @ <input type="submit" value="Set">
+  @ <input type="submit" value="设置">
   @ </form>
   @
   @ <table border=1 cellspacing=0 cellpadding=5 align="right" width="45%%">
   @ <tr><td bgcolor="#e0c0c0">
-  @ <big><b>Important Security Note</b></big>
+  @ <big><b>重要的安全提示</b></big>
   @
-  @ <p>External scripts and programs and
-  @ improper configuration may result in a compromised server.</p>
+  @ <p>外部脚本、程序和不适当的配置
+  @ 可能会危及服务器的安全。</p>
   @
-  @ <p>Be sure to enclose all text substitutions in single-quotes.
-  @ (ex <tt>'%%k'</tt>)  Otherwise, a user could cause arbitrary shell
-  @ commands to be run on your system.</p>
+  @ <p>请确认使用单引号来包含所有的文本
+  @ (如 <tt>'%%k'</tt>)。否则，别有用心的用户可能会
+  @ 在您的服务器上执行任意的命令。</p>
+  @  
+  @ <p>文本在被替换之前，已经被截去了所有的单引号和反斜杆，
+  @ 故如果替换结果本身使用单引号包含的话，
+  @ 它将始终被外壳程序作为一个单独的符号来处理。</p>
   @
-  @ <p>Text is stripped of all single-quotes and backslashs before it is
-  @ substituted, so if the substitution is itself enclosed in single-quotes,
-  @ it will always be treated as a single token by the shell.</p>
-  @
-  @ <p>Each tool can have a minimum permission set defined. See
-  @ <a href="userlist">Users</a> for the full list.</p>
+  @ <p>每一个工具都有一个最小的权限设置要求。参见
+  @ <a href="userlist">用户</a> 来获得全部的权限列表。</p>
   @ </td></tr></table>
   @
-  @ The following substitutions are available to all external tools:
+  @ 下列替换对所有外部工具有效:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td><b>%%RP</b></td><td>%s(g.scm.zName) repository root</td></tr>
-  @ <tr><td><b>%%P</b></td><td>CVSTrac project name</td></tr>
-  @ <tr><td><b>%%B</b></td><td>Server base URL</td></tr>
-  @ <tr><td><b>%%U</b></td><td>Current user</td></tr>
-  @ <tr><td><b>%%UC</b></td><td>User capabilities</td></tr>
-  @ <tr><td><b>%%N</b></td><td>Current epoch time</td></tr>
-  @ <tr><td><b>%%T</b></td><td>Name of tool</td></tr>
+  @ <tr><td><b>%%RP</b></td><td>%s(g.scm.zName) 仓库路径</td></tr>
+  @ <tr><td><b>%%P</b></td><td>CVSTrac 工程名称</td></tr>
+  @ <tr><td><b>%%B</b></td><td>服务器根 URL</td></tr>
+  @ <tr><td><b>%%U</b></td><td>当前用户</td></tr>
+  @ <tr><td><b>%%UC</b></td><td>用户权限</td></tr>
+  @ <tr><td><b>%%N</b></td><td>当前时间点</td></tr>
+  @ <tr><td><b>%%T</b></td><td>工具名称</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ File tools have the following substitutions available:
+  @ 下列替换对文件工具有效:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td><b>%%F</b></td><td>Filename</td></tr>
-  @ <tr><td><b>%%V1</b></td><td>First version number</td></tr>
-  @ <tr><td><b>%%V2</b></td><td>Second version number (i.e. diff)</td></tr>
+  @ <tr><td><b>%%F</b></td><td>文件名</td></tr>
+  @ <tr><td><b>%%V1</b></td><td>第一个版本号</td></tr>
+  @ <tr><td><b>%%V2</b></td><td>第二个版本号 (例如 diff)</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ Directory tools have the following substitutions available:
+  @ 下列替换对目录工具有效:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td><b>%%F</b></td><td>Directory pathname</td></tr>
+  @ <tr><td><b>%%F</b></td><td>目录路径名</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ Ticket tools have the following substitutions available:
+  @ 下列替换对任务单工具有效:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td><b>%%TN</b></td><td>Ticket number</td></tr>
+  @ <tr><td><b>%%TN</b></td><td>任务单编号</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ Wiki tools have the following substitutions available:
+  @ 下列替换对 Wiki 工具有效:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td><b>%%W</b></td><td>Wiki page name</td></tr>
-  @ <tr><td><b>%%T1</b></td><td>First timestamp of wiki page</td></tr>
-  @ <tr><td><b>%%T2</b></td><td>Second timestamp of wiki page (i.e. diff)
+  @ <tr><td><b>%%W</b></td><td>Wiki 页面名称</td></tr>
+  @ <tr><td><b>%%T1</b></td><td>第一个 wiki 页面的时间戳</td></tr>
+  @ <tr><td><b>%%T2</b></td><td>第二个 wiki 页面的时间戳 (例如 diff)
   @            </td></tr>
-  @ <tr><td><b>%%C</b></td><td>Temporary file containing content</td></tr>
+  @ <tr><td><b>%%C</b></td><td>包含内容的临时文件</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ Check-in tools have the following substitutions available:
+  @ 下列替换对提交工具有效:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td><b>%%CN</b></td><td>Check-in number</td></tr>
-  @ <tr><td><b>%%C</b></td><td>Temporary file containing message</td></tr>
+  @ <tr><td><b>%%CN</b></td><td>提交号</td></tr>
+  @ <tr><td><b>%%C</b></td><td>包含信息的临时文件</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ Milestone tools have the following substitutions available:
+  @ 下列替换对里程碑工具有效:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td><b>%%MS</b></td><td>Milestone number</td></tr>
-  @ <tr><td><b>%%C</b></td><td>Temporary file containing message</td></tr>
+  @ <tr><td><b>%%MS</b></td><td>里程碑编号</td></tr>
+  @ <tr><td><b>%%C</b></td><td>包含信息的临时文件</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ Report tools have the following substitutions available:
+  @ 下列替换对报告工具有效:
   @ <blockquote>
   @ <table cellspacing="5" cellpadding="0">
-  @ <tr><td><b>%%RN</b></td><td>Report number</td></tr>
+  @ <tr><td><b>%%RN</b></td><td>报告编号</td></tr>
   @ </table>
   @ </blockquote>
   @
-  @ Additionally, external programs have some or all the following
-  @ environment variables defined:<br>
+  @ 此外，外部程序还将有下列部分或全部的
+  @ 环境变量定义:<br>
   @ REQUEST_METHOD, GATEWAY_INTERFACE, REQUEST_URI, PATH_INFO,
   @ QUERY_STRING, REMOTE_ADDR, HTTP_USER_AGENT, CONTENT_LENGTH,
   @ HTTP_REFERER, HTTP_HOST, CONTENT_TYPE, HTTP_COOKIE
@@ -2157,13 +2159,13 @@ void setup_tools_page(void){
     return;
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
-  common_add_action_item("setup_toolsedit", "Add Tool");
-  common_header("External Tools");
+  common_add_nav_item("setup", "主设置菜单");
+  common_add_action_item("setup_toolsedit", "增加工具");
+  common_header("外部工具");
 
   az = db_query("SELECT name, description FROM tool ORDER BY name;");
   if( az && az[0] ){
-    @ <p><big><b>External Tools</b></big></p>
+    @ <p><big><b>外部工具</b></big></p>
     @ <dl>
     for(j=0; az[j]; j+=2){
       @ <dt><a href="setup_toolsedit?t=%h(az[j])">%h(az[j])</a></dt>
@@ -2174,7 +2176,7 @@ void setup_tools_page(void){
         output_formatted(az[j+1],NULL);
         @ </dd>
       }else{
-        @ <dd>(no description)</dd>
+        @ <dd>(无描述)</dd>
       }
     }
     @ </dl>
@@ -2210,29 +2212,29 @@ void setup_backup_page(void){
     db_execute("COMMIT");
   }
  
-  common_add_nav_item("setup", "Main Setup Menu");
+  common_add_nav_item("setup", "主设置菜单");
   common_add_help_item("CvstracAdminBackup");
-  common_header("Backup The Database");
+  common_header("备份数据库");
   if( zMsg ){
     @ <p class="error">%s(zMsg)</p>
   }
   @ <p>
-  @ Use the buttons below to make a safe (atomic) backup or restore
-  @ of the database file.   The original database is in the file
-  @ named <b>%h(zDbName)</b> and the backup is in 
-  @ <b>%h(zBuName)</b>.
+  @ 使用下面的按钮对数据库进行安全自动地备份及恢复操作。
+  @ 原数据库文件名
+  @ 为 <b>%h(zDbName)</b>，备份文件
+  @ 为 <b>%h(zBuName)</b>。
   @ </p>
   @
   @ <p>
-  @ It is always safe to do a backup.  The worst that can happen is that
-  @ you can overwrite a prior backup.  But a restore can destroy your
-  @ database if the backup copy you are restoring from is incorrect.
-  @ Use caution when doing a restore.
+  @ 备份总是安全的。最坏的情形是会覆盖上一次的
+  @ 备份。但是如果在恢复时中断操作，将会破坏您
+  @ 的数据库。
+  @ 使用恢复功能时，请谨慎。
   @ </p>
   @
   @ <form action="%s(g.zPath)" method="POST">
-  @ <p><input type="submit" name="bkup" value="Backup"></p>
-  @ <p><input type="submit" name="rstr" value="Restore"></p>
+  @ <p><input type="submit" name="bkup" value="备份"></p>
+  @ <p><input type="submit" name="rstr" value="恢复"></p>
   @ </form>
   common_footer();
 }
@@ -2274,48 +2276,48 @@ void setup_timeline_page(void){
   nTTL = atoi(db_config("rss_ttl", "60"));
   nRDL = atoi(db_config("rss_detail_level", "5"));
   
-  common_add_nav_item("setup", "Main Setup Menu");
-  common_header("Timeline & RSS Setup");
+  common_add_nav_item("setup", "主设置菜单");
+  common_header("时间线和 RSS 设置");
   @ <form action="%s(g.zPath)" method="POST">
   @ <p>
-  @ Enter number of days timeline cookie should be kept by users browser.
-  @ This cookie keeps timeline settings persistent across users multiple visits.<br>
-  @ This applies to all users.<br>
-  @ Set it to 0 to disable timeline cookie.
+  @ 输入在用户浏览器中 Cookie 需要保存的天数。
+  @ 该 Cookie 能保存时间线的设置以方便用户的多次访问。<br>
+  @ 该功能对所有用户有效。<br>
+  @ 设置为 0 将禁用浏览器 Cookie。
   @ </p>
   @ <p>
-  @ Cookie lifetime: 
-  @ <input type="text" name="cl" value="%d(nCookieLife)" size=5> days
-  @ <input type="submit" value="Set">
+  @ Cookie 生命期: 
+  @ <input type="text" name="cl" value="%d(nCookieLife)" size=5> 天
+  @ <input type="submit" value="提交">
   @ </p>
   @ <hr>
   @ <p>
-  @ RSS feed's TTL (Time To Live) tells RSS readers how long a feed should
-  @ be cached before refreshing from the source. Because a refresh
-  @ downloads the entire page, in order to avoid excessive use of
-  @ bandwidth this shouldn't be set too low. Anything lower then 15
-  @ is probably not a very good idea, while 30-60 is most common.
+  @ RSS feed 的 TTL (Time To Live) 用来通知 RSS 阅读器其内容在刷新之前
+  @ 需要缓存多长时间。因为每次刷新都需要下载整个页面，为了避免额外的带宽
+  @ 占用，这个值可以设置得长一些。
+  @ 低于 15 的值可能不是个好的方案，通常建议使用 30-60
+  @ 的数值。
   @ </p>
   @ <p>
   @ Time To Live:
-  @ <input type="text" name="ttl" value="%d(nTTL)" size=5> minutes
-  @ <input type="submit" value="Set">
+  @ <input type="text" name="ttl" value="%d(nTTL)" size=5> 分钟
+  @ <input type="submit" value="提交">
   @ </p>
   @ <hr>
   @ <p>
-  @ RSS feed's detail level determines how much details will be
-  @ embedded in feed.<br>
-  @ Higher the detail level, higher the bandwidth usage will be.
+  @ RSS 源的详细等级决定了在源中将会包含
+  @ 多少详细内容。<br>
+  @ 详细等级越高，带宽占用也会越大。
   @ </p>
   @ <p>
-  @ RSS detail level:<br>
+  @ RSS 详细等级:<br>
   @ <label for="rdl0"><input type="radio" name="rdl" value="0" id="rdl0"
-  @ %s(nRDL==0?" checked":"")> Basic</label><br>
+  @ %s(nRDL==0?" checked":"")> 基本</label><br>
   @ <label for="rdl5"><input type="radio" name="rdl" value="5" id="rdl5"
-  @ %s(nRDL==5?" checked":"")> Medium</label><br>
+  @ %s(nRDL==5?" checked":"")> 中等</label><br>
   @ <label for="rdl9"><input type="radio" name="rdl" value="9" id="rdl9"
-  @ %s(nRDL==9?" checked":"")> High</label><br>
-  @ <input type="submit" value="Set">
+  @ %s(nRDL==9?" checked":"")> 高</label><br>
+  @ <input type="submit" value="设置">
   @ </p>
   @ </form>
   common_footer();
@@ -2336,7 +2338,7 @@ void setup_repair_page(void){
     return;
   }
 
-  /* 
+  /*
   ** Change a check-in number.
   */
   cnfrom = atoi(PD("cnfrom"),"0");
@@ -2380,17 +2382,17 @@ void setup_repair_page(void){
     );
   }
 
-  common_add_nav_item("setup", "Main Setup Menu");
-  common_header("Repair The Database");
+  common_add_nav_item("setup", "主设置菜单");
+  common_header("修复数据库");
   @ <p>
-  @ You can use this page to repair damage to a database that was caused
-  @ when the repository was read incorrectly.  The problem may
-  @ have resulted from corruption in the %s(g.scm.zName) repository or a system 
-  @ malfunction or from a bug in CVSTrac.  (All known bugs of this kind have
-  @ been fixed but you never know when a new one might appear.)
+  @ 您可以使用该页面来修复在
+  @ 读取仓库数据文件时发生了错误的数据库。
+  @ 该问题可能是由于错误的 %s(g.scm.zName) 仓库或一个系统错误，
+  @ 或者是 CVSTrac 的错误。（所有已知的这种类型的错误
+  @ 都已修正，但不知道新的问题什么时候还会出现。）
   @ </p>
   @
-  @ 
+  @
   @ </p>
   common_footer();
 }

@@ -539,6 +539,19 @@ int main(int argc, char **argv){
     cgi_logfile(zLogFile,"*");
   }
 
+#if CVSNT
+  zSCM = db_config("scm", 0);
+  if( zSCM ) {
+    if(!strcmp(zSCM,"cvs")){
+      init_cvs();
+    }else if(!strcmp(zSCM,"svn") ){
+      init_svn();
+    }else if(!strcmp(zSCM,"git") ){
+      init_git();
+    }
+  }
+#endif
+  
   /* Locate the method specified by the path and execute the function
   ** that implements that method.
   */

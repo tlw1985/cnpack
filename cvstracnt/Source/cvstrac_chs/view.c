@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -20,8 +20,10 @@
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
 **
+** 简体中文翻译: beta (xbeta@163.net) 2003-11-10
+**
 *******************************************************************************
-**  
+**
 ** Code to generate the bug report listings
 */
 #include "config.h"
@@ -42,13 +44,13 @@ void view_list(void){
   throttle(1,0);
   common_standard_menu("reportlist", "search?t=1");
   if( g.okQuery ){
-    common_add_action_item("rptnew", "New Report Format");
+    common_add_action_item("rptnew", "新建报表格式");
   }
   common_add_help_item("CvstracReport");
-  common_header("Available Report Formats");
+  common_header("现有报表格式");
   az = db_query("SELECT rn, title, owner, description "
                 "FROM reportfmt ORDER BY title");
-  @ <p>Choose a report format from the following list:</p>
+  @ <p>请从下表中选择一个报表格式:</p>
   @ <ol>
   for(i=0; az[i]; i+=4){
     @ <li><a href="rptview?rn=%t(az[i])"
@@ -57,12 +59,12 @@ void view_list(void){
       @ (by <i>%h(az[i+2])</i>)
     }
     if( g.okQuery ){
-      @ [<a href="rptedit?rn=%t(az[i])&amp;copy=1" rel="nofollow">copy</a>]
+      @ [<a href="rptedit?rn=%t(az[i])&amp;copy=1" rel="nofollow">复制</a>]
     }
     if( g.okAdmin || (g.okQuery && strcmp(g.zUser,az[i+2])==0) ){
-      @ [<a href="rptedit?rn=%t(az[i])" rel="nofollow">edit</a>]
+      @ [<a href="rptedit?rn=%t(az[i])" rel="nofollow">编辑</a>]
     }
-    @ [<a href="rptsql?rn=%t(az[i])" rel="nofollow">sql</a>]
+    @ [<a href="rptsql?rn=%t(az[i])" rel="nofollow">SQL</a>]
     if( az[i+3] && az[i+3][0] ){
       @ <div class="shortcomment">
       if( output_trim_message(az[i+3], MN_CKIN_MSG, MX_CKIN_MSG) ){
@@ -76,7 +78,7 @@ void view_list(void){
     @ </li>
   }
   if( g.okQuery ){
-    @ <li><a href="rptnew">Create a new report format</a></li>
+    @ <li><a href="rptnew">新建报表格式</a></li>
   }
   @ </ol>
   common_footer();
@@ -238,7 +240,7 @@ char *verify_sql_statement(char *zSql){
   */
   for(i=0; isspace(zSql[i]); i++){}
   if( strncasecmp(&zSql[i],"select",6)!=0 ){
-    return mprintf("The SQL must be a SELECT statement");
+    return mprintf("SQL 必须是一个 SELECT 语句");
   }
   for(i=0; zSql[i]; i++){
     if( zSql[i]==';' ){
@@ -251,12 +253,12 @@ char *verify_sql_statement(char *zSql){
         /* A complete statement basically means that an unquoted semi-colon
         ** was found. We don't actually check what's after that.
         */
-        return mprintf("Semi-colon detected! "
-                       "Only a single SQL statement is allowed");
+        return mprintf("检测到分号！"
+                       "只允许单条 SQL 语句");
       }
     }
   }
-  return 0;  
+  return 0;
 }
 
 /*
@@ -281,10 +283,10 @@ void view_see_sql(void){
                 "FROM reportfmt WHERE rn=%d",rn);
   common_standard_menu(0, 0);
   common_add_help_item("CvstracReport");
-  common_add_action_item( mprintf("rptview?rn=%d",rn), "View");
-  common_header("SQL For Report Format Number %d", rn);
+  common_add_action_item( mprintf("rptview?rn=%d",rn), "查看");
+  common_header("报表格式编号 %d 的 SQL 语句", rn);
   if( az[0]==0 ){
-    @ <p>Unknown report number: %d(rn)</p>
+    @ <p>未知报表格式编号: %d(rn)</p>
     common_footer();
     return;
   }
@@ -293,11 +295,11 @@ void view_see_sql(void){
   zOwner = az[2];
   zClrKey = az[3];
   @ <table cellpadding=0 cellspacing=0 border=0>
-  @ <tr><td valign="top" align="right">Title:</td><td width=15></td>
+  @ <tr><td valign="top" align="right">标题:</td><td width=15></td>
   @ <td colspan=3>%h(zTitle)</td></tr>
-  @ <tr><td valign="top" align="right">Owner:</td><td></td>
+  @ <tr><td valign="top" align="right">所有者:</td><td></td>
   @ <td colspan=3>%h(zOwner)</td></tr>
-  @ <tr><td valign="top" align="right">SQL:</td><td></td>
+  @ <tr><td valign="top" align="right">SQL 语句:</td><td></td>
   @ <td valign="top"><pre>
   @ %h(zSQL)
   @ </pre></td>
@@ -347,17 +349,17 @@ void view_edit(void){
                             "WHERE rn=%d", rn);
     if( zTitle==0 ) cgi_redirect("reportlist");
 
-    common_add_action_item(mprintf("rptview?rn=%d",rn), "Cancel");
-    common_header("Are You Sure?");
+    common_add_action_item(mprintf("rptview?rn=%d",rn), "取消");
+    common_header("确认删除？");
     @ <form action="rptedit" method="POST">
-    @ <p>You are about to delete all traces of the report
-    @ <strong>%h(zTitle)</strong> from
-    @ the database.  This is an irreversible operation.  All records
-    @ related to this report will be removed and cannot be recovered.</p>
+    @ <p>您正在从数据库中删除报表
+    @ <strong>%h(zTitle)</strong>
+    @ 的所有记录。这是一个不可撤消的操作，所有与这个报表相关的记录
+    @ 都将移除并且不能被恢复。</p>
     @
     @ <input type="hidden" name="rn" value="%d(rn)">
-    @ <input type="submit" name="del2" value="Delete The Report">
-    @ <input type="submit" name="can" value="Cancel">
+    @ <input type="submit" name="del2" value="删除报表">
+    @ <input type="submit" name="can" value="取消">
     @ </form>
     common_footer();
     return;
@@ -368,9 +370,9 @@ void view_edit(void){
   }
   if( zTitle && zSQL ){
     if( zSQL[0]==0 ){
-      zErr = "Please supply an SQL query statement";
+      zErr = "请输入 SQL 查询语句";
     }else if( (zTitle = trim_string(zTitle))[0]==0 ){
-      zErr = "Please supply a title"; 
+      zErr = "请输入标题"; 
     }else if( (zErr = verify_sql_statement(zSQL))!=0 ){
       /* empty... zErr non-zero */
     }else{
@@ -398,35 +400,35 @@ void view_edit(void){
     }
   }else if( rn==0 ){
     zTitle = "";
-    zSQL = 
+    zSQL =
       @ SELECT
-      @   CASE WHEN status IN ('new','active') THEN '#f2dcdc'
-      @        WHEN status='review' THEN '#e8e8bd'
-      @        WHEN status='fixed' THEN '#cfe8bd'
-      @        WHEN status='tested' THEN '#bde5d6'
-      @        WHEN status='defer' THEN '#cacae5'
-      @        ELSE '#c8c8c8' END AS 'bgcolor',
+      @   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+      @        WHEN status='检查' THEN '#e8e8bd'
+      @        WHEN status='修正' THEN '#cfe8bd'
+      @        WHEN status='测试' THEN '#bde5d6'
+      @        WHEN status='推迟' THEN '#cacae5'
+      @        ELSE '#c8c8c8' END as 'bgcolor',
       @   tn AS '#',
-      @   type AS 'Type',
-      @   status AS 'Status',
-      @   sdate(origtime) AS 'Created',
-      @   owner AS 'By',
-      @   subsystem AS 'Subsys',
-      @   sdate(changetime) AS 'Changed',
-      @   assignedto AS 'Assigned',
-      @   severity AS 'Svr',
-      @   priority AS 'Pri',
-      @   title AS 'Title'
+      @   type AS '类型',
+      @   status AS '状态',
+      @   sdate(origtime) AS '创建时间',
+      @   owner AS '创建人',
+      @   subsystem AS '子系统',
+      @   sdate(changetime) AS '更新时间',
+      @   assignedto AS '分配给',
+      @   severity AS '严重',
+      @   priority AS '优先',
+      @   title AS '标题'
       @ FROM ticket
     ;
-    zClrKey = 
-      @ #ffffff Key:
-      @ #f2dcdc Active
-      @ #e8e8e8 Review
-      @ #cfe8bd Fixed
-      @ #bde5d6 Tested
-      @ #cacae5 Deferred
-      @ #c8c8c8 Closed
+    zClrKey =
+      @ #ffffff 图例:
+      @ #f2dcdc 活动
+      @ #e8e8e8 检查
+      @ #cfe8bd 修正
+      @ #bde5d6 测试
+      @ #cacae5 推迟
+      @ #c8c8c8 完成
     ;
   }else{
     char **az = db_query("SELECT title, sqlcode, owner, cols, description "
@@ -440,57 +442,57 @@ void view_edit(void){
     }
     if( P("copy") ){
       rn = 0;
-      zTitle = mprintf("Copy Of %s", zTitle);
+      zTitle = mprintf("复件 %s", zTitle);
       zOwner = g.zUser;
     }
   }
   if( zOwner==0 ) zOwner = g.zUser;
-  common_add_action_item("reportlist", "Cancel");
+  common_add_action_item("reportlist", "取消");
   if( rn>0 ){
-    common_add_action_item( mprintf("rptedit?rn=%d&del1=1",rn), "Delete");
+    common_add_action_item( mprintf("rptedit?rn=%d&del1=1",rn), "删除");
   }
   common_add_help_item("CvstracReport");
-  common_header(rn>0 ? "Edit Report Format":"Create New Report Format");
+  common_header(rn>0 ? "编辑报表格式":"创建新报表格式");
   if( zErr ){
     @ <blockquote class="error">%h(zErr)</blockquote>
   }
   @ <form action="rptedit" method="POST">
   @ <input type="hidden" name="rn" value="%d(rn)">
-  @ <p>Report Title:<br>
+  @ <p>报表标题:<br>
   @ <input type="text" name="t" value="%h(zTitle)" size="60"></p>
-  @ <p>Enter a complete SQL query statement against the "TICKET" table:<br>
+  @ <p>请为 "任务单" 表格输入完整的 SQL 语句:<br>
   cgi_textarea("s","sql",20,70,zSQL);
   @ </p>
   if( g.okAdmin ){
     char **azUsers;
     azUsers = db_query("SELECT id FROM user UNION SELECT '' ORDER BY id");
-    @ <p>Report owner:
+    @ <p>报表所有者:
     cgi_v_optionmenu(0, "w", zOwner, (const char**)azUsers);
     @ </p>
   } else {
     @ <input type="hidden" name="w" value="%h(zOwner)">
   }
-  @ <p>Enter an optional color key in the following box.  (If blank, no
-  @ color key is displayed.)  Each line contains the text for a single
-  @ entry in the key.  The first token of each line is the background
-  @ color for that line.<br>
+  @ <p>请在下面输入可选的颜色图例。
+  @（如果为空，则不显示任何颜色图例）
+  @ 每一行包含图例的一个单独的条目。
+  @ 每行的第一个部分即为其颜色。<br>
   cgi_textarea("k","colorkey",6,50,zClrKey);
   @ </p>
   if( !g.okAdmin && strcmp(zOwner,g.zUser)!=0 ){
-    @ <p>This report format is owned by %h(zOwner).  You are not allowed
-    @ to change it.</p>
+    @ <p>本报表格式的所有者是 %h(zOwner)，
+    @ 您不允许修改。</p>
     @ </form>
     report_format_hints();
     common_footer();
     return;
   }
-  @ <p>Enter a description
-  @ (<small>See <a href="wikihints">formatting hints</a></small>)<br>
+  @ <p>请输入描述:
+  @ (<small>参见 <a href="wikihints">格式文本说明</a></small>)<br>
   cgi_wikitext("d",40,zDesc);
   @ </p>
-  @ <input type="submit" value="Apply Changes">
+  @ <input type="submit" value="确认修改">
   if( rn>0 ){
-    @ <input type="submit" value="Delete This Report" name="del1">
+    @ <input type="submit" value="删除该报表格式" name="del1">
   }
   @ </form>
   report_format_hints();
@@ -502,132 +504,132 @@ void view_edit(void){
 ** formats
 */
 static void report_format_hints(void){
-  @ <hr><h3>TICKET Schema</h3>
+  @ <hr><h3>任务单 规则</h3>
   @ <blockquote><pre>
   @ CREATE TABLE ticket(
-  @    tn integer primary key,  -- Unique tracking number for the ticket
-  @    type text,               -- code, doc, todo, new, or event
-  @    status text,             -- new, review, defer, active, fixed,
-  @                             -- tested, or closed
-  @    origtime int,            -- Time this ticket was first created
-  @    changetime int,          -- Time of most recent change to this ticket
-  @    derivedfrom int,         -- This ticket derived from another
-  @    version text,            -- Version or build number
-  @    assignedto text,         -- Whose job is it to deal with this ticket
-  @    severity int,            -- How bad is the problem
-  @    priority text,           -- When should the problem be fixed
-  @    subsystem text,          -- What subsystem does this ticket refer to
-  @    owner text,              -- Who originally wrote this ticket
-  @    title text,              -- Title of this bug
-  @    description text,        -- Description of the problem
-  @    remarks text             -- How the problem was dealt with
+  @    tn integer primary key,  -- 任务单的唯一标识号
+  @    type text,               -- 错误修正、功能改进、新项开发等
+  @    status text,             -- 新建、检查、推迟、活动、修正、
+  @                             -- 测试 或 完成
+  @    origtime int,            -- 任务单创建时间
+  @    changetime int,          -- 任务单最后修改时间
+  @    derivedfrom int,         -- 该任务单源自另一个任务单
+  @    version text,            -- 版本号或 Build 号
+  @    assignedto text,         -- 谁应该完成该任务
+  @    severity int,            -- 错误程度
+  @    priority text,           -- 优先级
+  @    subsystem text,          -- 任务单相关的子系统
+  @    owner text,              -- 谁创建了该任务单
+  @    title text,              -- 任务单标题
+  @    description text,        -- 描述信息
+  @    remarks text             -- 备注
   @ );
   @ </pre></blockquote>
-  @ <h3>Notes</h3>
+  @ <h3>提示</h3>
   @ <ul>
-  @ <li><p>The SQL must consist of a single SELECT statement</p></li>
+  @ <li><p>该 SQL 只能包含单条 SELECT 语句。</p></li>
   @
-  @ <li><p>If a column of the result set is named "#" then that column
-  @ is assumed to hold a ticket number.  A hyperlink will be created from
-  @ that column to a detailed view of the ticket.</p></li>
+  @ <li><p>如果结果集的一个列以 "#" 命名，
+  @ 则假定其为任务单编号。系统将自动根据
+  @ 该列来创建一个超级链接，以显示该任务单的详细信息。</p></li>
   @
-  @ <li><p>If a column of the result set is named "bgcolor" then the content
-  @ of that column determines the background color of the row.</p></li>
+  @ <li><p>如果结果集的一个列以 "bgcolor" 命名，则该列的值（颜色）将决定这一
+  @ 一行的显示背景色。</p></li>
   @
-  @ <li><p>Times in the TICKET table are expressed as seconds since 1970.
-  @ Convert these values to human-friendly date formats using the
-  @ <b>sdate()</b> and <b>ldate()</b> SQL functions.</p></li>
+  @ <li><p>“任务单”表中的时间是从 1970 年到该时间的秒数。
+  @ 要转化这些时间为可读的日期格式，可使用
+  @ <b>sdate()</b> 和 <b>ldate()</b> SQL 函数。</p></li>
   @ 
-  @ <li><p>The <b>now()</b> SQL function returns the current time and date
-  @ in seconds since 1970.  The <b>user()</b> SQL function returns a string
-  @ which is the login of the current user.</p></li>
+  @ <li><p><b>now()</b> 这个 SQL 函数将返回从 1970 年到现在的秒数；
+  @ 而 SQL 函数 <b>user()</b>
+  @ 则返回当前登陆的用户名字符串。</p></li>
   @
-  @ <li><p>The first column whose name begins with underscore ("_") and all
-  @ subsequent columns are shown on their own rows in the table.  This is
-  @ useful for displaying the TICKET.DESCRIPTION and TICKET.REMARKS fields.
+  @ <li><p>从第一个以下划线开头命名的列开始，
+  @ 后面的列都将按照顺序显示在表格
+  @ 中，这对于显示任务单的描述信息和备注字段非常有用。
   @ </p></li>
   @
-  @ <li><p>The <b>aux()</b> SQL function takes a parameter name as an argument
-  @ and returns the value that the user enters in the resulting HTML form. A
-  @ second optional parameter provides a default value for the field.</p></li>
+  @ <li><p><b>aux()</b> SQL 函数接收一个名称作为参数，
+  @ 并且以用户在 HTML 表单中输入的该参数的值作为返回值。
+  @ 可选的第二个参数可为该字段提供一个默认值。</p></li>
   @
-  @ <li><p>The <b>option()</b> SQL function takes a parameter name
-  @ and a quoted SELECT statement as parameters. The query results are
-  @ presented as an HTML dropdown menu and the function returns
-  @ the currently selected value. Results may be a single value column or
-  @ two <b>value,description</b> columns. The first row is the default.</p></li>
+  @ <li><p><b>option()</b> SQL 函数接收一个名称和
+  @ 一个使用单引号包含的 SELECT 语句作为参数。SELECT
+  @ 的结果提供给 HTML 页面生成一个下拉列表，该函数返回
+  @ 当前选择的值。返回值可能是单列或者是包含
+  @ <b>值，描述</b> 的两列，第一列为默认列。</p></li>
   @
-  @ <li><p>The <b>cgi()</b> SQL function takes a parameter name as an argument
-  @ and returns the value of a corresponding CGI query value. If the CGI
-  @ parameter doesn't exist, an optional second argument will be returned
-  @ instead.</p></li>
+  @ <li><p><b>cgi()</b> SQL 函数接收一个名称作为参数，
+  @ 并且返回相应的 CGI 查询值。如果 CGI
+  @ 参数不存在，一个可选的第二参数将作为代替的
+  @ 返回结果。</p></li>
   @
-  @ <li><p>If a column is wrapped by the <b>wiki()</b> SQL function, it will
-  @ be rendered as wiki formatted content.</p></li>
+  @ <li><p>如果一个字段使用 <b>wiki()</b> SQL 函数封装，它将作为
+  @ wiki 来格式化其内容。</p></li>
   @
-  @ <li><p>If a column is wrapped by the <b>tkt()</b> SQL function, it will
-  @ be shown as a ticket number with a link to the appropriate page</p></li>
+  @ <li><p>如果一个字段使用 <b>tkt()</b> SQL 函数封装，它将作为
+  @ 一个任务单编号显示，并链接到相应的页面。</p></li>
   @
-  @ <li><p>If a column is wrapped by the <b>chng()</b> SQL function, it will
-  @ be shown as a checkin number with a link to the appropriate page.</p></li>
+  @ <li><p>如果一个字段使用 <b>chng()</b> SQL 函数封装，它将作为
+  @ 一个提交编号显示，并链接到相应的页面。</p></li>
   @
-  @ <li><p>The <b>path()</b> SQL function can be used to extract complete filename
-  @ from FILE table. For example:
+  @ <li><p><b>path()</b> SQL 函数可用来从 FILE 表中取得完整的
+  @ 文件名。例如:
   @ <pre>SELECT path(isdir, dir, base) AS 'filename' FROM file</pre>
   @ </p></li>
   @
-  @ <li><p>The <b>dirname()</b> SQL function takes filename as only argument
-  @ and extracts parent directory name from it.</p></li>
+  @ <li><p><b>dirname()</b> SQL 函数接收一个文件名参数，
+  @ 并且返回该文件名中的父目录名。</p></li>
   @
-  @ <li><p>The <b>basename()</b> SQL function takes filename as only argument
-  @ and extracts basename from it.</p></li>
+  @ <li><p><b>basename()</b> SQL 函数接收一个文件名参数，
+  @ 并且返回该文件名中的基本文件名。</p></li>
   @
-  @ <li><p>The <b>search()</b> SQL function takes a keyword pattern and
-  @ a search text. The function returns an integer score which is
-  @ higher depending on how well the search went.</p></li>
+  @ <li><p><b>search()</b> SQL 函数接收一个搜索文本的匹配项参数，
+  @ 该函数返回一个匹配分值，该分值的大小依赖于文本搜索匹配
+  @ 的程度。</p></li>
   @
-  @ <li><p>The query can join other tables in the database besides TICKET.
+  @ <li><p>该查询语句可以联接（join）除“任务单”表以外的任何表。
   @ </p></li>
   @ </ul>
   @
-  @ <h3>Examples</h3>
-  @ <p>In this example, the first column in the result set is named
-  @ "bgcolor".  The value of this column is not displayed.  Instead, it
-  @ selects the background color of each row based on the TICKET.STATUS
-  @ field of the database.  The color key at the right shows the various
-  @ color codes.</p>
+  @ <h3>示例</h3>
+  @ <p>在本例中，结果集的第一列是以 "bgcolor" 命名的。
+  @ 该列的值不会被显示，相应
+  @ 的，它将根据“任务单（TICKET）”表中的“状态（STATUS）”
+  @ 字段决定该行的背景色。
+  @ 右边的颜色图例将显示不同的颜色代码。</p>
   @ <table align="right" style="margin: 0 5px;" border=1 cellspacing=0 width=125>
-  @ <tr bgcolor="#f2dcdc"><td align="center">new or active</td></tr>
-  @ <tr bgcolor="#e8e8bd"><td align="center">review</td></tr>
-  @ <tr bgcolor="#cfe8bd"><td align="center">fixed</td></tr>
-  @ <tr bgcolor="#bde5d6"><td align="center">tested</td></tr>
-  @ <tr bgcolor="#cacae5"><td align="center">defer</td></tr>
-  @ <tr bgcolor="#c8c8c8"><td align="center">closed</td></tr>
+  @ <tr bgcolor="#f2dcdc"><td align="center">新建 或 活动</td></tr>
+  @ <tr bgcolor="#e8e8bd"><td align="center">检查</td></tr>
+  @ <tr bgcolor="#cfe8bd"><td align="center">修正</td></tr>
+  @ <tr bgcolor="#bde5d6"><td align="center">测试</td></tr>
+  @ <tr bgcolor="#cacae5"><td align="center">推迟</td></tr>
+  @ <tr bgcolor="#c8c8c8"><td align="center">完成</td></tr>
   @ </table>
   @ <blockquote><pre>
   @ SELECT
-  @   CASE WHEN status IN ('new','active') THEN '#f2dcdc'
-  @        WHEN status='review' THEN '#e8e8bd'
-  @        WHEN status='fixed' THEN '#cfe8bd'
-  @        WHEN status='tested' THEN '#bde5d6'
-  @        WHEN status='defer' THEN '#cacae5'
+  @   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+  @        WHEN status='检查' THEN '#e8e8bd'
+  @        WHEN status='修正' THEN '#cfe8bd'
+  @        WHEN status='测试' THEN '#bde5d6'
+  @        WHEN status='推迟' THEN '#cacae5'
   @        ELSE '#c8c8c8' END as 'bgcolor',
   @   tn AS '#',
-  @   type AS 'Type',
-  @   status AS 'Status',
-  @   sdate(origtime) AS 'Created',
-  @   owner AS 'By',
-  @   subsystem AS 'Subsys',
-  @   sdate(changetime) AS 'Changed',
-  @   assignedto AS 'Assigned',
-  @   severity AS 'Svr',
-  @   priority AS 'Pri',
-  @   title AS 'Title'
+  @   type AS '类型',
+  @   status AS '状态',
+  @   sdate(origtime) AS '创建时间',
+  @   owner AS '创建人',
+  @   subsystem AS '子系统',
+  @   sdate(changetime) AS '更新时间',
+  @   assignedto AS '分配给',
+  @   severity AS '严重',
+  @   priority AS '优先',
+  @   title AS '标题'
   @ FROM ticket
   @ </pre></blockquote>
-  @ <p>To base the background color on the TICKET.PRIORITY or
-  @ TICKET.SEVERITY fields, substitute the following code for the
-  @ first column of the query:</p>
+  @ <p>如果要以“任务单（TICKET）”表中的“优先级（PRIORITY）”或
+  @ “错误程度（SEVERITY）”
+  @ 字段来决定背景色，只需替换查询语句的第一列:</p>
   @ <table align="right" style="margin: 0 5px;" border=1 cellspacing=0 width=125>
   @ <tr bgcolor="#f2dcdc"><td align="center">1</td></tr>
   @ <tr bgcolor="#e8e8bd"><td align="center">2</td></tr>
@@ -646,8 +648,8 @@ static void report_format_hints(void){
   @ FROM ticket
   @ </pre></blockquote>
 #if 0
-  @ <p>You can, of course, substitute different colors if you choose.
-  @ Here is a palette of suggested background colors:</p>
+  @ <p>当然，您也可以替换成任何您喜欢的颜色。
+  @ 以下是一组推荐的背景色:</p>
   @ <blockquote>
   @ <table border=1 cellspacing=0 width=300>
   @ <tr><td align="center" bgcolor="#ffbdbd">#ffbdbd</td>
@@ -665,37 +667,37 @@ static void report_format_hints(void){
   @ </table>
   @ </blockquote>
 #endif
-  @ <p>To see the TICKET.DESCRIPTION and TICKET.REMARKS fields, include
-  @ them as the last two columns of the result set and given them names
-  @ that begin with an underscore.  Like this:</p>
+  @ <p>如果要显示“任务单（TICKET）”表中的“描述信息（DESCRIPTION）”或“备注
+  @ （REMARKS）”字段，您需要将他们放到最后两列，并给予一个以下划线开头的名字，
+  @ 例如:</p>
   @ <blockquote><pre>
   @  SELECT
   @    tn AS '#',
-  @    type AS 'Type',
-  @    status AS 'Status',
-  @    sdate(origtime) AS 'Created',
-  @    owner AS 'By',
-  @    subsystem AS 'Subsys',
-  @    sdate(changetime) AS 'Changed',
-  @    assignedto AS 'Assigned',
-  @    severity AS 'Svr',
-  @    priority AS 'Pri',
-  @    title AS 'Title',
-  @    description AS '_Description',   -- When the column name begins with '_'
-  @    remarks AS '_Remarks'            -- the data is shown on a separate row.
+  @    type AS '类型',
+  @    status AS '状态',
+  @    sdate(origtime) AS '创建时间',
+  @    owner AS '创建人',
+  @    subsystem AS '子系统',
+  @    sdate(changetime) AS '更新时间',
+  @    assignedto AS '分配给',
+  @    severity AS '严重',
+  @    priority AS '优先',
+  @    title AS '标题',
+  @    description AS '_描述信息',   -- 当列名以下划线开头时，数据将被
+  @    remarks AS '_备注'            -- 分行显示。
   @  FROM ticket
   @ </pre></blockquote>
   @
-  @ <p>Or, to see part of the description on the same row, use the
-  @ <b>wiki()</b> function with some string manipulation. Using the
-  @ <b>tkt()</b> function on the ticket number will also generate a linked
-  @ field, but without the extra <i>edit</i> column:
+  @ <p>或者，要在同一行中查看描述信息部分，可以使用
+  @ <b>wiki()</b> 函数来进行一些字符串处理。使用
+  @ <b>tkt()</b> 函数来处理任务单编号同样会生成一个超链接字段，
+  @ 但是并不会有额外的 <i>编辑</i> 列:
   @ </p>
   @ <blockquote><pre>
   @  SELECT
   @    tkt(tn) AS '',
-  @    title AS 'Title',
-  @    wiki(substr(description,0,80)) AS 'Description'
+  @    title AS '标题',
+  @    wiki(substr(description,0,80)) AS '描述信息'
   @  FROM ticket
   @ </pre></blockquote>
   @
@@ -832,8 +834,8 @@ static int generate_html(
           @ %h(zN): <input type="text" name="%h(zP)" value="%h(g.azAuxVal[i])">
         }
       }
-      @ <input type="submit" value="Go">
-      @ </form></td></tr> 
+      @ <input type="submit" value="执行">
+      @ </form></td></tr>
     }
     @ <tr>
     tn = -1;
@@ -866,7 +868,7 @@ static int generate_html(
   }
   if( azArg==0 ){
     @ <tr><td colspan="%d(ncol)">
-    @ <i>No records match the report criteria</i>
+    @ <i>没有符合该报表要求的记录。</i>
     @ </td></tr>
     return 0;
   }
@@ -892,7 +894,7 @@ static int generate_html(
     if( zData==0 ) zData = "";
     if( newrowidx>=0 && i>=newrowidx ){
       if( tn>0 && g.okWrite ){
-        @ <td valign="top"><a href="tktedit?tn=%d(tn),%d(rn)">edit</a></td>
+        @ <td valign="top"><a href="tktedit?tn=%d(tn),%d(rn)">编辑</a></td>
         tn = 0;
       }
       if( zData[0] ){
@@ -912,7 +914,7 @@ static int generate_html(
     }
   }
   if( tn>0 && g.okWrite ){
-    @ <td valign="top"><a href="tktedit?tn=%d(tn),%d(rn)">edit</a></td>
+    @ <td valign="top"><a href="tktedit?tn=%d(tn),%d(rn)">编辑</a></td>
   }
   @ </tr>
   return 0;
@@ -1092,7 +1094,7 @@ void rpttool(void){
   }
 
   common_standard_menu(0, 0);
-  common_add_action_item(mprintf("rptview?rn=%d", rn), "View");
+  common_add_action_item(mprintf("rptview?rn=%d", rn), "查看");
   common_add_action_item( mprintf("rptsql?rn=%d",rn), "SQL");
   add_rpt_tools(zTool,rn);
 
@@ -1177,12 +1179,12 @@ void view_view(void){
     common_add_help_item("CvstracReport");
     common_add_action_item(
       mprintf("rptview?tablist=1&%s", getenv("QUERY_STRING")),
-      "Raw Data"
+      "原始数据"
     );
     if( g.okAdmin || (g.okQuery && strcmp(g.zUser,zOwner)==0) ){
-      common_add_action_item( mprintf("rptedit?rn=%d",rn), "Edit");
+      common_add_action_item( mprintf("rptedit?rn=%d",rn), "编辑");
     }
-    common_add_action_item( mprintf("rptsql?rn=%d",rn), "SQL");
+    common_add_action_item( mprintf("rptsql?rn=%d",rn), "SQL 语句");
     common_header("%s", zTitle);
     if( zDesc && zDesc[0] ){
       @ <div class="wiki">
@@ -1198,7 +1200,7 @@ void view_view(void){
     db_restrict_access(0);
     @ </table>
     @ <div id="rowcount" align="right">
-    @ <small><i>Rows: %d(sState.nCount)</i></small>
+    @ <small><i>行数: %d(sState.nCount)</i></small>
     @ </div>
   }else{
     db_restrict_access(1);

@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -88,7 +90,7 @@ static void revision_history(const char *zName, int showMilestones){
 
   /* @ <h2>History of /%h(zName)</h2> */
   if( showMilestones ){
-    common_add_action_item(mprintf("rlog?f=%t",zName), "Omit Milestones");
+    common_add_action_item(mprintf("rlog?f=%t",zName), "省略里程碑");
     az = db_query("SELECT filechng.cn, date, vers, nins, ndel, prevvers,"
                   "       message, user, branch "
                   "FROM filechng, chng "
@@ -99,7 +101,7 @@ static void revision_history(const char *zName, int showMilestones){
                   "WHERE milestone=1 "
                   "ORDER BY 2 DESC", zName);
   } else {
-    common_add_action_item(mprintf("rlog?f=%t&sms=1",zName), "Show Milestones");
+    common_add_action_item(mprintf("rlog?f=%t&sms=1",zName), "显示里程碑");
     az = db_query("SELECT filechng.cn, date, vers, nins, ndel, prevvers,"
                   "       message, user, branch "
                   "FROM filechng, chng "
@@ -107,7 +109,7 @@ static void revision_history(const char *zName, int showMilestones){
                   "ORDER BY date DESC", zName);
   }
 
-  common_header("History for /%h", zName);
+  common_header("/%h 的历史", zName);
   output_breadcrumb(zName, 0);
 
   @ <table class="rlog" cellpadding=0 cellspacing=0 border=0>
@@ -121,9 +123,9 @@ static void revision_history(const char *zName, int showMilestones){
     strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M", pTm);
     if( i==0 ){
       @ <thead><tr>
-      @         <th class="date">Date</th>
-      @         <th class="version">Version</th>
-      @         <th class="description">Description</th></tr>
+      @         <th class="date">日期</th>
+      @         <th class="version">版本</th>
+      @         <th class="description">描述</th></tr>
       @ <tbody>
     }
     if( az[i][0]==0 ){
@@ -139,11 +141,11 @@ static void revision_history(const char *zName, int showMilestones){
       common_icon("milestone");
       @ </td>
       if( az[i+8] && az[i+8][0] ){
-        @ <td class="branch">Milestone
+        @ <td class="branch">里程碑
         output_chng(atoi(az[i+2]));
-        @    on branch %h(az[i+8]):
+        @    于分支 %h(az[i+8]):
       }else{
-        @ <td>Milestone
+        @ <td>里程碑
         output_chng(atoi(az[i+2]));
         @ :
       }
@@ -153,27 +155,27 @@ static void revision_history(const char *zName, int showMilestones){
       @    %z(printable_vers(az[i+2]))</a>
       @ </td>
       if( az[i+8] && az[i+8][0] ){
-        @ <td class="branch">Check-in
+        @ <td class="branch">提交
         output_chng(atoi(az[i]));
-        @     on branch %h(az[i+8]):
+        @     于分支 %h(az[i+8]):
       }else{
-        @ <td>Check-in
+        @ <td>提交
         output_chng(atoi(az[i]));
         @ :
       }
     }
     output_formatted(az[i+6], 0);
-    @&nbsp;By %z(format_user(az[i+7])).
+    @&nbsp;由 %z(format_user(az[i+7])) 提交。
     if( az[i][0]!=0 ){ /* Can't diff a Milestone */
       if( g.okCheckout && az[i+5] && az[i+5][0] ){
         @ <a href="filediff?f=%T(zName)&amp;v1=%T(az[i+5])&amp;v2=%T(az[i+2])">
-        @ (diff)</a>
+        @ (差异)</a>
       }
     }
     @ </td></tr>
   }
   if( i==0 ){
-    @ <tr class="error"><td>Nothing is known about this file</td></tr>
+    @ <tr class="error"><td>没有关于该文件的信息</td></tr>
   }
   @ </table>
 }
@@ -255,7 +257,7 @@ void dirtool(void){
   if( zAction==0 || zAction[0]==0 ) cgi_redirect(zDirUrl);
 
   common_standard_menu(0, "search?f=1");
-  common_add_action_item(zDirUrl,"Directory");
+  common_add_action_item(zDirUrl,"目录");
 
   add_dir_tools(zTool,zDir);
 
@@ -356,7 +358,7 @@ void browse_rlog(void){
   }
   z = strrchr(zDir, '/' );
   if( z ){ *z = 0;}
-  common_add_action_item(zDir, "Directory");
+  common_add_action_item(zDir, "目录");
   add_file_tools(0,zFile,0,0);
   common_add_help_item("CvstracFileHistory");
   revision_history(zFile, showMilestones);
@@ -378,14 +380,14 @@ void browse_filediff(void){
   throttle(1,0);
   if( zFile==0 || zV1==0 || zV2==0 ){ cgi_redirect("index"); return; }
   common_standard_menu(0, "search?f=1");
-  common_add_action_item(mprintf("rlog?f=%T", zFile), "History");
+  common_add_action_item(mprintf("rlog?f=%T", zFile), "历史");
   add_file_tools(0,zFile,zV1,zV2);
   common_add_help_item("CvstracFileHistory");
-  common_header("Difference in %h versions %h and %h", zFile, zV1, zV2);
+  common_header("文件 %h 版本 %h 和 %h 的差异", zFile, zV1, zV2);
   output_breadcrumb(zFile, 0);
   @ <div class="diff">
   if( diff_versions(zV1, zV2, zFile) ){
-    @ <b>Diff failed!</b>
+    @ <b>比较失败！</b>
   }
   @ </div>
   common_footer();
@@ -431,7 +433,7 @@ void browse_dir(void){
   if( zName[0] ){
     common_add_action_item(
       mprintf("timeline?x=1&c=2&dm=1&px=%h",zName),
-      "Activity"
+      "活跃性"
     );
   }
   add_dir_tools(0,zName);
@@ -447,11 +449,11 @@ void browse_dir(void){
   if( zName[0] ){
     /* this looks like navigation, but it's relative to the current page
     */
-    common_add_action_item("dir", "Top");
-    common_add_action_item(mprintf("dir?d=%T",zDir), "Up");
-    common_add_action_item(mprintf("dirview?d=%T&sc=1",zName), "Long");
+    common_add_action_item("dir", "根目录");
+    common_add_action_item(mprintf("dir?d=%T",zDir), "上一级");
+    common_add_action_item(mprintf("dirview?d=%T&sc=1",zName), "详细");
   }else{
-    common_add_action_item("dirview?sc=1","Long");
+    common_add_action_item("dirview?sc=1","详细");
   }
   az = db_query("SELECT base, isdir FROM file WHERE dir='%q' ORDER BY base",
                  zName);
@@ -459,7 +461,7 @@ void browse_dir(void){
   if( zName[0] ) n++;
   nRow = (n+3)/4;
   if( zName[0] ){ zName = mprintf("%s/",zName); }
-  common_header("Directory /%h", zName);
+  common_header("目录 /%h", zName);
   output_breadcrumb(zName, 1);
   /* @ <h2>Contents of directory /%h(zName)</h2> */
   @ <table width="100%%">
@@ -525,21 +527,21 @@ static char *file_age_to_text(int nModified){
   }
   
   if( (n = nAge/nYear)>1 ){
-    return mprintf("%d years", n);
+    return mprintf("%d 年", n);
   }else if( (n = nAge/nMonth)>1 ){
-    return mprintf("%d months", n);
+    return mprintf("%d 月", n);
   }else if( (n = nAge/nWeek)>1 ){
-    return mprintf("%d weeks", n);
+    return mprintf("%d 周", n);
   }else if( (n = nAge/nDay)>1 ){
-    return mprintf("%d days", n);
+    return mprintf("%d 天", n);
   }else if( (n = nAge/3600)>1 ){
-    return mprintf("%d hours", n);
+    return mprintf("%d 小时", n);
   }else{
     n = nAge/60;
     if( n<=1 ){
-      return mprintf("1 minute");
+      return mprintf("1 分钟");
     }else{
-      return mprintf("%d minutes", n);
+      return mprintf("%d 分钟", n);
     }
   }
 }
@@ -663,7 +665,7 @@ void browse_dirview(void){
   if( zName[0] ){
     common_add_action_item(
       mprintf("timeline?x=1&c=2&dm=1&px=%T",zName),
-      "Activity"
+      "活跃性"
     );
   }
   add_dir_tools(0,zName);
@@ -712,12 +714,12 @@ void browse_dirview(void){
     /* this looks like navigation, but it's relative to the current page
     */
     common_add_action_item(
-      mprintf("dirview%s%s",(zSortUrl[0])?"?":"",zSortUrl), "Top");
+      mprintf("dirview%s%s",(zSortUrl[0])?"?":"",zSortUrl), "根目录");
     common_add_action_item(
-      mprintf("dirview?d=%T%s%s",zDir,(zSortUrl[0])?"&":"",zSortUrl), "Up");
-    common_add_action_item(mprintf("dir?d=%T&sc=1",zName), "Short");
+      mprintf("dirview?d=%T%s%s",zDir,(zSortUrl[0])?"&":"",zSortUrl), "上一级");
+    common_add_action_item(mprintf("dir?d=%T&sc=1",zName), "简略");
   }else{
-    common_add_action_item("dir?sc=1", "Short");
+    common_add_action_item("dir?sc=1", "简略");
   }
   common_add_help_item("CvstracBrowse");
   
@@ -745,16 +747,16 @@ void browse_dirview(void){
     zNameNS, zNameNS, zOrderBy
   );
   
-  common_header("Directory /%h", zName);
+  common_header("目录 /%h", zName);
   output_breadcrumb(zName, 1);
 
   @ <table width="100%%" border=0 cellspacing=0 cellpadding=3>
   @ <tr>
-  column_header(zNameNS,zFld,"file","File");
-  column_header(zNameNS,zFld,"vers","Vers");
-  column_header(zNameNS,zFld,"user","By");
-  column_header(zNameNS,zFld,"date","Age");
-  column_header(zNameNS,zFld,"msg","Check-in");
+  column_header(zNameNS,zFld,"file","文件");
+  column_header(zNameNS,zFld,"vers","版本");
+  column_header(zNameNS,zFld,"user","用户");
+  column_header(zNameNS,zFld,"date","时间");
+  column_header(zNameNS,zFld,"msg","提交");
   @ </tr>
 
   if( zName[0] ){
@@ -827,10 +829,10 @@ void browse_fileview(void){
   }
   z = strrchr(zDir, '/' );
   if( z ){ *z = 0;}
-  common_add_action_item(zDir, "Directory");
+  common_add_action_item(zDir, "目录");
 
   zGetFile = mprintf("getfile?f=%T&v=%T", zFile, zVers);
-  common_add_action_item(zGetFile, "Raw");
+  common_add_action_item(zGetFile, "文件内容");
   add_file_tools(0,zFile,zVers,0);
 
   common_add_help_item("CvstracFileview");

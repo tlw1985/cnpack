@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -111,7 +113,7 @@ struct Global {
 Global g;
 
 /*
-** The table of web pages supported by this application is generated 
+** The table of web pages supported by this application is generated
 ** automatically by the "mkindex" program and written into a file
 ** named "page_index.h".  We include that file here to get access
 ** to the table.
@@ -149,7 +151,7 @@ static int find_path(
 ** Print a usage message and die
 */
 static void usage(const char *argv0){
-    fprintf(stderr, 
+    fprintf(stderr,
       "Usage: %s <command> ?<directory>? ?<project>?\n"
       "   Or: %s chroot <root> <user> <command> ?<directory>? ?<project>?\n"
       "   Or: %s server <port> <directory> ?<project>?\n"
@@ -329,7 +331,7 @@ int main(int argc, char **argv){
 #endif
 
   /* Figure out our behavior based on command line parameters and
-  ** the environment.  
+  ** the environment.
   */
   if( strcmp(argv[1],"cgi")==0 /* || getenv("GATEWAY_INTERFACE")!=0 */ ){
     cgi_init();
@@ -436,8 +438,8 @@ int main(int argc, char **argv){
       zPath = &zPath[i];    
     }else{
       cgi_set_status(404,"Not Found");
-      @ <h1>Not Found</h1>
-      @ <p>Page not found: %h(zPath)</p>
+      @ <h1>无效页面</h1>
+      @ <p>该页面无效: %h(zPath)</p>
       cgi_reply();
       return 0;
     }
@@ -515,9 +517,9 @@ int main(int argc, char **argv){
       cgi_redirect( mprintf("%s/index", g.zPath) );
     }else{
       cgi_set_status(404,"Not Found");
-      @ <h1>Not Found</h1>
-      @ <p>Project not found: %h(g.zName)</p>
-      @ <p>Page not found: %h(g.zPath)</p>
+      @ <h1>无效页面</h1>
+      @ <p>找不到项目: %h(g.zName)</p>
+      @ <p>该页面无效: %h(g.zPath)</p>
     }
     cgi_reply();
     return 0;
@@ -539,6 +541,19 @@ int main(int argc, char **argv){
     cgi_logfile(zLogFile,"*");
   }
 
+#if CVSNT
+  zSCM = db_config("scm", 0);
+  if( zSCM ) {
+    if(!strcmp(zSCM,"cvs")){
+      init_cvs();
+    }else if(!strcmp(zSCM,"svn") ){
+      init_svn();
+    }else if(!strcmp(zSCM,"git") ){
+      init_git();
+    }
+  }
+#endif
+
   /* Locate the method specified by the path and execute the function
   ** that implements that method.
   */
@@ -555,8 +570,8 @@ int main(int argc, char **argv){
       g.isConst = 0;
     }else{
       cgi_set_status(404,"Not Found");
-      @ <h1>Not Found</h1>
-      @ <p>Page not found: %h(g.zPath)</p>
+      @ <h1>无效页面</h1>
+      @ <p>该页面无效: %h(g.zPath)</p>
     }
   }else{
     xFunc();

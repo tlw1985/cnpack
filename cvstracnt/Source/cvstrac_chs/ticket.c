@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -29,6 +31,7 @@
 #include "ticket.h"
 #include <time.h>
 
+extern time_t parse_time(const char *zTime);
 /*
 ** If the "notify" configuration parameter exists in the CONFIG
 ** table and is not an empty string, then make various % substitutions
@@ -108,7 +111,7 @@ void ticket_notify(int tn, int first_change, int last_change, int atn){
     cnt['r']++;
   }
   if( cnt['A']>0 ){
-    azSubst['A'] = 
+    azSubst['A'] =
       db_short_query("SELECT user.email FROM ticket, user "
                      "WHERE ticket.tn=%d and ticket.assignedto=user.id", tn);
   }
@@ -217,8 +220,8 @@ void tkttool(void){
   }
 
   common_standard_menu(0, "search?t=1");
-  common_add_action_item(mprintf("tktview?tn=%d", tn), "View");
-  common_add_action_item(mprintf("tkthistory?tn=%d", tn), "History");
+  common_add_action_item(mprintf("tktview?tn=%d", tn), "查看");
+  common_add_action_item(mprintf("tkthistory?tn=%d", tn), "历史");
   add_tkt_tools(zTool,tn);
 
   common_header("#%d: %h", tn, zTool);
@@ -271,13 +274,13 @@ void ticket_new(void){
   zFrom = extract_integer(zFrom);
 
   if( zType==0 ){
-    zType = db_config("dflt_tkt_type","code");
+    zType = db_config("dflt_tkt_type","");
   }
   if( zWho==0 ){
     zWho = db_config("assignto","");
   }
   if( zTitle && strlen(zTitle)>maxSummaryLength ){
-    zErrMsg = mprintf("Please make the title no more than %d characters long.",
+    zErrMsg = mprintf("标题不能超过 %d 个字符的长度。",
                       maxSummaryLength);
   }
   if( zErrMsg==0 && zTitle[0] && zType[0] && zDesc[0] && P("submit")
@@ -315,18 +318,18 @@ void ticket_new(void){
     return;
   }else if( P("submit") ){
     if( zTitle[0]==0 ){
-      zErrMsg = "Please enter a title.";
+      zErrMsg = "请输入标题。";
     }else if( zDesc[0]==0 ){
-      zErrMsg = "Please enter a description.";
+      zErrMsg = "请输入描述信息。";
     }else if( zContact[0]==0 && g.isAnon ){
-      zErrMsg = "Please enter your contact information.";
+      zErrMsg = "请输入联系方式。";
     }
   }
-  
+
   common_standard_menu("tktnew", 0);
   common_add_help_item("CvstracTicket");
-  common_add_action_item( "index", "Cancel");
-  common_header("Create A New Ticket");
+  common_add_action_item( "index", "取消");
+  common_header("创建新的任务单");
   if( zErrMsg ){
     @ <blockquote class="error">
     @ %h(zErrMsg)
@@ -337,70 +340,70 @@ void ticket_new(void){
   @
   @ <tr>
   @ <td colspan=2>
-  @ Enter a one-line summary of the problem:<br>
+  @ 输入一行关于该问题的摘要信息:<br>
   @ <input type="text" name="t" size=70
   @     maxlength=%d(maxSummaryLength) value="%h(zTitle)">
   @ </td>
   @ </tr>
   @
   @ <tr>
-  @ <td align="right">Type:
+  @ <td align="right">类型:
   cgi_v_optionmenu2(0, "y", zType, (const char**)db_query(
       "SELECT name, value FROM enums WHERE type='type'"));
   @ </td>
-  @ <td>What type of ticket is this?</td>
-  @ </tr> 
+  @ <td>该任务单的类型是什么？</td>
+  @ </tr>
   @
   @ <tr>
   @   <td align="right" class="nowrap">
-  @     Version: <input type="text" name="v" value="%h(zVers)" size="10">
+  @     版本号: <input type="text" name="v" value="%h(zVers)" size="10">
   @   </td>
   @   <td>
-  @      Enter the version and/or build number of the product
-  @      that exhibits the problem.
+  @      输入存在该问题的产品版本号及/或 Build
+  @      号。
   @   </td>
   @ </tr>
   @
   @ <tr>
   @   <td align="right" class="nowrap">
-  @     Severity:
+  @     严重度:
   cgi_optionmenu(0, "r", zSev,
          "1", "1", "2", "2", "3", "3", "4", "4", "5", "5", NULL);
   @   </td>
   @   <td>
-  @     How debilitating is the problem?  "1" is a show-stopper defect with
-  @     no workaround.  "2" is a major defect with a workaround.  "3"
-  @     is a mid-level defect.  "4" is an annoyance.  "5" is a cosmetic
-  @     defect or a nice-to-have feature request.
+  @     该问题有多严重？"1" 表示极其严重的错误导致无法工作。
+  @     "2" 表示一个主要的错误但还可以工作。
+  @     "3" 表示中等错误。"4" 表示让人厌烦的问题。
+  @     "5" 表示一个小问题或是如果能加上最好的功能请求。
   @   </td>
   @ </tr>
   @
   @ <tr>
   @   <td align="right" class="nowrap">
-  @     Priority:
+  @     优先级:
   cgi_optionmenu(0, "p", zPri,
          "1", "1", "2", "2", "3", "3", "4", "4", "5", "5", NULL);
   @   </td>
   @   <td>
-  @     How quickly do you need this ticket to be resolved?
-  @     "1" means immediately.
-  @     "2" means before the next build.  
-  @     "3" means before the next release.
-  @     "4" means implement as time permits.
-  @     "5" means defer indefinitely.
+  @     希望该任务单能多短时间内被解决？
+  @     "1" 表示立即解决。
+  @     "2" 表示在下一次 Build 时解决。
+  @     "3" 表示下一次发布前解决。
+  @     "4" 表示在时间允许的时候解决。
+  @     "5" 表示时间不确定。
   @   </td>
   @ </tr>
   @
   if( g.okWrite ){
     @ <tr>
     @   <td align="right" class="nowrap">
-    @     Assigned To:
+    @     分配给:
     az = db_query("SELECT id FROM user UNION SELECT '' ORDER BY id");
     cgi_v_optionmenu(0, "w", zWho, (const char **)az);
     db_query_free(az);
     @   </td>
     @   <td>
-    @     To what user should this problem be assigned?
+    @     该问题分配给谁来解决？
     @   </td>
     @ </tr>
     @
@@ -409,34 +412,34 @@ void ticket_new(void){
     if( az[0] && az[1] && az[2] ){
       @ <tr>
       @   <td align="right" class="nowrap">
-      @     Subsystem:
+      @     子系统:
       cgi_v_optionmenu2(4, "s", zSubsys, (const char**)az);
       db_query_free(az);
       @   </td>
       @   <td>
-      @     Which component is showing a problem?
+      @     在哪一个部分出现的问题？
       @   </td>
       @ </tr>
     }
   }
   @ <tr>
   @   <td align="right" class="nowrap">
-  @     Derived From: <input type="text" name="f" value="%h(zFrom)" size="5">
+  @     衍生自任务单: <input type="text" name="f" value="%h(zFrom)" size="5">
   @   </td>
   @   <td>
-  @      Is this related to an existing ticket?
+  @      是否与某个已存在的任务单相关？
   @   </td>
   @ </tr>
   if( g.isAnon ){
     @ <tr>
     @   <td align="right" class="nowrap">
-    @     Contact: <input type="text" name="c" value="%h(zContact)" size="20">
+    @     联系方式: <input type="text" name="c" value="%h(zContact)" size="20">
     @   </td>
     @   <td>
-    @      Enter a phone number or e-mail address where a developer can
-    @      contact you with questions about this ticket.  The information
-    @      you enter will be available to the developers only and will not
-    @      be visible to general users.
+    @      请输入一个电话号码或邮件地址，当一位开发者对该任务单有
+    @      疑问时可以与您联系。您输入的信息
+    @      将只能被开发者本人看到，普通用户看
+    @      不到该信息。
     @   </td>
     @ </tr>
     @
@@ -475,48 +478,48 @@ void ticket_new(void){
   }
   @ <tr>
   @   <td colspan="2">
-  @     Enter a detailed description of the problem.  For code defects,
-  @     be sure to provide details on exactly how the problem can be
-  @     reproduced.  Provide as much detail as possible. 
-  @     <a href="#format_hints">Formatting hints</a>.
+  @     输入关于该问题的详细描述。对代码错误而言，
+  @     请保证您提供的这些信息能帮助开发者有效地重现
+  @     该问题。尽可能多地提供更详尽的信息。
+  @     <a href="#format_hints">格式文本说明</a>。
   @     <br>
   cgi_wikitext("d", 40, zDesc);
   if( isPreview ){
-    @     <br>Description Preview:
+    @     <br>描述信息预览:
     @     <table border=1 cellpadding=15 width="100%%"><tr><td>
     output_formatted(zDesc, 0);
     @     </td></tr></table>
   }
   if( g.okWrite ){
-    @     <br>Note: If you want to include a large script or binary file
-    @     with this ticket you will be given an opportunity to add attachments
-    @     to the ticket after the ticket has been created.  Do not paste
-    @     large scripts or screen dumps in the description.
+    @     <br>提示: 如果您想要包含关于该任务单的一段大的描述或二进制文件，
+    @     您可以在创建该任务单后通过增加附件来
+    @     提交。请不要在描述信息中直接粘贴巨大
+    @     的描述或截屏图像。
   }
   @   </td>
   @ </tr>
   @ <tr>
   @   <td align="right">
-  @     <input type="submit" name="preview" value="Preview">
+  @     <input type="submit" name="preview" value="预览">
   @   </td>
   @   <td>
-  @     Preview the formatting of the description.
+  @     预览格式化后的描述信息。
   @   </td>
   @ </tr>
   @ <tr>
   @   <td align="right">
-  @     <input type="submit" name="submit" value="Submit">
+  @     <input type="submit" name="submit" value="提交">
   @   </td>
   @   <td>
-  @     After filling in the information about, press this button to create
-  @     the new ticket.
+  @     在填写完前面的相关信息后，请点击该按钮
+  @     以创建新的任务单。
   @   </td>
   @ </tr>
   @ </table>
   @ </form>
   @ <a name="format_hints"></a>
   @ <hr>
-  @ <h3>Formatting Hints:</h3>
+  @ <h3>格式文本说明:</h3>
   append_formatting_hints();
   common_footer();
 }
@@ -581,19 +584,19 @@ void ticket_undo(void){
   if( P("w")==0 ){
     common_standard_menu(0,0);
     common_add_help_item("CvstracTicket");
-    common_add_action_item(mprintf("tkthistory?tn=%d",tn), "Cancel");
-    common_header("Undo Change To Ticket?");
-    @ <p>If you really want to remove the last edit to ticket #%d(tn)
-    @ then click on the "OK" link below.  Otherwise, click on "Cancel".</p>
+    common_add_action_item(mprintf("tkthistory?tn=%d",tn), "取消");
+    common_header("撤消对任务单的修改？");
+    @ <p>如果您确认要撤消对任务单 #%d(tn) 的修改，
+    @ 请点击下面的 "确定" 链接。否则，点击 "取消"。</p>
     @ <form method="POST" action="tktundo">
     @ <input type="hidden" name="tn" value="%d(tn)">
     @ <input type="hidden" name="u" value="%t(zUser)">
     @ <input type="hidden" name="t" value="%d(tm)">
     @ <table cellpadding="30">
     @ <tr><td>
-    @ <input type="submit" name="w" value="OK">
+    @ <input type="submit" name="w" value="确定">
     @ </td><td>
-    @ <input type="submit" name="can" value="Cancel">
+    @ <input type="submit" name="can" value="取消">
     @ </td></tr>
     @ </table>
     @ </form>
@@ -646,18 +649,18 @@ static void output_tkt_chng(char **azChng){
   char zPrefix[200];
   char zSuffix[100];
   char *z;
-  const char *zType = (atoi(azChng[5])==0) ? "Check-in" : "Milestone";
+  const char *zType = (atoi(azChng[5])==0) ? "提交" : "里程碑";
 
   thisDate = atoi(azChng[0]);
   pTm = localtime(&thisDate);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M", pTm);
   if( azChng[2][0] ){
-    bprintf(zPrefix, sizeof(zPrefix), "%h [%.20h] on branch %.50h: ",
+    bprintf(zPrefix, sizeof(zPrefix), "%h [%.20h] 于分支 %.50h: ",
             zType, azChng[1], azChng[2]);
   }else{
     bprintf(zPrefix, sizeof(zPrefix), "%h [%.20h]: ", zType, azChng[1]);
   }
-  bprintf(zSuffix, sizeof(zSuffix), " (By %.30h)", azChng[3]);
+  bprintf(zSuffix, sizeof(zSuffix), " (由 %.30h)", azChng[3]);
   @ <tr><td valign="top" width=160 align="right">%h(zDate)</td>
   @ <td valign="top" width=30 align="center">
   common_icon("dot");
@@ -690,6 +693,9 @@ void ticket_view(void){
   const char *azExtra[5];
   char zPage[30];
   const char *zTn;
+  time_t ttime;
+  char zTime[32];
+  struct tm *pTm;
 
   login_check_credentials();
   if( !g.okRead ){ login_needed(); return; }
@@ -701,19 +707,19 @@ void ticket_view(void){
   bprintf(zPage,sizeof(zPage),"%d",tn);
   common_standard_menu("tktview", "search?t=1");
   if( rn>0 ){
-    common_replace_nav_item(mprintf("rptview?rn=%d", rn), "Report");
-    common_add_action_item(mprintf("tkthistory?tn=%d,%d", tn, rn), "History");
+    common_replace_nav_item(mprintf("rptview?rn=%d", rn), "报表");
+    common_add_action_item(mprintf("tkthistory?tn=%d,%d", tn, rn), "历史");
   }else{
-    common_add_action_item(mprintf("tkthistory?tn=%d", tn), "History");
+    common_add_action_item(mprintf("tkthistory?tn=%d", tn), "历史");
   }
   if( g.okWrite ){
     if( rn>0 ){
-      common_add_action_item(mprintf("tktedit?tn=%d,%d",tn,rn), "Edit");
+      common_add_action_item(mprintf("tktedit?tn=%d,%d",tn,rn), "编辑");
     }else{
-      common_add_action_item(mprintf("tktedit?tn=%d",tn), "Edit");
+      common_add_action_item(mprintf("tktedit?tn=%d",tn), "编辑");
     }
     if( attachment_max()>0 ){
-      common_add_action_item(mprintf("attach_add?tn=%d",tn), "Attach");
+      common_add_action_item(mprintf("attach_add?tn=%d",tn), "附件");
     }
   }
   add_tkt_tools(0,tn);
@@ -762,8 +768,8 @@ void ticket_view(void){
     "ORDER BY chng.milestone ASC, chng.date DESC", tn);
   azDrv = db_query(
     "SELECT tn,title FROM ticket WHERE derivedfrom=%d", tn);
-  common_header("Ticket #%d", tn);
-  @ <h2>Ticket #%d(tn): %h(az[11])</h2>
+  common_header("任务单 #%d", tn);
+  @ <h2>任务单 #%d(tn): %h(az[11])</h2>
   @ <blockquote>
   output_formatted(az[12], zPage);
   @ </blockquote>
@@ -774,12 +780,12 @@ void ticket_view(void){
   @ <tr bgcolor="%h(BG1)" class="bkgnd1">
   @ <td valign="top" align="left">
   if( az[13][0]==0 ){
-    @ [<a href="tktappend?tn=%h(zTn)">Add remarks</a>]
+    @ [<a href="tktappend?tn=%h(zTn)">增加备注</a>]
   } else {
-    @ [<a href="tktappend?tn=%h(zTn)">Append remarks</a>]
+    @ [<a href="tktappend?tn=%h(zTn)">追加备注</a>]
   }
   @ </td></tr></table></td></tr></table>
-  @ <h3>Remarks:</h3>
+  @ <h3>备注:</h3>
   @ <blockquote>
   output_formatted(az[13], zPage);
   @ </blockquote>
@@ -790,49 +796,49 @@ void ticket_view(void){
     @ <table width="100%%" border=0 cellpadding=4 cellspacing=0>
     @ <tr bgcolor="%h(BG1)" class="bkgnd1">
     @ <td valign="top" align="left">
-    @ [<a href="tktappend?tn=%h(zTn)">Append remarks</a>]
+    @ [<a href="tktappend?tn=%h(zTn)">追加备注</a>]
     @ </td></tr></table></td></tr></table>
     @
   }
 
   @
-  @ <h3>Properties:</h3>
-  @ 
+  @ <h3>属性:</h3>
+  @
   @ <blockquote>
   @ <table>
   @ <tr>
-  @   <td align="right">Type:</td>
+  @   <td align="right">类型:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[0])&nbsp;</b></td>
   @ <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-  @   <td align="right">Version:</td>
+  @   <td align="right">版本号:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[5])&nbsp;</b></td>
   @ </tr>
   @ <tr>
-  @   <td align="right">Status:</td>
+  @   <td align="right">状态:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[1])</b></td>
   @ <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-  @   <td align="right">Created:</td>
+  @   <td align="right">创建时间:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[2])</b></td>
   @ </tr>
   @ <tr>
-  @   <td align="right">Severity:</td>
+  @   <td align="right">严重度:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[7])&nbsp;</b></td>
   @ <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-  @   <td align="right">Last&nbsp;Change:</td>
+  @   <td align="right">更新时间:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[3])</b></td>
   @ </tr>
   @ <tr>
-  @   <td align="right">Priority:</td>
+  @   <td align="right">优先级:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[8])&nbsp;</b></td>
   @ <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-  @   <td align="right">Subsystem:</td>
+  @   <td align="right">子系统:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[9])&nbsp;</b></td>
   @ </tr>
   @ <tr>
-  @   <td align="right">Assigned&nbsp;To:</td>
+  @   <td align="right">分配给:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[6])&nbsp;</b></td>
   @ <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-  @   <td align="right">Derived From:</td>
+  @   <td align="right">衍生自任务单:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>
   z = extract_integer(az[4]);
   if( z && z[0] ){
@@ -844,11 +850,11 @@ void ticket_view(void){
   @   </b></td>
   @ </tr>
   @ <tr>
-  @   <td align="right">Creator:</td>
+  @   <td align="right">创建人:</td>
   @   <td bgcolor="%h(BG3)" class="bkgnd3"><b>%h(az[10])&nbsp;</b></td>
   if( g.okWrite && !g.isAnon ){
     @ <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-    @   <td align="right">Contact:</td>
+    @   <td align="right">联系方式:</td>
     if( strchr(az[14],'@') ){
       @   <td bgcolor="%h(BG3)" class="bkgnd3"><b><a href="mailto:%h(az[14])">
       @        %h(az[14])</a>&nbsp;</b></td>
@@ -883,7 +889,7 @@ void ticket_view(void){
   @ </blockquote>
   if( azDrv[0] ){
     int i;
-    @ <h3>Derived Tickets:</h3>
+    @ <h3>衍生自任务单:</h3>
     @ <table cellspacing=0 border=0 cellpadding=0>
     for(i=0; azDrv[i]; i+=2){
       @ <tr><td valign="top" width=160 align="right">
@@ -902,7 +908,7 @@ void ticket_view(void){
   nChng = 0;
   if( azChng[0] && azChng[5] && atoi(azChng[5])==0 ){
     int i;
-    @ <h3>Related Check-ins:</h3>
+    @ <h3>相关的 CVS 提交:</h3>
     @ <table cellspacing=0 border=0 cellpadding=0>
     for(i=0; azChng[i]; i+=6){
       /* Milestones are handeld in loop below */
@@ -916,14 +922,14 @@ void ticket_view(void){
   
   if( azChng[0] && azChng[nChng*6] ){
     int i;
-    @ <h3>Related Milestones:</h3>
+    @ <h3>相关的里程碑:</h3>
     @ <table cellspacing=0 border=0 cellpadding=0>
     for(i=nChng*6; azChng[i]; i+=6){
       output_tkt_chng(&azChng[i]);
     }
     @ </table>
   }
-  attachment_html(zPage,"<h3>Attachments:</h3>\n<blockquote>","</blockquote>");
+  attachment_html(zPage,"<h3>附件:</h3>\n<blockquote>","</blockquote>");
   common_footer();
 }
 
@@ -1078,21 +1084,21 @@ void ticket_edit(void){
                                   "WHERE tn=%d", tn);
     if( zTitle==0 ) cgi_redirect("index");
 
-    common_add_action_item(mprintf("tktedit?tn=%h",PD("tn","")), "Cancel");
-    common_header("Are You Sure?");
+    common_add_action_item(mprintf("tktedit?tn=%h",PD("tn","")), "取消");
+    common_header("确认删除？");
     @ <form action="tktedit" method="POST">
-    @ <p>You are about to delete all traces of ticket
+    @ <p>您将要从数据库中删除任务单
     output_ticket(tn,0);
-    @ &nbsp;<strong>%h(zTitle)</strong> from
-    @ the database.  This is an irreversible operation.  All records
-    @ related to this ticket will be removed and cannot be recovered.</p>
+    @ &nbsp;<strong>%h(zTitle)</strong> 及其所
+    @ 有跟踪记录。这是一个无法撤消的操作，所有与该任务单相关的
+    @ 记录都将被删除并且无法恢复。</p>
     @
     if( te ){
       @ <input type="hidden" name="le" value="%d(te)">
     }
     @ <input type="hidden" name="tn" value="%h(PD("tn",""))">
-    @ <input type="submit" name="del2" value="Delete The Ticket">
-    @ <input type="submit" name="can" value="Cancel">
+    @ <input type="submit" name="del2" value="删除该任务单">
+    @ <input type="submit" name="can" value="取消">
     @ </form>
     common_footer();
     return;
@@ -1100,14 +1106,14 @@ void ticket_edit(void){
 
   if( P("del2") && ok_to_delete_ticket(tn) ){
     if( le && te > le ){
-      common_add_action_item(mprintf("tktview?tn=%d",tn), "Cancel");
+      common_add_action_item(mprintf("tktview?tn=%d",tn), "取消");
       common_add_action_item(mprintf("tktedit?tn=%d,%d&del1=1", tn, rn),
-                             "Delete");
-      common_header("Ticket Changed!");
-      @ <p>Ticket #%d(tn) has been changed by someone else while you
-      @ attempted to delete it!</p>
-      @ <a href="tktedit?tn=%d(tn),%d(rn)&del1=1">Try again</a> or
-      @ <a href="tktview?tn=%d(tn),%d(rn)">cancel</a>?
+                             "删除");
+      common_header("任务单已变更!");
+      @ <p>任务单 #%d(tn) 在您尝试删除时已经被其它人
+      @ 修改并提交过了!</p>
+      @ <a href="tktedit?tn=%d(tn),%d(rn)&del1=1">重试</a> 或
+      @ <a href="tktview?tn=%d(tn),%d(rn)">取消</a>?
       common_footer();
       return;
     }
@@ -1295,13 +1301,13 @@ void ticket_edit(void){
 
   /* Print the header.
   */
-  common_add_action_item( mprintf("tktview?tn=%d,%d", tn, rn), "Cancel");
+  common_add_action_item( mprintf("tktview?tn=%d,%d", tn, rn), "取消");
   if( ok_to_delete_ticket(tn) ){
     common_add_action_item( mprintf("tktedit?tn=%d,%d&del1=1", tn, rn),
-                            "Delete");
+                            "删除");
   }
   common_add_help_item("CvstracTicket");
-  common_header("Edit Ticket #%d", tn);
+  common_header("编辑任务单 #%d", tn);
 
   @ <form action="tktedit" method="POST">
   @ 
@@ -1310,11 +1316,11 @@ void ticket_edit(void){
     /* Don't stomp on someone elses edit if they hit submit first. */
     @ <input type="hidden" name="le" value="%d(le ? le : te)">
   }
-  @ <span class="nowrap">Ticket Number: %d(tn)</span><br>
+  @ <span class="nowrap">任务单编号: %d(tn)</span><br>
   if( le && le < te ){
     @ <p class="error">
-    @ Ticket #%d(tn) has been changed by someone else while you
-    @ were editting it!
+    @ 任务单 #%d(tn) 在您编辑期间已经被其它人
+    @ 修改并提交过了!
     @ </p>
   }
 
@@ -1324,12 +1330,12 @@ void ticket_edit(void){
     @ </blockquote>
   }
   @ <span class="nowrap">
-  @ Title: <input type="text" name="t" value="%h(aParm[9].zNew)"
+  @ 标题: <input type="text" name="t" value="%h(aParm[9].zNew)"
   @   maxlength=%d(maxSummaryLength) size=70>
   @ </span><br>
   @ 
-  @ Description:
-  @ (<small>See <a href="#format_hints">formatting hints</a></small>)<br>
+  @ 描述信息:
+  @ (<small>参见 <a href="#format_hints">格式文本说明</a></small>)<br>
   cgi_wikitext("c", 40, aParm[10].zNew);
   @ <br>
   if( isPreview ){
@@ -1338,8 +1344,8 @@ void ticket_edit(void){
     @ &nbsp;</td></tr></table><br>
   }
   @
-  @ Remarks:
-  @ (<small>See <a href="#format_hints">formatting hints</a></small>)<br>
+  @ 备注:
+  @ (<small>参见 <a href="#format_hints">格式文本说明</a></small>)<br>
   cgi_wikitext("r", 40, aParm[11].zNew);
   @ <br>
   if( isPreview ){
@@ -1349,14 +1355,14 @@ void ticket_edit(void){
   }
   @ 
   @ <span class="nowrap">
-  @ Status:
+  @ 状态:
   cgi_v_optionmenu2(0, "s", aParm[1].zNew, (const char**)db_query(
      "SELECT name, value FROM enums WHERE type='status'"));
   @ </span>
   @ &nbsp;&nbsp;&nbsp;
   @ 
   @ <span class="nowrap">
-  @ Type: 
+  @ 类型: 
   cgi_v_optionmenu2(0, "y", aParm[0].zNew, (const char**)db_query(
      "SELECT name, value FROM enums WHERE type='type'"));
   @ </span>
@@ -1364,14 +1370,14 @@ void ticket_edit(void){
   @ 
   @ 
   @ <span class="nowrap">
-  @ Severity: 
+  @ 严重度: 
   cgi_optionmenu(0, "e", aParm[5].zNew,
          "1", "1", "2", "2", "3", "3", "4", "4", "5", "5", NULL);
   @ </span>
   @ &nbsp;&nbsp;&nbsp;
   @ 
   @ <span class="nowrap">
-  @ Assigned To: 
+  @ 分配给: 
   azUsers = (const char**)db_query(
               "SELECT id FROM user UNION SELECT '' ORDER BY id");
   cgi_v_optionmenu(0, "a", aParm[4].zNew, azUsers);
@@ -1379,7 +1385,7 @@ void ticket_edit(void){
   @ &nbsp;&nbsp;&nbsp;
   @ 
   @ <span class="nowrap">
-  @ Subsystem:
+  @ 子系统:
   cgi_v_optionmenu2(0, "m", aParm[7].zNew, (const char**)db_query(
       "SELECT '','' UNION ALL "
       "SELECT name, value FROM enums WHERE type='subsys'"));
@@ -1387,31 +1393,31 @@ void ticket_edit(void){
   @ &nbsp;&nbsp;&nbsp;
   @ 
   @ <span class="nowrap">
-  @ Version: <input type="text" name="v" value="%h(aParm[3].zNew)" size=10>
+  @ 版本号: <input type="text" name="v" value="%h(aParm[3].zNew)" size=10>
   @ </span>
   @ &nbsp;&nbsp;&nbsp;
   @ 
   @ <span class="nowrap">
-  @ Derived From: <input type="text" name="d" value="%h(aParm[2].zNew)" size=10>
+  @ 衍生自任务单: <input type="text" name="d" value="%h(aParm[2].zNew)" size=10>
   @ </span>
   @ &nbsp;&nbsp;&nbsp;
   @ 
   @ <span class="nowrap">
-  @ Priority:
+  @ 优先级:
   cgi_optionmenu(0, "p", aParm[6].zNew,
          "1", "1", "2", "2", "3", "3", "4", "4", "5", "5", NULL);
   @ </span>
   @ &nbsp;&nbsp;&nbsp;
   @ 
   @ <span class="nowrap">
-  @ Owner: 
+  @ 创建人: 
   cgi_v_optionmenu(0, "w", aParm[8].zNew, azUsers);
   @ </span>
   @ &nbsp;&nbsp;&nbsp;
   @
   if( !g.isAnon ){
     @ <span class="nowrap">
-    @ Contact: <input type="text" name="n" value="%h(aParm[12].zNew)" size=20>
+    @ 联系方式: <input type="text" name="n" value="%h(aParm[12].zNew)" size=20>
     @ </span>
     @ &nbsp;&nbsp;&nbsp;
     @
@@ -1443,7 +1449,7 @@ void ticket_edit(void){
     */
 
     @ <span class="nowrap">
-    @ Associated Check-ins:
+    @ 相关提交:
     @ <input type="text" name="cl" size=70 value="\
     if( azChng!=0 ){
       for(i=0; azChng[i]; i++){
@@ -1454,7 +1460,7 @@ void ticket_edit(void){
     @ </span>
     @ &nbsp;&nbsp;&nbsp;
     @ <span class="nowrap">
-    @ Associated Milestones:
+    @ 相关里程碑:
     @ <input type="text" name="ml" size=70 value="\
     if( azMs!=0 ){
       for(i=0; azMs[i]; i++){
@@ -1467,22 +1473,22 @@ void ticket_edit(void){
     @ 
   }
   @ <p align="center">
-  @ <input type="submit" name="submit" value="Apply Changes">
+  @ <input type="submit" name="submit" value="应用修改">
   @ &nbsp;&nbsp;&nbsp;
-  @ <input type="submit" name="pre" value="Preview Description And Remarks">
+  @ <input type="submit" name="pre" value="预览描述信息和备注">
   if( ok_to_delete_ticket(tn) ){
     @ &nbsp;&nbsp;&nbsp;
-    @ <input type="submit" name="del1" value="Delete This Ticket">
+    @ <input type="submit" name="del1" value="删除该任务单">
   }
   @ </p>
-  @ 
+  @
   @ </form>
-  attachment_html(mprintf("%d",tn),"<h3>Attachments</h3><blockquote>",
+  attachment_html(mprintf("%d",tn),"<h3>附件</h3><blockquote>",
       "</blockquote>");
   @
   @ <a name="format_hints"></a>
   @ <hr>
-  @ <h3>Formatting Hints:</h3>
+  @ <h3>格式文本说明:</h3>
   append_formatting_hints();
   common_footer();
 }
@@ -1540,7 +1546,7 @@ void ticket_append(void){
       int change;
       zOrig = db_short_query("SELECT remarks FROM ticket WHERE tn=%d", tn);
       zOrig = remove_blank_lines(zOrig);
-      time(&now); 
+      time(&now);
       pTm = localtime(&now);
       strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S", pTm);
       if( isspace(zText[0]) && isspace(zText[1]) ) zSpacer = "\n\n";
@@ -1567,13 +1573,13 @@ void ticket_append(void){
   zTktTitle = db_short_query("SELECT title FROM ticket WHERE tn=%d", tn);
   
   common_add_help_item("CvstracTicket");
-  common_add_action_item( mprintf("tktview?tn=%h", zTn), "Cancel");
-  common_header("Append Remarks To Ticket #%d", tn);
+  common_add_action_item( mprintf("tktview?tn=%h", zTn), "取消");
+  common_header("追加备注到任务单 #%d", tn);
 
   if( le && le < te ){
     @ <p class="error">
-    @ Ticket #%d(tn) has been changed by someone else while you
-    @ were editting it!</p>
+    @ 任务单 #%d(tn) 在您编辑期间已经被其它人
+    @ 修改并提交了!</p>
   }
   if( zErrMsg ){
     @ <blockquote class="error">
@@ -1587,16 +1593,16 @@ void ticket_append(void){
     @ <input type="hidden" name="le" value="%d(le ? le : te)">
   }
   @ <input type="hidden" name="tn" value="%h(zTn)">
-  @ Append to #%d(tn):
+  @ 追加备注到 #%d(tn):
   cgi_href(zTktTitle, 0, 0, 0, 0, 0, "tktview?tn=%d", tn);
   @ &nbsp;
-  @ (<small>See <a href="#format_hints">formatting hints</a></small>)<br>
+  @ (<small>参见 <a href="#format_hints">格式文本说明</a></small>)<br>
   cgi_wikitext("r", 60, zText);
   @ <br>
   @ <p align="center">
-  @ <input type="submit" name="submit" value="Apply">
+  @ <input type="submit" name="submit" value="应用">
   @ &nbsp;&nbsp;&nbsp;
-  @ <input type="submit" name="pre" value="Preview">
+  @ <input type="submit" name="pre" value="预览">
   @ </p>
   if( doPreview ){
     @ <table border=1 cellpadding=15 width="100%%"><tr><td>
@@ -1607,7 +1613,7 @@ void ticket_append(void){
   @ </form>
   @ <a name="format_hints"></a>
   @ <hr>
-  @ <h3>Formatting Hints:</h3>
+  @ <h3>格式文本说明:</h3>
   append_formatting_hints();
   common_footer();
 }
@@ -1641,35 +1647,35 @@ static void ticket_change(
     len1 = strlen(zOld);
     len2 = strlen(zNew);
     if( len1==0 ){
-      @ Added <i>%h(zField)</i>:<blockquote>
+      @ 增加 <i>%h(zField)</i>:<blockquote>
       output_formatted(&zNew[len1], zPage);
       @ </blockquote>
     }else if( len2>len1+5 && strncmp(zOld,zNew,len1)==0 ){
-      @ Appended to <i>%h(zField)</i>:<blockquote>
+      @ 追加到 <i>%h(zField)</i>:<blockquote>
       output_formatted(&zNew[len1], zPage);
       @ </blockquote>
     }else{
-      @ Changed <i>%h(zField)</i>.
+      @ 修改 <i>%h(zField)</i>.
       diff_strings(1,zOld,zNew);
     }
   }else if( (!g.okWrite || g.isAnon) && strcmp(zField,"contact")==0 ){
     /* Do not show contact information to unprivileged users */
-    @ Change <i>%h(zField)</i>
+    @ 修改 <i>%h(zField)</i>
   }else if( strncmp(zField,"extra",5)==0 ){
     char zLabel[30];
     const char *zAlias;
     bprintf(zLabel,sizeof(zLabel),"%h_name", zField);
     zAlias = db_config(zLabel, zField);
-    @ Change <i>%h(zAlias)</i> from "%h(zOld)" to "%h(zNew)"
+    @ 修改 <i>%h(zAlias)</i> 由 "%h(zOld)" 为 "%h(zNew)"
   }else{
-    @ Change <i>%h(zField)</i> from "%h(zOld)" to "%h(zNew)"
+    @ 修改 <i>%h(zField)</i> 由 "%h(zOld)" 为 "%h(zNew)"
   }
 
-  @ by %h(zUser) on %h(zDate)
+  @ 由 %h(zUser) 于 %h(zDate)
 
   if( isLast && ok_to_undo_change(date, zUser) ){
-    @ [<a href="tktundo?tn=%d(tn)&amp;u=%t(zUser)&amp;t=%d(date)">Undo
-    @ this change</a>]</p>
+    @ [<a href="tktundo?tn=%d(tn)&amp;u=%t(zUser)&amp;t=%d(date)">撤消
+    @ 该修改</a>]</p>
   }
 
   @ </li>
@@ -1689,7 +1695,7 @@ static void ticket_checkin(
   char *z;
   char zDate[100];
 
-  @ <li> Check-in 
+  @ <li> 提交 
 
   output_chng(cn);
   if( zBranch && zBranch[0] ){
@@ -1708,7 +1714,7 @@ static void ticket_checkin(
 
   pTm = localtime(&date);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M", pTm);
-  @ (By %h(zUser) on %h(zDate))
+  @ (由 %h(zUser) 于 %h(zDate))
   @ </li>
 }
 
@@ -1727,16 +1733,16 @@ static void ticket_attach(
   struct tm *pTm;
   pTm = localtime(&date);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S", pTm);
-  @ <li> Attachment 
+  @ <li> 附件 
   @ <a href="attach_get/%d(attachn)/%T(zFilename)">%h(zFilename)</a>
-  @ %d(size) bytes added by %h(zUser) on %h(zDate).
+  @ %d(size) 字节，由 %h(zUser) 于 %h(zDate)增加。
   if( zDescription && zDescription[0] ){
     @ <br>
     output_formatted(zDescription,NULL);
     @ <br>
   }
   if( ok_to_delete_attachment(date, zUser) ){
-    @ [<a href="attach_del?atn=%d(attachn)">delete</a>]
+    @ [<a href="attach_del?atn=%d(attachn)">删除</a>]
   }
   @ </li>
 }
@@ -1754,9 +1760,9 @@ static void ticket_inspect(
   struct tm *pTm;
   pTm = localtime(&date);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S", pTm);
-  @ <li> Inspection report "%h(zResult)" on 
+  @ <li> 检查报告 "%h(zResult)" 于 
   output_chng(cn);
-  @ &nbsp;by %h(zInspector) on %h(zDate)
+  @ &nbsp;由 %h(zInspector) 于 %h(zDate)
   @ </li>
 }
 
@@ -1773,9 +1779,9 @@ static void ticket_derived(
   struct tm *pTm;
   pTm = localtime(&date);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S", pTm);
-  @ <li> Derived 
+  @ <li> 衍生自
   output_ticket(tn,0);
-  @ &nbsp;by %h(zOwner) on %h(zDate)
+  @ &nbsp;由 %h(zOwner) 于 %h(zDate)
   @ </li>
 }
 
@@ -1808,21 +1814,21 @@ void ticket_history(void){
   common_standard_menu("tktview", "search?t=1");
 
   if( rn>0 ){
-    common_add_action_item(mprintf("tktview?tn=%d,%d",tn,rn), "View");
+    common_add_action_item(mprintf("tktview?tn=%d,%d",tn,rn), "查看");
   }else{
-    common_add_action_item(mprintf("tktview?tn=%d",tn), "View");
+    common_add_action_item(mprintf("tktview?tn=%d",tn), "查看");
   }
 
   common_add_help_item("CvstracTicket");
 
   if( g.okWrite ){
     if( rn>0 ){
-      common_add_action_item(mprintf("tktedit?tn=%d,%d",tn,rn), "Edit");
+      common_add_action_item(mprintf("tktedit?tn=%d,%d",tn,rn), "编辑");
     }else{
-      common_add_action_item(mprintf("tktedit?tn=%d",tn), "Edit");
+      common_add_action_item(mprintf("tktedit?tn=%d",tn), "编辑");
     }
     if( attachment_max()>0 ){
-      common_add_action_item(mprintf("attach_add?tn=%d",tn), "Attach");
+      common_add_action_item(mprintf("attach_add?tn=%d",tn), "附件");
     }
   }
   add_tkt_tools(0,tn);
@@ -1840,10 +1846,10 @@ void ticket_history(void){
   pTm = localtime(&orig);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S", pTm);
 
-  common_header("Ticket #%d History", tn);
-  @ <h2>Ticket %d(tn) History: %h(az[0])</h2>
+  common_header("任务单 #%d 历史", tn);
+  @ <h2>任务单 %d(tn) 历史: %h(az[0])</h2>
   @ <ol>
-  @ <li>Created %h(zDate) by %h(az[2])</li>
+  @ <li>由 %h(zDate) 创建于 %h(az[2])</li>
 
   /* Grab various types of ticket activities from the db.
   ** All must be sorted by ascending time and the first field of each

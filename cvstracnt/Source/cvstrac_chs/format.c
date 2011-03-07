@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -151,7 +153,7 @@ int is_repository_file(const char *z){
 **
 ** If z[] is not a list element marker, then return 0.  If z[] is
 ** a list element marker, set *pLevel to indicate the list depth
-** (the number of colons) and the type (bullet or enumeration).  
+** (the number of colons) and the type (bullet or enumeration).
 ** *pLevel is negative for enumerations and positive for bullets and
 ** the magnitude is the depth.  Then return the number of characters
 ** in the marker (which will always be at least 2.)
@@ -178,7 +180,7 @@ static int is_list_elem(const char *z, int *pLevel){
     *pLevel = 0;
     return 0;
   }
-  if( type<0 ){ 
+  if( type<0 ){
     *pLevel = -depth;
   }else{
     *pLevel = depth;
@@ -506,7 +508,7 @@ static void adjust_list_nesting(int *aList, int iTarget){
     aList[aList[0]] = +1;
   }
   iDepth = iTarget;
-  if( iDepth<0 ) iDepth = 0x7fffffff & -iDepth;  
+  if( iDepth<0 ) iDepth = 0x7fffffff & -iDepth;
   if( aList[0]==iDepth-1 ){
     if( iTarget<0 ){
       cgi_printf("<ol>\n");
@@ -808,7 +810,7 @@ void output_chng(int cn){
         if( az[0][0] && az[0][0] != '0' ){
           @ <a href="%z(zLink)" 
           @    class="%s((atoi(az[0])==1)?"release":"event")"
-          @    title="Milestone [%d(cn)] %h(az[2]) (By %h(az[1]))">\
+          @    title="里程碑 [%d(cn)] %h(az[2]) (由 %h(az[1]))">\
           @ [%d(cn)]</a>\
         }else{
           char *z = az[2];
@@ -817,13 +819,13 @@ void output_chng(int cn){
           /* Mozilla and Firefox are quite sensitive to newlines
           ** in link titles so we can't use '@' formatting here.
           */
-          @ <a href="%z(zLink)" class="checkin" title="Check-in [%d(cn)]\
+          @ <a href="%z(zLink)" class="checkin" title="提交 [%d(cn)]\
           if( az[3] && az[3][0] ){
-            @ on branch %h(az[3])\
+            @ 于分支 %h(az[3])\
           }
           @ :\
           trimmed = output_trim_message(z, MN_CKIN_MSG, MX_CKIN_MSG);
-          @ %h(z)%s(trimmed?"...":"") (By %h(az[1]))">[%d(cn)]</a>
+          @ %h(z)%s(trimmed?"...":"") (由 %h(az[1]))">[%d(cn)]</a>
         }
       }
     }else{
@@ -1107,7 +1109,7 @@ static void output_wikilink(const char *zPage,const char *zTitle,
 **
 **    *    {quote: XYZ} renders XYZ with all special meanings for XYZ escaped.
 **
-**    *    {link: URL TEXT} renders TEXT with a link to URL.  URL can be 
+**    *    {link: URL TEXT} renders TEXT with a link to URL.  URL can be
 **         relative.
 **
 **    *    {linebreak} renders a linebreak.
@@ -1209,7 +1211,7 @@ void output_wiki(
 
       /*
       ** Markup of the form "{quote: ABC}" writes out the text ABC exactly
-      ** as it appears.  This can be used to escape special meanings 
+      ** as it appears.  This can be used to escape special meanings
       ** associated with ABC.
       */
       if( sMarkup.lenType==5 && strncmp(sMarkup.zType,"quote",5)==0 ){
@@ -1355,9 +1357,9 @@ void output_wiki(
         azMarkup = db_query(
               "SELECT markup, description FROM markup ORDER BY markup;");
         if( azMarkup && azMarkup[0] ){
-          @ <h3>Custom Markup Rules</h3>
-          @ <p>The following are custom markup rules implemented
-          @ on this server.</p>
+          @ <h3>可定制标记规则</h3>
+          @ <p>以下是该服务器已实现的可定制标记
+          @ 规则。</p>
           for(j=0; azMarkup[j]; j+=2){
             if( azMarkup[j+1] && azMarkup[j+1][0] ){
               /* this markup has a description, output it.
@@ -1366,7 +1368,7 @@ void output_wiki(
               output_formatted(azMarkup[j+1],NULL);
               @ </p>
             }else{
-              @ <p>{%h(azMarkup[j])} (no description)</p>
+              @ <p>{%h(azMarkup[j])} (无描述)</p>
             }
           }
         }
@@ -1570,7 +1572,7 @@ void output_wiki(
     if( wordStart && !inPRE ){
       /* A wiki name at the beginning of a word which is not in verbatim
       ** text generates a hyperlink to that wiki page.
-      ** 
+      **
       ** Special case: If the name is in CamelCase but ends with a "_", then
       ** suppress the "_" and do not generate the hyperlink.  This allows
       ** CamelCase words that are not wiki page names to appear in text.
@@ -1688,7 +1690,7 @@ void output_wiki(
       */
       if( c=='[' && (j = ndigit(&zText[i+1]))>0
                  && is_eow(&zText[i+j+2],0)
-                 && (v = atoi(&zText[i+1]))>0 && v<=nCommit 
+                 && (v = atoi(&zText[i+1]))>0 && v<=nCommit
                  && zText[i+j+1]==']' ){
         put_htmlized_text(&zText, i);
         output_chng(v);
@@ -1764,7 +1766,7 @@ void output_formatted(const char *zText, const char *zPageId){
   output_wiki(zText,"",zPageId);
 }
 
-/* 
+/*
 ** This routine alters a check-in message to make it more readable
 ** in a timeline.  The following changes are made:
 **
@@ -1838,89 +1840,89 @@ void append_formatting_hints(void){
   int j;
   @ <ul class="hints">
   @ <li><p>
-  @ Blank lines divide paragraphs.
+  @ 空行划分段落。
   @ </p></li>
   @
   @ <li><p>
-  @ If a paragraph is indented by a tab or by two or more spaces,
-  @ it is displayed verbatim -- in a constant-width font with all
-  @ spacing and line breaks preserved.
+  @ 如果一个段落用制表符或两个以上空格缩进，
+  @ 它将会原样显示，即使用等宽字体并保留所有
+  @ 的空格和换行符。
   @ </p></li>
   @
   @ <li><p>
-  @ Surround phrases by underscores, asterisks or equals 
-  @ for italic, bold or fixed text.
-  @ (Ex: "<tt>_italic text_, *bold text*, =fixed text=</tt>")
-  @ Use two or three asterisks for bold text in a larger font.
+  @ 在短语两端使用下划线、星号或等号表示斜体、
+  @ 粗本或等宽文本。
+  @ （如: "<tt>_斜体文本_、*粗体文本* 和 =等宽文本=</tt>"）
+  @ 使用两个或三个星号表示更大字体的粗体文本。
   @ </p></li>
   @
   @ <li><p>
   if( g.okRead ){
-    @ Text like "<tt>#123</tt>" becomes a hyperlink to ticket #123.
+    @ 类似 "<tt>#123</tt>" 的文本将生成一个链接指向 任务单 #123。
   }
   if( g.okCheckout ){
-    @ Text like "<tt>[456]</tt>" becomes a hyperlink to
-    @ check-in [456].
+    @ 类似 "<tt>[456]</tt>" 的文本将生成一个链接指向 提交编号
+    @ [456]。
   }
   if( g.okRdWiki ){
-    @ An absolute URL, a wiki page name becomes a hyperlink.
-    @ Also markup of the form "<tt>{wiki: <i>title text</i>}</tt>"
-    @ becomes a hyperlink to the wiki document of <i>title</i>.
+    @ 一个绝对链接地址或一个 wiki 页面的名字将生成一个超链接。
+    @ 或者使用下列形式的标志: "<tt>{wiki: <i>title text</i>}</tt>"
+    @ 也将生成一个指向 wiki 文档 of <i>title</i> 的超链接。
   } else {
-    @ An absolute URL becomes a hyperlink.
+    @ 一个绝对链接地址将生成一个超链接。
   }
-  @ Or use markup of the form:
-  @ "<tt>{link: <i>url text</i>}</tt>".
+  @ 或者使用下列形式的标志:
+  @ "<tt>{link: <i>url 文本</i>}</tt>"。
   @ </p></li>
   @
   @ <li><p>
-  @ A path to a file in the repository becomes a link to its rlog page:
+  @ 使用仓库相对路径的文件名将生成指向该文件日志页面的链接:
   @ "<tt>/path/to/format.c</tt>".
   @ </p></li>
   @
   @ <li><p>
-  @ The characters "<tt>*:</tt>" or "<tt>1:</tt>" at the beginning of a line
-  @ produce a bullet or enumeration list.
-  @ Use additional colons for nested lists.
+  @ 在行首使用符号 "<tt>*:</tt>" 或 "<tt>1:</tt>"
+  @ 将生成一个项目符号或数字符号列表。
+  @ 使用更多的冒号以显示嵌套的列表。
   @ </p></li>
   @
   @ <li><p>
-  @ Create a table by wrapping cells with "<tt>|</tt>", starting at the
-  @ beginning of a line. Each cell is separated with a "<tt>|</tt>" and
-  @ each line should end with a "<tt>|</tt>".
+  @ 在行首，可以通过使用 "<tt>|</tt>" 标记单元格来创建表格。
+  @ 每个单元格都要用一个 "<tt>|</tt>" 分隔开，
+  @ 并且每一行都应该以一个 "<tt>|</tt>" 结束。
   @ </p></li>
   @
   @ <li><p>
-  @ Use "<tt>_:</tt>" at the beginning of a paragraph to indent that
-  @ paragraph.  Multiple colons indent more.
+  @ 在行首使用符号 "<tt>_:</tt>" 来缩进一个段落。
+  @ 使用多个冒号显示更多的缩进。
   @ </p></li>
   @
   @ <li><p>
-  @ Four or more "-" or "=" characters on a line by themselves generate a
-  @ horizontal rule (the &lt;hr&gt; markup of HTML).
+  @ 在单独的一行中使用四个或更多的 "-" 或 "=" 字符将生成
+  @ 一条横线（即 HTML 中的 &lt;hr&gt; 标志）。
   @ </p></li>
   @
   @ <li><p>
-  @ Create a line-break using "<tt>{linebreak}</tt>".
+  @ 使用 "<tt>{linebreak}</tt>" 标记来换行。
   @ </p></li>
   @
   @ <li><p>
-  @ Use "<tt>{quote: <i>text</i>}</tt>" to display <i>text</i>.
+  @ 使用 "<tt>{quote: <i>文本</i>}</tt>" 来显示引用 <i>文本</i>。
   @ </p></li>
   @
   @ <li><p>
-  @ Insert in-line images using "<tt>{image: <i>url</i>}</tt>".
-  @ The <i>url</i> can be the filename of an attachment.
+  @ 在文本中插入图像，使用 "<tt>{image: <i>url</i>}</tt>" 标记。
+  @ 其中 <i>url</i> 可以是附件文件名。
   @ </p></li>
   @
   @ <li><p>
-  @ Insert in-line reports using "<tt>{report: <i>rn</i>}</tt>". The <i>rn</i>
-  @ is the report number (which isn't necessarily the same as the numbers on
-  @ the <a href="reportlist">report list</a>).
+  @ 要嵌入报表，可以使用 "<tt>{report: <i>rn</i>}</tt>"。 其中 <i>rn</i>
+  @ 为报表编号（该编号可以不与
+  @ <a href="reportlist">报表列表</a> 中的编号完全一致）。
   @ </p></li>
   @
   @ <li><p>
-  @ Text between "<tt>&lt;html&gt;...&lt;/html&gt;</tt>" is interpreted as HTML.
+  @ 在标记 "<tt>&lt;html&gt;...&lt;/html&gt;</tt>" 中间的内容被解释为 HTML 文本。
   @ </p></li>
   @
 
@@ -1936,7 +1938,7 @@ void append_formatting_hints(void){
         output_formatted(az[j+1],NULL);
         @ </p></li>
       }else{
-        @ <li><p>{%h(az[j])} (no description)</p></li>
+        @ <li><p>{%h(az[j])} (无描述)</p></li>
       }
     }
   }

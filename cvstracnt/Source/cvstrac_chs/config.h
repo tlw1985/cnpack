@@ -12,6 +12,7 @@
 #if defined(__linux__) || defined(__sun__)
 #include <crypt.h>
 #endif
+#if 0
 #if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
 /* MinGW headers have no consts so producing warnings "discards qualifiers" */
 char *crypt(const char *key, const char *salt);
@@ -19,7 +20,10 @@ char *crypt(const char *key, const char *salt);
 #include <direct.h>
 #include <io.h>
 #endif
+#endif
 
+#include <time.h>
+#include <sys/types.h>
 /*
 ** Standard colors.  These colors can also be changed using a stylesheet.
 */
@@ -58,17 +62,17 @@ char *crypt(const char *key, const char *salt);
                "      title=\"Default Stylesheet\"\n" \
                "      type=\"text/css\" href=\"%B/cvstrac_default.css\">\n" \
                "<link rel=\"alternate\" type=\"application/rss+xml\"\n" \
-               "   title=\"%N Timeline Feed\" href=\"%B/timeline.rss\">\n" \
-               "<link rel=\"index\" title=\"Index\" href=\"%B/index\">\n" \
-               "<link rel=\"search\" title=\"Search\" href=\"%B/search\">\n" \
-               "<link rel=\"help\" title=\"Help\"\n" \
+               "   title=\"%N 时间线 RSS\" href=\"%B/timeline.rss\">\n" \
+               "<link rel=\"index\" title=\"首页\" href=\"%B/index\">\n" \
+               "<link rel=\"search\" title=\"搜索\" href=\"%B/search\">\n" \
+               "<link rel=\"help\" title=\"帮助\"\n" \
                "   href=\"%B/wiki?p=CvstracDocumentation\">\n" \
                "<title>%N: %T</title>\n</head>\n" \
                "<body>"
 
 /* Default HTML page footer */
 #define FOOTER "<div id=\"footer\">\n" \
-               "<a href=\"about\">CVSTrac version %V</a>\n" \
+               "<a href=\"about\">CVSTrac version %V 中文版</a>\n" \
                "</div>\n" \
                "</body></html>\n"
 
@@ -87,6 +91,18 @@ char *crypt(const char *key, const char *salt);
 #define MN_CKIN_MSG   100
 #define MX_CKIN_MSG   300
 
+/* Work with cvsnt on windows.
+*/
+#ifndef CVSNT
+# define CVSNT        0
+#endif
+
+#if CVSNT
+# define popen popen2
+# define pclose pclose2
+# define system system2
+#endif
+
 /* Maximum number of seconds for any HTTP or CGI handler to live. This
 ** prevents denials of service caused by bad queries, endless loops, or
 ** other possibilties.
@@ -102,8 +118,31 @@ char *crypt(const char *key, const char *salt);
 /* #define USE_STRICT_AUTHORIZER 1 */
 
 /* Unset the following to disable internationalization code. */
-#ifndef CVSTRAC_I18N
-# define CVSTRAC_I18N 1
+#define DEF_CHARSET "ISO-8859-1"
+#define CVSTRAC_I18N 1
+
+#if !defined(BIG5) && !defined(GB2312)
+# define GB2312
+#endif
+
+#ifdef GB2312
+# undef CVSTRAC_I18N
+# define CVSTRAC_I18N 0
+# define strftime strftime2
+# define CHINESE
+# undef DEF_CHARSET
+# define DEF_CHARSET "GB2312"
+# undef BIG5
+#endif
+
+#ifdef BIG5
+# undef CVSTRAC_I18N
+# define CVSTRAC_I18N 0
+# define strftime strftime2
+# define CHINESE
+# undef DEF_CHARSET
+# define DEF_CHARSET "BIG5"
+# undef GB2312
 #endif
 
 #if CVSTRAC_I18N

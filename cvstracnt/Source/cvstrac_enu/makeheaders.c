@@ -1,4 +1,8 @@
+<<<<<<< makeheaders.c
+static const char ident[] = "@(#) $Header: /var/cvshome/cnpack/cvstracnt/Source/cvstrac/makeheaders.c,v 1.1.4.3 2007/02/05 13:33:39 zjy Exp $";
+=======
 static const char ident[] = "@(#) $Header: /var/cvshome/cnpack/cvstracnt/Source/cvstrac/makeheaders.c,v 1.5 2008/06/01 11:57:45 zjy Exp $";
+>>>>>>> 1.5
 /*
 ** This program scans C and C++ source files and automatically generates
 ** appropriate header files.

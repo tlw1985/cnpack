@@ -20,6 +20,8 @@
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
 **
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2005-09-09
+**
 *******************************************************************************
 **
 ** This file contains code used to call svnlook to get information 
@@ -71,7 +73,7 @@ static void svn_insert_copied_files(
   /* zOldDir must end with '/' if it's not empty string.
   */
   zTmp = (strlen(zOldDir)==0) ? mprintf("") : mprintf("%s/", zOldDir);
-  if( zTmp==0 ) common_err("Out of memory");
+  if( zTmp==0 ) common_err("内存不足");
   nLen = strlen(zTmp);
   
   /* This query should return only files that are not deleted.
@@ -96,7 +98,7 @@ static void svn_insert_copied_files(
     }else{
       zFile = mprintf("%s", &(azTree[i])[nLen]);
     }
-    if( zFile==0 ) common_err("Out of memory");
+    if( zFile==0 ) common_err("内存不足");
     nFLen = strlen(zFile);
     if( nFLen && zFile[nFLen-1]!='/' ){
       db_execute(
@@ -229,7 +231,7 @@ static int svn_history_update(int isReread){
   in = popen(zCmd, "r");
   if( in==0 ){
     error_init(&nErr);
-    @ <li><p>Unable to execute the following command:
+    @ <li><p>U执行以下命令失败:
     @ <blockquote class="error"><pre>
     @ %h(zCmd)
     @ </pre></blockquote></p></li>
@@ -245,7 +247,7 @@ static int svn_history_update(int isReread){
     nHeadRevision = strtol(zLine,&z,10);
     if( z[0]!='\n' && z[0]!='\r' && z[0] ){
       error_init(&nErr);
-      @ <li><p>Error reading from repository '%h(zRoot)'</p>
+      @ <li><p>读取仓库失败： '%h(zRoot)'</p>
       @ <p class="error">%h(zLine)</p></li>
       error_finish(nErr);
       pclose(in);
@@ -253,8 +255,8 @@ static int svn_history_update(int isReread){
     }
   }else{
     error_init(&nErr);
-    @ <li><p>Error reading from repository '%h(zRoot)'</p>
-    @ <p class="error"><tt>svnlook youngest</tt> returned nothing</p></li>
+    @ <li><p>读取仓库失败： '%h(zRoot)'</p>
+    @ <p class="error"><tt>svnlook youngest</tt> 没有返回内容。</p></li>
     error_finish(nErr);
     pclose(in);
     return -1;
@@ -267,8 +269,8 @@ static int svn_history_update(int isReread){
   */
   if( nHeadRevision==0 ){
     error_init(&nErr);
-    @ <li><p class="error">Repository '%h(zRoot)' appears empty. Latest revision
-    @ seems to be '%h(zLine)'</p></li>
+    @ <li><p class="error">仓库 '%h(zRoot)' 可能是空的。最后一个版本
+    @ 似乎是 '%h(zLine)'</p></li>
     error_finish(nErr);
     return -1;
   }
@@ -313,7 +315,7 @@ static int svn_history_update(int isReread){
     in = popen(zCmd, "r");
     if( in==0 ){
       error_init(&nErr);
-      @ <li><p>Unable to execute the following command:
+      @ <li><p>执行以下命令失败:
       @ <blockquote class="error"><pre>
       @ %h(zCmd)
       @ </pre></blockquote></p></li>
@@ -431,7 +433,7 @@ static int svn_history_update(int isReread){
     in = popen(zCmd, "r");
     if( in==0 ){
       error_init(&nErr);
-      @ <li><p>Unable to execute the following command:
+      @ <li><p>执行以下命令失败:
       @ <blockquote class="error"><pre>
       @ %h(zCmd)
       @ </pre></blockquote></p></li>
@@ -495,7 +497,7 @@ static int svn_history_update(int isReread){
             history = popen(zCmd, "r");
             if( history==0 ){
               error_init(&nErr);
-              @ <li><p>Unable to execute the following command:
+              @ <li><p>执行以下命令失败:
               @ <blockquote class="error"><pre>
               @ %h(zCmd)
               @ </pre></blockquote></p></li>

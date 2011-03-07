@@ -20,6 +20,8 @@
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
 **
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2005-09-09
+**
 *******************************************************************************
 **
 ** This file contains code used to read the CVSROOT/history file from
@@ -128,14 +130,14 @@ static void check_path(int nErr, const char *zProg){
   z = getenv("PATH");
   if( z==0 ){
     error_init(&nErr);
-    @ <li><p>No PATH environment variable</p></li>
+    @ <li><p>没有找到 PATH 环境变量</p></li>
     error_finish(nErr);
   }
   size = strlen(zProg) + strlen(z) + 2;
   zPath = malloc( size*2 );
   if( zPath==0 ){
     error_init(&nErr);
-    @ <li><p>Out of memory!</p></li>
+    @ <li><p>内存不足！</p></li>
     error_finish(nErr);
   }
   strcpy(zPath, z);
@@ -155,7 +157,7 @@ static void check_path(int nErr, const char *zProg){
     }
   }
   error_init(&nErr);
-  @ <li><p>Unable to locate program "<b>%h(zProg)</b>".
+  @ <li><p>无法定位程序 "<b>%h(zProg)</b>".
   @ (uid=%d(getuid()), PATH=%h(getenv("PATH")))</p></li>
   error_finish(nErr);
 }
@@ -264,7 +266,7 @@ static int cvs_history_update(int isReread){
   in = fopen(zFilename,"r");
   if( in==0 ){
     error_init(&nErr);
-    @ <li><p>Unable to open the history file %h(zFilename).</p></li>
+    @ <li><p>打开历史日志文件 %h(zFilename) 失败。</p></li>
     error_finish(nErr);
     return -1;
   }
@@ -480,8 +482,8 @@ static int cvs_history_update(int isReread){
     zFile = find_repository_file(zRoot, azFileList[i]);
     if( zFile==0 ){
       error_init(&nErr);
-      @ <li><p>Unable to locate the file %h(azFileList[i]) in the
-      @ CVS repository</p></li>
+      @ <li><p>无法在 CVS 仓库中定位文件 %h(azFileList[i])
+      @ 。</p></li>
       continue;
     }
 
@@ -504,7 +506,7 @@ static int cvs_history_update(int isReread){
     in = popen(zCmd, "r");
     if( in==0 ){
       error_init(&nErr);
-      @ <li><p>Unable to execute the following command:
+      @ <li><p>无法执行以下命令:
       @ <blockquote><pre>
       @ %h(zCmd)
       @ </pre></blockquote></p></li>
@@ -570,7 +572,7 @@ static int cvs_history_update(int isReread){
           pNew = malloc( sizeof(*pNew) + strlen(&zLine[1]) + i + 2 );
           if( pNew==0 ){
             error_init(&nErr);
-            @ <li><p>Out of memory at:
+            @ <li><p>内存不足:
             @ <blockquote><pre>
             @ %h(zLine)
             @ </pre></blockquote></p></li>
@@ -660,13 +662,13 @@ static int cvs_history_update(int isReread){
         check_path(nErr, "rlog");
         path_ok = 1;
       }
-      @ <p><li>No revision information found in <b>rlog</b> output:
+      @ <p><li>在 <b>rlog</b> 输出中找不到版本信息:
       @ <blockquote><pre>
       @ %h(zCmd);
       @ </pre></blockquote></p></li>
     }else if( seen_sym==0 ){
       error_init(&nErr);
-      @ <p><li>No "<b>symbolic names:</b>" line seen in <b>rlog</b> output:
+      @ <p><li>在 <b>rlog</b> 输出中找不到 "<b>symbolic names:</b>" 行:
       @ <blockquote><pre>
       @ %h(zCmd);
       @ </pre></blockquote></p></li>
@@ -832,7 +834,7 @@ static int cvs_diff_versions(
   if( has_binary_keyword(zFile) ){
     free(zFile);
     @ <p>
-    @ %h(zRelFile) is a binary file
+    @ %h(zRelFile) 是一个二进制文件
     @ </p>
     return 0; /* Don't attempt to compare binaries, but it's not a failure */
   }
@@ -902,7 +904,7 @@ static int cvs_dump_version(const char *zVersion, const char *zFile,int bRaw){
   if( !bRaw && has_binary_keyword(zReal) ){
 
     /* FIXME: could do a hex dump, but yuck... */
-    @ <tt>%h(zFile)</tt> is a binary file.
+    @ <tt>%h(zFile)</tt> 是一个二进制文件。
   }else{
     char *zCmd = mprintf(OS_VAL("co -q '-p%s' '%s' 2>/dev/null",
                                 "cvs -q rcsfile co \"-p%s\" \"%s\" 2>NUL"),

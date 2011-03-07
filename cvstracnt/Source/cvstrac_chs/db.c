@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -51,13 +53,13 @@ void db_err(const char *zReason, const char *zQuery, const char *zFormat, ...){
   cgi_reset_content();
   cgi_set_status(200, "OK");
   cgi_set_content_type("text/html");
-  @ <h1>Database Error</h1>
+  @ <h1>数据库错误</h1>
   @ %h(zMsg)
   if( zQuery ){
     @ <blockquote class="error">%h(zQuery)</blockquote>
   }
   if( zReason ){
-    @ Reason: %h(zReason)
+    @ 原因: %h(zReason)
   }
   cgi_append_header("Pragma: no-cache\r\n");
   cgi_reply();
@@ -97,9 +99,14 @@ sqlite3 *db_open(void){
 #endif
 
   zName = mprintf("%s.db", g.zName);
+  
+  if( (strcmp(g.argv[1],"init")!=0) && (access(zName, R_OK | W_OK | F_OK) == -1) ) {
+    exit(0);
+  }
+
   if( SQLITE_OK!=sqlite3_open(zName, &pDb) ){
     db_err( sqlite3_errmsg(pDb), 0,
-            "db_open: Unable to open the database named \"%h\"", zName );
+            "db_open: 无法打开数据库文件 \"%h\"", zName );
     sqlite3_close(pDb);
   }
   sqlite3_busy_timeout(pDb, 10000);
@@ -297,8 +304,8 @@ static int db_query_callback(
   if( pResult->nCols==0 ){
     pResult->nCols = nArg;
   }else if( pResult->nCols!= nArg ){
-    db_err("Mismatched number of columns in query results", 0,
-           "db_query_callback: Database query failed");
+    db_err("数据库查询结果字段数不匹配", 0,
+           "db_query_callback: 数据库查询失败");
   }
   if( pResult->nElem + nArg >= pResult->nAlloc ){
     if( pResult->nAlloc==0 ){
@@ -313,7 +320,7 @@ static int db_query_callback(
   }
   if( azArg==0 ) return 0;
   for(i=0; i<nArg; i++){
-    pResult->azElem[pResult->nElem++] = mprintf("%s",azArg[i] ? azArg[i] : ""); 
+    pResult->azElem[pResult->nElem++] = mprintf("%s",azArg[i] ? azArg[i] : "");
   }
   return 0;
 }
@@ -347,7 +354,7 @@ char **db_query(const char *zFormat, ...){
   db_restrict_query(0);
   if( rc != SQLITE_OK ){
     db_err( zErrMsg ? zErrMsg : sqlite3_errmsg(pDb), zSql,
-            "db_query: Database query failed" );
+            "db_query: 数据库查询失败" );
   }
   sqlite3_free(zSql);
   if( sResult.azElem==0 ){
@@ -384,7 +391,7 @@ static int db_short_query_callback(
 ** string which is the first result of that query.  Errors in the query
 ** are ignored.
 **
-** This routine is designed for use on queries that only return a 
+** This routine is designed for use on queries that only return a
 ** single value.  For multi-valued results, use db_query().
 */
 char *db_short_query(const char *zFormat, ...){
@@ -406,7 +413,7 @@ char *db_short_query(const char *zFormat, ...){
   /* short query callback aborts when we get a real value */
   if( rc != SQLITE_OK && rc != SQLITE_ABORT ){
     db_err( zErrMsg ? zErrMsg : sqlite3_errmsg(pDb), zSql,
-            "db_short_query: Database query failed" );
+            "db_short_query: 数据库查询失败" );
   }
   sqlite3_free(zSql);
   return zResult;
@@ -430,7 +437,7 @@ void db_execute(const char *zFormat, ...){
   va_end(ap);
   rc = sqlite3_exec(pDb, zSql, 0, 0, &zErrMsg);
   if( rc!=SQLITE_OK ){
-    db_err(zErrMsg, zSql, "db_execute: Database execute failed");
+    db_err(zErrMsg, zSql, "db_execute: 数据库执行失败");
   }
   sqlite3_free(zSql);
 }
@@ -469,7 +476,7 @@ int db_exists(const char *zFormat, ...){
   rc = sqlite3_exec(pDb, zSql, db_exists_callback, &iResult, &zErrMsg);
   db_restrict_query(0);
   if( rc!=SQLITE_OK ){
-    db_err(zErrMsg, zSql, "db_exists: Database exists query failed");
+    db_err(zErrMsg, zSql, "db_exists: 数据库查询失败");
   }
   sqlite3_free(zSql);
   return iResult;
@@ -560,7 +567,7 @@ void db_callback_query(
   db_restrict_query(0);
   if( rc != SQLITE_OK ){
     db_err(zErrMsg ? zErrMsg : sqlite3_errmsg(pDb), zSql,
-           "db_callback_query: Database query failed");
+           "db_callback_query: 数据库查询失败");
   }
   sqlite3_free(zSql);
 }
@@ -587,7 +594,7 @@ void db_callback_execute(
   rc = sqlite3_exec(pDb, zSql, xCallback, pArg, &zErrMsg);
   if( rc != SQLITE_OK ){
     db_err(zErrMsg ? zErrMsg : sqlite3_errmsg(pDb), zSql,
-           "db_callback_execute: Database query failed");
+           "db_callback_execute: 数据库查询失败");
   }
   sqlite3_free(zSql);
 }
@@ -632,7 +639,7 @@ static void ldate(sqlite3_context *context, int argc, sqlite3_value **argv){
   time_t t;
   struct tm *pTm;
   char zBuf[200];
-  
+
   if( argc!=1 ) return;
   t = sqlite3_value_int(argv[0]);
   if( t==0 ) return;
@@ -755,11 +762,11 @@ static void f_option(sqlite3_context *context, int argc, sqlite3_value **argv){
     char *zErr;
     char *zQuery = (char *)sqlite3_value_text(argv[1]);
     if( zQuery==0 ) {
-      db_err("Query cannot be NULL", "NULL", "Illegal option() query");
+      db_err("查询结果不能为 NULL", "NULL", "无效的 option() 查询");
     }
     zErr = verify_sql_statement(zQuery);
     if( zErr ){
-      db_err( zErr, zQuery, "Illegal option() query" );
+      db_err( zErr, zQuery, "无效的 option() 查询" );
     }else{
       int rc;
       struct QueryResult sResult;
@@ -770,7 +777,7 @@ static void f_option(sqlite3_context *context, int argc, sqlite3_value **argv){
       rc = sqlite3_exec(pDb, zQuery, db_query_callback, &sResult, &zErr);
       db_restrict_query(0);
       if( rc != SQLITE_OK ){
-        db_err( zErr, zQuery, "option() query failed" );
+        db_err( zErr, zQuery, "option() 查询失败" );
       }
       
       if( sResult.azElem==0 ){
@@ -1132,7 +1139,7 @@ static char zSchema[] =
 @ );
 @ INSERT INTO config(name,value) VALUES('cvsroot','');
 @ INSERT INTO config(name,value) VALUES('historysize',0);
-@ INSERT INTO config(name,value) VALUES('initial_state','new');
+@ INSERT INTO config(name,value) VALUES('initial_state','新建');
 @ INSERT INTO config(name,value) VALUES('schema','1.0');
 @
 @ -- An entry in the following table describes everything we know
@@ -1164,72 +1171,72 @@ static char zSchema[] =
 @ -- Several default report formats:
 @ --
 @ INSERT INTO reportfmt VALUES(1,NULL,
-@   'Recently changed and open tickets',
-@   '#ffffff Key:
-@ #f2dcdc Active
-@ #e8e8bd Review
-@ #cfe8bd Fixed
-@ #bdefd6 Tested
-@ #cacae5 Deferred
-@ #c8c8c8 Closed',
+@   '最近一周更新及活动任务',
+@   '#ffffff 状态:
+@ #f2dcdc 活动
+@ #e8e8bd 检查
+@ #cfe8bd 修正
+@ #bdefd6 测试
+@ #cacae5 推迟
+@ #c8c8c8 完成',
 @   "SELECT
-@   CASE WHEN status IN ('new','active') THEN '#f2dcdc'
-@        WHEN status='review' THEN '#e8e8bd'
-@        WHEN status='fixed' THEN '#cfe8bd'
-@        WHEN status='tested' THEN '#bde5d6'
-@        WHEN status='defer' THEN '#cacae5'
+@   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+@        WHEN status='检查' THEN '#e8e8bd'
+@        WHEN status='修正' THEN '#cfe8bd'
+@        WHEN status='测试' THEN '#bde5d6'
+@        WHEN status='推迟' THEN '#cacae5'
 @        ELSE '#c8c8c8' END as 'bgcolor',
 @   tn AS '#',
-@   type AS 'Type',
-@   status AS 'Status',
-@   sdate(origtime) AS 'Created',
-@   owner AS 'By',
-@   subsystem AS 'Subsys',
-@   sdate(changetime) AS 'Changed',
-@   assignedto AS 'Assigned',
-@   severity AS 'Svr',
-@   priority AS 'Pri',
-@   title AS 'Title'
+@   type AS '类型',
+@   status AS '状态',
+@   sdate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   sdate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
 @ FROM ticket
-@ WHERE changetime>now()-604800 OR status IN ('new','active')
+@ WHERE changetime>now()-604800 OR status IN ('新建','活动')
 @ ORDER BY changetime DESC");
 @ ----------------------------------------------------------------------------
 @ INSERT INTO reportfmt VALUES(2,NULL,
-@   'Recently changed and open tickets w/description and remarks',
-@   '#ffffff Key:
-@ #f2dcdc Active
-@ #e8e8bd Review
-@ #cfe8bd Fixed
-@ #bdefd6 Tested
-@ #cacae5 Deferred
-@ #c8c8c8 Closed',
+@   '最近一周更新及活动任务（详细信息）',
+@   '#ffffff 状态:
+@ #f2dcdc 活动
+@ #e8e8bd 检查
+@ #cfe8bd 修正
+@ #bdefd6 测试
+@ #cacae5 推迟
+@ #c8c8c8 完成',
 @   "SELECT
-@   CASE WHEN status IN ('new','active') THEN '#f2dcdc'
-@        WHEN status='review' THEN '#e8e8bd'
-@        WHEN status='fixed' THEN '#cfe8bd'
-@        WHEN status='tested' THEN '#bde5d6'
-@        WHEN status='defer' THEN '#cacae5'
+@   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+@        WHEN status='检查' THEN '#e8e8bd'
+@        WHEN status='修正' THEN '#cfe8bd'
+@        WHEN status='测试' THEN '#bde5d6'
+@        WHEN status='推迟' THEN '#cacae5'
 @        ELSE '#c8c8c8' END as 'bgcolor',
 @   tn AS '#',
-@   type AS 'Type',
-@   status AS 'Status',
-@   sdate(origtime) AS 'Created',
-@   owner AS 'By',
-@   subsystem AS 'Subsys',
-@   sdate(changetime) AS 'Changed',
-@   assignedto AS 'Assigned',
-@   severity AS 'Svr',
-@   priority AS 'Pri',
-@   title AS 'Title',
-@   description AS '_Description',
-@   remarks AS '_Remarks'
+@   type AS '类型',
+@   status AS '状态',
+@   sdate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   sdate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题',
+@   description AS '_详细描述',
+@   remarks AS '_备注'
 @ FROM ticket
-@ WHERE changetime>now()-604800 OR status IN ('new','active')
+@ WHERE changetime>now()-604800 OR status IN ('新建','活动')
 @ ORDER BY changetime DESC");
 @ ----------------------------------------------------------------------------
 @ INSERT INTO reportfmt VALUES(3,NULL,
-@   'Tickets associated with a particular user',
-@   '#ffffff Priority:
+@   '指定人员相关任务',
+@   '#ffffff 优先级:
 @ #f2dcdc 1
 @ #e8e8bd 2
 @ #cfe8bd 3
@@ -1242,74 +1249,263 @@ static char zSchema[] =
 @        WHEN 4 THEN '#cacae5'
 @        ELSE '#c8c8c8' END as 'bgcolor',
 @   tn AS '#',
-@   type AS 'Type',
-@   status AS 'Status',
-@   sdate(origtime) AS 'Created',
-@   owner AS 'By',
-@   subsystem AS 'Subsys',
-@   sdate(changetime) AS 'Changed',
-@   assignedto AS 'Assigned',
-@   severity AS 'Svr',
-@   priority AS 'Pri',
-@   title AS 'Title'
+@   type AS '类型',
+@   status AS '状态',
+@   sdate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   sdate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
 @ FROM ticket
 @ WHERE owner=aux('User',user()) OR assignedto=aux('User',user())");
 @ ----------------------------------------------------------------------------
-@ INSERT INTO reportfmt VALUES(4,NULL,'All Tickets',
-@   '#ffffff Key:
-@ #f2dcdc Active
-@ #e8e8bd Review
-@ #cfe8bd Fixed
-@ #bdefd6 Tested
-@ #cacae5 Deferred
-@ #c8c8c8 Closed',
+@ INSERT INTO reportfmt VALUES(4,NULL,
+@   '指定人员相关活动任务',
+@   '#ffffff 优先级:
+@ #f2dcdc 1
+@ #e8e8bd 2
+@ #cfe8bd 3
+@ #cacae5 4
+@ #c8c8c8 5',
 @   "SELECT
-@   CASE WHEN status IN ('new','active') THEN '#f2dcdc'
-@        WHEN status='review' THEN '#e8e8bd'
-@        WHEN status='fixed' THEN '#cfe8bd'
-@        WHEN status='tested' THEN '#bde5d6'
-@        WHEN status='defer' THEN '#cacae5'
+@   CASE priority WHEN 1 THEN '#f2dcdc'
+@        WHEN 2 THEN '#e8e8bd'
+@        WHEN 3 THEN '#cfe8bd'
+@        WHEN 4 THEN '#cacae5'
 @        ELSE '#c8c8c8' END as 'bgcolor',
 @   tn AS '#',
-@   type AS 'Type',
-@   status AS 'Status',
-@   sdate(origtime) AS 'Created',
-@   owner AS 'By',
-@   subsystem AS 'Subsys',
-@   sdate(changetime) AS 'Changed',
-@   assignedto AS 'Assigned',
-@   severity AS 'Svr',
-@   priority AS 'Pri',
-@   title AS 'Title'
+@   type AS '类型',
+@   status AS '状态',
+@   sdate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   sdate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
+@ FROM ticket
+@ WHERE (owner=aux('User',user()) OR assignedto=aux('User',user())) AND
+@   status IN ('新建','活动')");
+@ ----------------------------------------------------------------------------
+@ INSERT INTO reportfmt VALUES(5,NULL,'全部任务单',
+@   '#ffffff 状态:
+@ #f2dcdc 活动
+@ #e8e8bd 检查
+@ #cfe8bd 修正
+@ #bdefd6 测试
+@ #cacae5 推迟
+@ #c8c8c8 完成',
+@   "SELECT
+@   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+@        WHEN status='检查' THEN '#e8e8bd'
+@        WHEN status='修正' THEN '#cfe8bd'
+@        WHEN status='测试' THEN '#bde5d6'
+@        WHEN status='推迟' THEN '#cacae5'
+@        ELSE '#c8c8c8' END as 'bgcolor',
+@   tn AS '#',
+@   type AS '类型',
+@   status AS '状态',
+@   sdate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   sdate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
 @ FROM ticket");
 @ ----------------------------------------------------------------------------
-@ INSERT INTO reportfmt VALUES(5,NULL,'Tickets counts',NULL,"SELECT
-@   status AS 'Status',
-@   count(case when type='code' then 'x' end) AS 'Code Bugs',
-@   count(case when type='doc' then 'x' end) AS 'Doc Bugs',
-@   count(case when type='new' then 'x' end) AS 'Enhancements',
-@   count(case when type NOT IN ('code','doc','new') then 'x' end)
-@         AS 'Other',
-@   count(*) AS 'All Types'
+@ INSERT INTO reportfmt VALUES(6,NULL,'任务单统计',NULL,"SELECT
+@   status,
+@   count(case when type='错误修正' then 'x' end),
+@   count(case when type='功能改进' then 'x' end),
+@   count(case when type='新项设计' then 'x' end),
+@   count(case when type='新项开发' then 'x' end),
+@   count(case when type='代码移植' then 'x' end),
+@   count(case when type='文档相关' then 'x' end),
+@   count(case when type NOT IN ('错误修正','功能改进','新项设计','新项开发','文档相关','代码移植') then 'x' end),
+@   count(*)
 @ FROM ticket GROUP BY status
 @ UNION
 @ SELECT
-@   'TOTAL' AS 'Status',
-@   count(case when type='code' then 'x' end) as 'Code Bugs',
-@   count(case when type='doc' then 'x' end) as 'Doc Bugs',
-@   count(case when type='new' then 'x' end) as 'Enhancements',
-@   count(case when type NOT IN ('code','doc','new') then 'x' end)
-@      as 'Other',
-@   count(*) AS 'All Types'
+@   '全部' AS '状态',
+@   count(case when type='错误修正' then 'x' end) as '错误修正',
+@   count(case when type='功能改进' then 'x' end) as '功能改进',
+@   count(case when type='新项设计' then 'x' end) as '新项设计',
+@   count(case when type='新项开发' then 'x' end) as '新项开发',
+@   count(case when type='代码移植' then 'x' end) as '代码移植',
+@   count(case when type='文档相关' then 'x' end) as '文档相关',
+@   count(case when type NOT IN ('错误修正','功能改进','新项设计','新项开发','文档相关','代码移植') then 'x' end)
+@      as '其它类型',
+@   count(*) AS '所有类型'
 @ FROM ticket
-@ ORDER BY [All Types]");
+@ ORDER BY [所有类型]");
 @ ----------------------------------------------------------------------------
-@ 
+@ INSERT INTO reportfmt VALUES(7,NULL,
+@   '活动的错误修正任务',
+@   '#ffffff 状态:
+@ #f2dcdc 活动
+@ #e8e8bd 检查
+@ #cfe8bd 修正
+@ #bdefd6 测试
+@ #cacae5 推迟
+@ #c8c8c8 完成',
+@   "SELECT
+@   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+@        WHEN status='检查' THEN '#e8e8bd'
+@        WHEN status='修正' THEN '#cfe8bd'
+@        WHEN status='测试' THEN '#bde5d6'
+@        WHEN status='推迟' THEN '#cacae5'
+@        ELSE '#c8c8c8' END as 'bgcolor',
+@   tn AS '#',
+@   type AS '类型',
+@   status AS '状态',
+@   ldate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   ldate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
+@ FROM ticket
+@ WHERE (type='错误修正') AND NOT (status IN ('修正','完成'))
+@ ORDER BY changetime DESC");
+@ ----------------------------------------------------------------------------
+@ INSERT INTO reportfmt VALUES(8,NULL,
+@   '活动的新特性开发任务',
+@   '#ffffff 状态:
+@ #f2dcdc 活动
+@ #e8e8bd 检查
+@ #cfe8bd 修正
+@ #bdefd6 测试
+@ #cacae5 推迟
+@ #c8c8c8 完成',
+@   "SELECT
+@   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+@        WHEN status='检查' THEN '#e8e8bd'
+@        WHEN status='修正' THEN '#cfe8bd'
+@        WHEN status='测试' THEN '#bde5d6'
+@        WHEN status='推迟' THEN '#cacae5'
+@        ELSE '#c8c8c8' END as 'bgcolor',
+@   tn AS '#',
+@   type AS '类型',
+@   status AS '状态',
+@   ldate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   ldate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
+@ FROM ticket
+@ WHERE (type='新项设计' OR type='新项开发' OR type='功能改进') AND NOT (status IN ('修正','完成'))
+@ ORDER BY changetime DESC");
+@ ----------------------------------------------------------------------------
+@ INSERT INTO reportfmt VALUES(9,NULL,
+@   '未分配的任务',
+@   '#ffffff 状态:
+@ #f2dcdc 活动
+@ #e8e8bd 检查
+@ #cfe8bd 修正
+@ #bdefd6 测试
+@ #cacae5 推迟
+@ #c8c8c8 完成',
+@   "SELECT
+@   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+@        WHEN status='检查' THEN '#e8e8bd'
+@        WHEN status='修正' THEN '#cfe8bd'
+@        WHEN status='测试' THEN '#bde5d6'
+@        WHEN status='推迟' THEN '#cacae5'
+@        ELSE '#c8c8c8' END as 'bgcolor',
+@   tn AS '#',
+@   type AS '类型',
+@   status AS '状态',
+@   ldate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   ldate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
+@ FROM ticket
+@ WHERE assignedto=''
+@ ORDER BY changetime DESC");
+@ ----------------------------------------------------------------------------
+@ INSERT INTO reportfmt VALUES(10,NULL,
+@   '已完成的新特性开发',
+@   '#ffffff 状态:
+@ #f2dcdc 活动
+@ #e8e8bd 检查
+@ #cfe8bd 修正
+@ #bdefd6 测试
+@ #cacae5 推迟
+@ #c8c8c8 完成',
+@   "SELECT
+@   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+@        WHEN status='检查' THEN '#e8e8bd'
+@        WHEN status='修正' THEN '#cfe8bd'
+@        WHEN status='测试' THEN '#bde5d6'
+@        WHEN status='推迟' THEN '#cacae5'
+@        ELSE '#c8c8c8' END as 'bgcolor',
+@   tn AS '#',
+@   type AS '类型',
+@   status AS '状态',
+@   ldate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   ldate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
+@ FROM ticket
+@ WHERE (type='新项设计' OR type='新项开发' OR type='功能改进') AND (status IN ('修正','完成'))
+@ ORDER BY changetime DESC");
+@ ----------------------------------------------------------------------------
+@ INSERT INTO reportfmt VALUES(11,NULL,
+@   '已修正的错误',
+@   '#ffffff 状态:
+@ #f2dcdc 活动
+@ #e8e8bd 检查
+@ #cfe8bd 修正
+@ #bdefd6 测试
+@ #cacae5 推迟
+@ #c8c8c8 完成',
+@   "SELECT
+@   CASE WHEN status IN ('新建','活动') THEN '#f2dcdc'
+@        WHEN status='检查' THEN '#e8e8bd'
+@        WHEN status='修正' THEN '#cfe8bd'
+@        WHEN status='测试' THEN '#bde5d6'
+@        WHEN status='推迟' THEN '#cacae5'
+@        ELSE '#c8c8c8' END as 'bgcolor',
+@   tn AS '#',
+@   type AS '类型',
+@   status AS '状态',
+@   ldate(origtime) AS '创建时间',
+@   owner AS '创建人',
+@   subsystem AS '子系统',
+@   ldate(changetime) AS '更新时间',
+@   assignedto AS '分配给',
+@   severity AS '严重',
+@   priority AS '优先',
+@   title AS '标题'
+@ FROM ticket
+@ WHERE (type='错误修正') AND (status IN ('修正','完成'))
+@ ORDER BY changetime DESC");
+@ ----------------------------------------------------------------------------
+@
 @ -- This table contains the names of all subsystems.
 @ -- (This table is obsolete and is removed by zSchemaChange_1_4 below.)
 @ --
 @ CREATE TABLE subsyst(name text);
-@ INSERT INTO subsyst VALUES('Unknown');
+@ INSERT INTO subsyst VALUES('未知');
 @
 @ -- The next table is used for browsing the repository
 @ --
@@ -1328,7 +1524,7 @@ static char zSchema[] =
 **
 ** The XREF table creates a mapping from check-ins to tickets.  The
 ** mapping is many-to-many.  This mapping is used to show which tickets
-** are effected by a check-in and which check-ins are related to a 
+** are effected by a check-in and which check-ins are related to a
 ** particular ticket.
 */
 static char zSchemaChange_1_1[] =
@@ -1349,7 +1545,7 @@ static char zSchemaChange_1_1[] =
 **
 ** Two big changes:  First, add the "cookie" table.  This table records
 ** the HTTP cookies used to login.  Second, the "wiki" table is added
-** to store Wiki pages. 
+** to store Wiki pages.
 */
 static char zSchemaChange_1_2[] =
 @ BEGIN;
@@ -1413,7 +1609,7 @@ static char zSchemaChange_1_3[] =
 static char zSchemaChange_1_4[] =
 @ BEGIN;
 @
-@ -- Redo the indexing of tables so that fewer full table scans are 
+@ -- Redo the indexing of tables so that fewer full table scans are
 @ -- required to render most pages.
 @ --
 @ DROP INDEX chng_idx;
@@ -1425,7 +1621,7 @@ static char zSchemaChange_1_4[] =
 @ CREATE INDEX wiki_idx1 ON wiki(invtime);
 @
 @ -- The new ENUMS table is used to define allowed values of various
-@ -- ticket columns.  
+@ -- ticket columns.
 @ --
 @ CREATE TABLE enums(
 @   type text,   -- Which enumeration this entry is part of
@@ -1436,18 +1632,20 @@ static char zSchemaChange_1_4[] =
 @ );
 @ CREATE INDEX enums_idx1 ON enums(type, idx);
 @ CREATE INDEX enums_idx2 ON enums(name, type);
-@ INSERT INTO enums VALUES('status',1,'new','New','#f2dcdc');
-@ INSERT INTO enums VALUES('status',2,'review','Review','#e8e8bd');
-@ INSERT INTO enums VALUES('status',3,'defer','Defer','#cacae5');
-@ INSERT INTO enums VALUES('status',4,'active','Active','#f2dcdc');
-@ INSERT INTO enums VALUES('status',5,'fixed','Fixed','#cfe8bd');
-@ INSERT INTO enums VALUES('status',6,'tested','Tested','#bde5d6');
-@ INSERT INTO enums VALUES('status',7,'closed','Closed','#c8c8c8');
-@ INSERT INTO enums VALUES('type',1,'code','Code Defect','#f2dcdc');
-@ INSERT INTO enums VALUES('type',2,'doc','Documentation','#e8e8bd');
-@ INSERT INTO enums VALUES('type',3,'todo','Action Item','#cacae5');
-@ INSERT INTO enums VALUES('type',4,'new','Enhancement','#cfe8bd');
-@ INSERT INTO enums VALUES('type',5,'event','Incident','#c8c8c8');
+@ INSERT INTO enums VALUES('status',1,'新建','新建','#f2dcdc');
+@ INSERT INTO enums VALUES('status',2,'检查','检查','#e8e8bd');
+@ INSERT INTO enums VALUES('status',3,'推迟','推迟','#cacae5');
+@ INSERT INTO enums VALUES('status',4,'活动','活动','#f2dcdc');
+@ INSERT INTO enums VALUES('status',5,'修正','修正','#cfe8bd');
+@ INSERT INTO enums VALUES('status',6,'测试','测试','#bde5d6');
+@ INSERT INTO enums VALUES('status',7,'完成','完成','#c8c8c8');
+@ INSERT INTO enums VALUES('type',1,'错误修正','错误修正','#f2dcdc');
+@ INSERT INTO enums VALUES('type',2,'功能改进','功能改进','#e8e8bd');
+@ INSERT INTO enums VALUES('type',3,'新项设计','新项设计','#cacae5');
+@ INSERT INTO enums VALUES('type',4,'新项开发','新项开发','#a4e4bd');
+@ INSERT INTO enums VALUES('type',5,'文档相关','文档相关','#cfe8bd');
+@ INSERT INTO enums VALUES('type',6,'代码移植','代码移植','#bde5d6');
+@ INSERT INTO enums VALUES('type',7,'其它类型','其它类型','#c8c8c8');
 @ INSERT INTO enums SELECT 'subsys', rowid, name, name, '' FROM subsyst;
 @ DROP TABLE subsyst;
 @
@@ -1853,7 +2051,7 @@ static int upgrade_schema_1_callback(
   xref_add_checkin_comment(atoi(azArg[0]), azArg[1]);
   return 0;
 }
-  
+
 /*
 ** Update the database schema from version 1.0 to version 1.1.
 */
@@ -2101,7 +2299,7 @@ static void f_decode(sqlite3_context *context, int argc, sqlite3_value **argv){
       int nDecoded;
       if( zOut==0 ){
         db_err( strerror(errno), 0,
-                "f_decode: Unable to allocate %d bytes", nBytes);
+                "f_decode: 无法分配 %d 字节的空间", nBytes);
       }
       nDecoded = blob_decode((const unsigned char *)zIn,(unsigned char *)zOut);
       sqlite3_result_blob(context, zOut, nBytes, SQLITE_TRANSIENT);

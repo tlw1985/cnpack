@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -72,7 +74,7 @@ void attachment_add(void){
 
   zPage = P("tn");
   if( zPage==0 ){
-    common_err("Invalid or missing \"tn\" query parameter");
+    common_err("无效的或缺少 \"tn\" 查询参数");
   }
   login_check_credentials();
   throttle(1,1);
@@ -96,13 +98,13 @@ void attachment_add(void){
         cgi_redirect(zBack);
       }
     }else if( is_wiki_name(zPage)!=strlen(zPage) ){
-      common_err("Invalid wiki page name \"tn=%h\"", zPage);
+      common_err("无效的 wiki 页名 \"tn=%h\"", zPage);
     }else if( !g.okWiki ){
       cgi_redirect(zBack);
     }
   }
   common_add_help_item("CvstracAttachment");
-  common_add_action_item(zBack, "Cancel");
+  common_add_action_item(zBack, "取消");
   if( P("can") || mxSize<=0 ){
     cgi_redirect(zBack);
   }
@@ -117,11 +119,11 @@ void attachment_add(void){
     char **az;
     int atn;
     if( zData==0 || zName==0 || zName[0]==0 || size<=0 || zType==0 ){
-      common_err("Attachment information is missing from the query content");
+      common_err("查询内容中缺少附件信息");
     }
     if( size>mxSize ){
-      zErr = mprintf("Your attachment is too big.  The maximum allowed size "
-               "is %dKB but your attachment was %dKB", mxSize/1024, 
+      zErr = mprintf("您的附件太大了。附件最大长度允许 "
+               " %dKB 而您的附件有 %dKB", mxSize/1024,
                (size+1023)/1024);
     }else{
       sqlite3 *pDb;
@@ -145,7 +147,7 @@ void attachment_add(void){
           -1, &pStmt, &zTail);
       if( rc!=SQLITE_OK ) {
         db_err( sqlite3_errmsg(pDb), 0,
-               "/attach_add: unable to add \"%h\"", zName );
+               "/attach_add: 无法增加 \"%h\"", zName );
       }
       sqlite3_bind_text(pStmt, 1, zPage, -1, SQLITE_STATIC);
       sqlite3_bind_int(pStmt, 2, size);
@@ -158,7 +160,7 @@ void attachment_add(void){
       rc = sqlite3_step(pStmt);
       if( rc!=SQLITE_DONE ) {
         db_err( sqlite3_errmsg(pDb), 0,
-               "/attach_add: unable to add \"%h\"", zName );
+               "/attach_add: 无法增加 \"%h\"", zName );
       }
       sqlite3_finalize(pStmt);
 
@@ -173,40 +175,40 @@ void attachment_add(void){
   if( is_integer(zPage) ){
     if( tn==0 ){
       /* FIXME: Not sure we need a separate page unless there's an error... */
-      common_header("Attachments To Setup");
+      common_header("设置附件");
     }else{
       zTitle = db_short_query("SELECT title FROM ticket WHERE tn=%d", tn);
-      if( zTitle==0 ){ common_err("No such ticket: #%d", tn); }
-      common_header("Attachments To Ticket #%d", tn);
+      if( zTitle==0 ){ common_err("不存在的任务单: #%d", tn); }
+      common_header("任务单 #%d 的附件", tn);
     }
   }else{
-    common_header("Attachments to %h", wiki_expand_name(zPage));
+    common_header("%h 的附件", wiki_expand_name(zPage));
   }
   if( zErr ){
-    @ <p class="error"><b>Error:</b> %h(zErr)</p>
+    @ <p class="error"><b>错误:</b> %h(zErr)</p>
   }
   if( is_integer(zPage) && tn ){
-    @ <h2>Ticket #%d(tn): %h(zTitle)</h2>
+    @ <h2>任务单 #%d(tn): %h(zTitle)</h2>
   }
-  if( attachment_html(zPage, "<p>Existing attachments:</p>", "")==0 ){
-    @ <p>There are currently no attachments on this document.</p>
+  if( attachment_html(zPage, "<p>已有的附件:</p>", "")==0 ){
+    @ <p>该文档当前没有附件。</p>
   }
-  @ <p>To add a new attachment 
-  @ select the file to attach below an press the "Add Attachment" button.
-  @ Attachments may not be larger than %d(mxSize/1024)KB.</p>
+  @ <p>如果需要增加新的附件，
+  @ 从下面选择一个要上传的文件，并点击“增加附件”按钮。
+  @ 附件长度不能超过 %d(mxSize/1024)KB。</p>
   @ <form method="POST" action="attach_add" enctype="multipart/form-data">
-  @ File to attach: <input type="file" name="f"><br>
-  @ Description:
-  @ (<small>See <a href="#format_hints">formatting hints</a></small>)<br>
+  @ 上传文件: <input type="file" name="f"><br>
+  @ 描述:
+  @ (<small>见 <a href="#format_hints">格式提示</a></small>)<br>
   cgi_wikitext("d",20,0);
   @ <br>
-  @ <input type="submit" name="ok" value="Add Attachment">
-  @ <input type="submit" name="can" value="Cancel">
+  @ <input type="submit" name="ok" value="增加附件">
+  @ <input type="submit" name="can" value="取消">
   @ <input type="hidden" name="tn" value="%h(zPage)">
   @ </form>
   @ <hr>
   @ <a name="format_hints"></a>
-  @ <h3>Formatting Hints:</h3>
+  @ <h3>格式提示:</h3>
   append_formatting_hints();
   common_footer();
 }
@@ -244,7 +246,7 @@ void attachment_output(int atn){
                      "FROM attachment "
                      "WHERE atn=%d", atn);
   if( !got ){
-    common_err("No such attachment: %d", atn);
+    common_err("不存在的附件: %d", atn);
   }
 }
 
@@ -261,7 +263,7 @@ void attachment_get(void){
   char *z;
   login_check_credentials();
   throttle(1,0);
-  if( atn==0 ) common_err("No attachment specified");
+  if( atn==0 ) common_err("没有指定附件");
   z = db_short_query("SELECT tn FROM attachment WHERE atn=%d", atn);
   if( z && z[0] ){
     if( is_integer(z) ){
@@ -271,7 +273,7 @@ void attachment_get(void){
     }
     attachment_output(atn);
   }else{
-    common_err("No attachment specified");
+    common_err("没有指定附件");
   }
 }
 
@@ -324,16 +326,16 @@ void attachment_delete(void){
                 "FROM attachment WHERE atn=%d", atn);
   if( az[0]==0 ){
     if( !g.okDelete ){
-      common_err("Access denied");
+      common_err("拒绝访问");
     }else{
-      common_err("No such attachment: %d", atn);
+      common_err("不存在的附件: %d", atn);
     }
   }
   t = atoi(az[2]);
   if( is_user_page(az[0]) ) {
     /* only admin and the user can manipulate a user's home page */
     if( !g.okAdmin && !is_home_page(az[0]) ){
-      common_err("Access denied");
+      common_err("拒绝访问");
     }
   }else if( !ok_to_delete_attachment(t,az[3]) ){
     common_err("Access denied");
@@ -343,7 +345,7 @@ void attachment_delete(void){
       zDocView = mprintf("tktview?tn=%t",az[0]);
     }else{
       if( !g.okSetup ){
-        common_err("Access denied");
+        common_err("拒绝访问");
       }
       zDocView = "setup_style";
     }
@@ -359,14 +361,14 @@ void attachment_delete(void){
     cgi_redirect(zDocView);
     return;
   }
-  common_add_action_item(zDocView, "Cancel");
+  common_add_action_item(zDocView, "取消");
   common_add_help_item("CvstracAttachment");
   pTm = gmtime(&t);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S", pTm);
-  common_header("Delete Attachment?");
-  @ <p>Are you sure you want to delete this attachments?</p>
+  common_header("删除附件？");
+  @ <p>您确认要删除该附件吗？</p>
   @ <blockquote>
-  @ %h(az[5]) %h(az[1]) bytes added by %h(az[3]) on %h(zDate) UTC.
+  @ %h(az[5]) %h(az[1]) 字节，由 %h(az[3]) 上传于 %h(zDate) UTC。
   if(az[6] && az[6][0]){
     @ <br>
     output_formatted(az[6], NULL);
@@ -377,9 +379,9 @@ void attachment_delete(void){
   @ <form method="POST" action="attach_del">
   @ <input type="hidden" name="atn" value="%d(atn)">
   @ &nbsp;&nbsp;&nbsp;&nbsp;
-  @ <input type="submit" name="ok" value="Yes, Delete">
+  @ <input type="submit" name="ok" value="是，删除">
   @ &nbsp;&nbsp;&nbsp;&nbsp;
-  @ <input type="submit" name="can" value="No, Cancel">
+  @ <input type="submit" name="can" value="否，取消">
   @ </form>
   common_footer();
 }
@@ -413,14 +415,14 @@ int attachment_html(const char *zPage, const char *zBefore, const char *zAfter){
       pTm = gmtime(&t);
       strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S", pTm);
       @ <li><a href="attach_get/%d(atn)/%t(az[i+5])">%h(az[i+5])</a>
-      @ %h(az[i+1]) bytes added by %h(az[i+3]) on %h(zDate) UTC.
+      @ %h(az[i+1]) 字节由 %h(az[i+3]) 上传于 %h(zDate) UTC。
       if(az[i+6] && az[i+6][0]){
         @ <br>
         output_formatted(az[i+6], NULL);
         @ <br>
       }
       if( ok_to_delete_attachment(t, az[i+3]) ){
-        @ [<a href="attach_del?atn=%d(atn)">delete</a>]
+        @ [<a href="attach_del?atn=%d(atn)">删除</a>]
       }
     }
     @ </ul>

@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 */
@@ -129,7 +131,7 @@ time_t mkgmtime(struct tm *p){
   isLeapYr = p->tm_year%4==0 && (p->tm_year%100!=0 || (p->tm_year+300)%400==0);
   p->tm_yday = priorDays[p->tm_mon] + p->tm_mday - 1;
   if( isLeapYr && p->tm_mon>1 ) p->tm_yday++;
-  nDay = (p->tm_year-70)*365 + (p->tm_year-69)/4 -p->tm_year/100 + 
+  nDay = (p->tm_year-70)*365 + (p->tm_year-69)/4 -p->tm_year/100 +
          (p->tm_year+300)/400 + p->tm_yday;
   t = ((nDay*24 + p->tm_hour)*60 + p->tm_min)*60 + p->tm_sec;
   return t;
@@ -157,16 +159,16 @@ void error_init(int *pnErr){
     cgi_reset_content();
     cgi_set_status(200, "OK");
     cgi_set_content_type("text/html");
-    common_header("Error Reading Repository");
-    @ <p>The following errors occurred while trying to read and
-    @ interpret
+    common_header("读取仓库数据出错");
+    @ <p>在尝试读取和
+    @ 分析
     if( !strcmp(g.scm.zSCM,"cvs") ){
-      @ the CVSROOT/history file from the CVS repository.
+      @ CVS 仓库的 CVSROOT/history 文件时出错。
     }else{
-      @ the %h(g.scm.zName) repository.
+      @ %h(g.scm.zName) 仓库时出错。
     }
-    @ This indicates a problem in the installation of CVSTrac.  Please save
-    @ this page and contact your system administrator.</p>
+    @ 该现象表示安装 CVSTrac 时出现了问题。请
+    @ 保存本页面并与您的系统管理员联系。</p>
     @ <ul>
   }
   ++*pnErr;
@@ -272,7 +274,7 @@ char *subst(const char *zIn, const char **azSubst){
 ** If any errors occur, output an error page and exit.
 **
 ** If the "isReread" flag is set, it means that the history file is being
-** reread to pick up changes that we may have missed earlier.  
+** reread to pick up changes that we may have missed earlier.
 */
 void history_update(int isReread){
   if( g.scm.pxHistoryUpdate ) g.scm.pxHistoryUpdate(isReread);

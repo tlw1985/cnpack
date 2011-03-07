@@ -280,7 +280,7 @@ void cgi_reply(void){
   }
 
 #if CVSTRAC_I18N
-  printf( "Content-Type: %s; charset=%s\r\n", zContentType, nl_langinfo(CODESET));
+  printf( "Content-Type: %s; charset=%s\r\n", zContentType, db_config("charset", nl_langinfo(CODESET)));
 #else
   printf( "Content-Type: %s; charset=ISO-8859-1\r\n", zContentType);
 #endif

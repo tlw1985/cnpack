@@ -97,6 +97,11 @@ sqlite3 *db_open(void){
 #endif
 
   zName = mprintf("%s.db", g.zName);
+
+  if( (strcmp(g.argv[1],"init")!=0) && (access(zName, R_OK | W_OK | F_OK) == -1) ) {
+    exit(0);
+  }
+
   if( SQLITE_OK!=sqlite3_open(zName, &pDb) ){
     db_err( sqlite3_errmsg(pDb), 0,
             "db_open: Unable to open the database named \"%h\"", zName );

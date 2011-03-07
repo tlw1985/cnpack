@@ -102,8 +102,11 @@ endif
 
 all:	$(APPNAME) index.html
 
-install:	$(APPNAME)
+install:	strip
 	mv $(APPNAME) $(INSTALLDIR)
+
+strip:	$(APPNAME)
+	strip $(APPNAME)
 
 translate:	$(SRCDIR)/translate.c
 	$(BCC) -o translate $(SRCDIR)/translate.c
@@ -135,10 +138,17 @@ index.html:	$(SRCDIR)/webpage.html $(SRCDIR)/VERSION
 	sed -f $(SRCDIR)/VERSION $(SRCDIR)/webpage.html >index.html
 
 clean:	
+<<<<<<< main.mk
+	rm -f *.o *_.c $(APPNAME)
+	rm -f makewikiinit maketestdb
+	rm -f translate$(E) makeheaders$(E) mkindex$(E) page_index.h index.html headers
+	rm -f attach.h browse.h cgi.h common.h cvs.h db.h format.h git.h history.h index.h login.h main.h md5.h rss.h search.h setup.h svn.h test.h throttle.h ticket.h timeline.h tools.h user.h view.h wiki.h wikiinit.h
+=======
 	rm -f *.o *_.c css.c $(APPNAME)
 	rm -f makewikiinit$(E) maketestdb$(E) makecss$(E)
 	rm -f translate$(E) makeheaders$(E) mkindex$(E) page_index.h index.html headers
 	rm -f attach.h browse.h cgi.h common.h css.h cvs.h db.h format.h git.h history.h index.h login.h main.h md5.h rss.h search.h setup.h svn.h test.h throttle.h ticket.h timeline.h tools.h user.h view.h wiki.h wikiinit.h
+>>>>>>> 1.5
 
 headers:	makeheaders mkindex $(TRANS_SRC)
 	./makeheaders  attach_.c:attach.h browse_.c:browse.h cgi_.c:cgi.h common_.c:common.h css_.c:css.h cvs_.c:cvs.h db_.c:db.h format_.c:format.h git_.c:git.h history_.c:history.h index_.c:index.h login_.c:login.h main_.c:main.h md5_.c:md5.h rss_.c:rss.h search_.c:search.h setup_.c:setup.h svn_.c:svn.h test_.c:test.h throttle_.c:throttle.h ticket_.c:ticket.h timeline_.c:timeline.h tools_.c:tools.h user_.c:user.h view_.c:view.h wiki_.c:wiki.h wikiinit_.c:wikiinit.h

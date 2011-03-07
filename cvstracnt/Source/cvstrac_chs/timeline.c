@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -31,7 +33,7 @@
 #include "timeline.h"
 
 /*
-** Parse a text time description.  The format can be 
+** Parse a text time description.  The format can be
 **
 **      YYYY-BB-DD  HH:MM:SS
 **      YYYY-bbbb-DD   HH:MM:SS
@@ -47,6 +49,7 @@ time_t parse_time(const char *zTime){
   struct tm sTm;
   int y, d, h, m, s;
   int i, n;
+  char *szt;
   static struct {
     char *zName;
     int iMon;
@@ -69,6 +72,10 @@ time_t parse_time(const char *zTime){
   y = d = h = m = s = 0;
   n = sscanf(zTime, "%d-%20[^-]-%d %d:%d:%d", &y, zMonth, &d, &h, &m, &s);
   if( n<3 || n==4 ) return 0;
+  /* 处理2003-11月-12格式 */
+  szt = strstr(zMonth, "月");
+  if(szt) *szt = '\0';
+
   for(i=0; zMonth[i]; i++){
     if( isupper(zMonth[i]) ) zMonth[i] = tolower(zMonth[i]);
   }
@@ -375,8 +382,8 @@ void timeline_page(void){
       if( showS==1 ){
         appendf(zSQL,&len,sizeof(zSQL),
           " AND ("
-          "(newval IN ('new','active') AND oldval NOT IN ('new','active')) OR"
-          "(newval NOT IN ('new','active') AND oldval IN ('new','active')))");
+          "(newval IN ('新建','活动') AND oldval NOT IN ('新建','活动')) OR"
+          "(newval NOT IN ('新建','活动') AND oldval IN ('新建','活动')))");
       }
     }
     if( showS==3 ){
@@ -444,10 +451,10 @@ void timeline_page(void){
       && db_exists("SELECT dir FROM file WHERE dir='%q'", zCkinPrfx)
   ){
     common_add_action_item( mprintf("%s?d=%h",default_browse_url(),zCkinPrfx),
-                            "Directory" );
+                            "目录" );
   }
 
-  common_header("Timeline");
+  common_header("时间线");
   if( P("debug1") ){
     @ <p>%h(zSQL)</p><hr>
   }
@@ -505,25 +512,25 @@ void timeline_page(void){
         zWiki = az[i+6];
         if( az[i+3][0] && az[i+3][0]!='0' ){
           zIcon = "milestone";
-          bprintf(zPrefix, sizeof(zPrefix), "Milestone [%.20s]: ", az[i+5]);
+          bprintf(zPrefix, sizeof(zPrefix), "里程碑 [%.20s]: ", az[i+5]);
         }else{
           zIcon = "checkin";
           if( az[i+4][0] ){
             bprintf(zPrefix, sizeof(zPrefix),
-                    "Check-in [%.20s] on branch %.50s: ",
+                    "提交 [%.20s] 于分支 %.50s: ",
                     az[i+5], az[i+4]);
             if( showC==2 ) zContentClass="branch";
           }else{
-            bprintf(zPrefix, sizeof(zPrefix), "Check-in [%.20s]: ", az[i+5]);
+            bprintf(zPrefix, sizeof(zPrefix), "提交 [%.20s]: ", az[i+5]);
           }
-          bprintf(zSuffix, sizeof(zSuffix), " (By %z)", format_user(az[i+2]));
+          bprintf(zSuffix, sizeof(zSuffix), " (由 %z)", format_user(az[i+2]));
         }
         break;
       }
       case 2: {  /* A new ticket was created */
         zMsg = az[i+6];
-        bprintf(zPrefix, sizeof(zPrefix), "Create ticket #%.20s: ", az[i+5]);
-        bprintf(zSuffix, sizeof(zSuffix), " (By %z)", format_user(az[i+2]));
+        bprintf(zPrefix, sizeof(zPrefix), "创建任务单 #%.20s: ", az[i+5]);
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %z)", format_user(az[i+2]));
         zIcon = mprintf("type %s", az[i+3]);
         break;
       }
@@ -531,26 +538,26 @@ void timeline_page(void){
         char zType[50];
         bprintf(zType,sizeof(zType),"%.30s",az[i+4]);
         if( islower(zType[0]) ) zType[0] = toupper(zType[0]);
-        bprintf(zPrefix, sizeof(zPrefix), "%.30s ticket #%.20s, was %.20s.",
+        bprintf(zPrefix, sizeof(zPrefix), "%.30s 任务单 #%.20s，原来是 %.20s。",
              zType, az[i+5], az[i+3]);
-        bprintf(zSuffix, sizeof(zSuffix), " (By %z)", format_user(az[i+2]));
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %z)", format_user(az[i+2]));
         zIcon = mprintf("state %s", az[i+4]);
         if( az[i+7] && atoi(az[i+8])==4 && strcmp(az[i],az[i+7])==0
             && strcmp(az[i+5],az[i+12])==0 ){
           i += 7;
           if( az[i+4][0]==0 ){
-            appendf(zPrefix,0,sizeof(zPrefix), " Unassign from %.50s.", az[i+3]);
+            appendf(zPrefix,0,sizeof(zPrefix), " 取消给 %.50s 的分配。", az[i+3]);
           }else if( az[i+3][0]==0 ){
-            appendf(zPrefix,0,sizeof(zPrefix), " Assign to %.50s.", az[i+4]);
+            appendf(zPrefix,0,sizeof(zPrefix), " 分配给 %.50s。", az[i+4]);
           }else{
-            appendf(zPrefix,0,sizeof(zPrefix), " Reassign from %.50s to %.50s",
+            appendf(zPrefix,0,sizeof(zPrefix), " 重新由 %.50s 分配给 %.50s。",
                     az[i+3], az[i+4]); 
           }
         }
         if( az[i+7] && atoi(az[i+8])==6 && strcmp(az[i],az[i+7])==0
             && strcmp(az[i+5],az[i+12])==0 ){
           i += 7;
-          appendf(zPrefix,0,sizeof(zPrefix), " Plus other changes.");
+          appendf(zPrefix,0,sizeof(zPrefix), " 其它的变更。");
           while( az[i+7] && atoi(az[i+8])==6 && strcmp(az[i],az[i+7])==0
                  && strcmp(az[i+5],az[i+12])==0 ){
             i += 7;
@@ -560,22 +567,22 @@ void timeline_page(void){
       }
       case 4: {  /* The assigned-to field of a ticket changed */
         if( az[i+4][0]==0 ){
-          bprintf(zPrefix, sizeof(zPrefix), "Unassign ticket #%.20s from %.50s.",
+          bprintf(zPrefix, sizeof(zPrefix), "取消任务单 #%.20s 对 %.50s 的分配。",
              az[i+5], az[i+3]);
         }else if( az[i+3][0]==0 ){
-          bprintf(zPrefix, sizeof(zPrefix), "Assign ticket #%.20s to %.50s.",
+          bprintf(zPrefix, sizeof(zPrefix), "分配任务单 #%.20s 给 %.50s。",
              az[i+5], az[i+4]);
         }else{
           bprintf(zPrefix, sizeof(zPrefix),
-             "Reassign ticket #%.20s from %.50s to %.50s",
+             "重新分配任务单 #%.20s  从 %.50s 给 %.50s。",
              az[i+5], az[i+3], az[i+4]); 
         }
-        bprintf(zSuffix, sizeof(zSuffix), " (By %z)", format_user(az[i+2]));
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %z)", format_user(az[i+2]));
         zIcon = "ticket";
         break;
       }
       case 5: {   /* Changes to a Wiki page */
-        bprintf(zPrefix, sizeof(zPrefix), "Wiki page {wiki:%s} ", az[i+5]);
+        bprintf(zPrefix, sizeof(zPrefix), "Wiki 页面 {wiki:%s} ", az[i+5]);
         zIcon = "edit";
         /* Skip over subsequent lines of same text and display number 
         ** of edits if > 1. Only collapse items from same day.
@@ -607,7 +614,7 @@ void timeline_page(void){
         break;
       }
       case 6: {  /* Changes to a ticket other than status or assignment */
-        bprintf(zSuffix, sizeof(zSuffix), " (By %z)", format_user(az[i+2]));
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %z)", format_user(az[i+2]));
         zIcon = "ticket";
         /* Skip over subsequent lines of same text and display number 
         ** of edits if > 1. Only collapse items from same day.
@@ -626,25 +633,25 @@ void timeline_page(void){
           i += 7;
         }
         if( nEdits>1 ){
-          bprintf(zPrefix, sizeof(zPrefix), "%d changes to ticket #%.20s",
+          bprintf(zPrefix, sizeof(zPrefix), "%d 次修改任务单 #%.20s",
                   nEdits, az[i+5]);
         }else{
-          bprintf(zPrefix, sizeof(zPrefix), "Changes to ticket #%.20s", az[i+5]);
+          bprintf(zPrefix, sizeof(zPrefix), "修改任务单 #%.20s", az[i+5]);
         }
         break;
       }
       case 7: { /* Attachments */
         if( isdigit(az[i+3][0]) ){
-          bprintf(zPrefix, sizeof(zPrefix), "Attachment to ticket #%.20s: ",
+          bprintf(zPrefix, sizeof(zPrefix), "增加附件到任务单 #%.20s: ",
                   az[i+3]);
         }else{
-          bprintf(zPrefix, sizeof(zPrefix), "Attachment to {wiki:%.100s}: ",
+          bprintf(zPrefix, sizeof(zPrefix), "增加附件到 {wiki:%.100s}: ",
                   az[i+3]);
         }
         zAttach = mprintf(
             "%h bytes <a href=\"attach_get/%T/%T\">%h</a>",
             az[i+4], az[i+6], az[i+5], az[i+5]);
-        bprintf(zSuffix, sizeof(zSuffix), "(By %z)", format_user(az[i+2]));
+        bprintf(zSuffix, sizeof(zSuffix), "(由 %z)", format_user(az[i+2]));
         zIcon = "attach";
         break;
       }
@@ -653,13 +660,13 @@ void timeline_page(void){
         zIcon = "inspect";
         if( az[i+4][0] ){
           bprintf(zPrefix, sizeof(zPrefix),
-                  "Inspection of [%.20s] on branch %.50s: ",
+                  "检查 [%.20s] 于分支 %.50s: ",
                   az[i+5], az[i+4]);
           if( showC==2 ) zContentClass="branch";
         }else{
-          bprintf(zPrefix, sizeof(zPrefix), "Inspection of [%.20s]: ", az[i+5]);
+          bprintf(zPrefix, sizeof(zPrefix), "检查 [%.20s]: ", az[i+5]);
         }
-        bprintf(zSuffix, sizeof(zSuffix), " (By %z)", format_user(az[i+2]));
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %z)", format_user(az[i+2]));
         break;
       }
       default:
@@ -703,9 +710,9 @@ void timeline_page(void){
 
   @ <form id="timelineopts" method="GET" action="timeline">
   @ <div id="odays">
-  @ Show a timeline of 
+  @ 显示前
   cgi_text("d", 0, 0, 0, 0, 5, 8, 0, mprintf("%d",days), 0);
-  @ days going backwards from
+  @ 天以内的时间线，结束日期
   pTm = localtime(&end);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d", pTm);
   cgi_text("e", 0, 0, 0, 0, 14, 50, 0, mprintf("%s",zDate), 0);
@@ -714,15 +721,15 @@ void timeline_page(void){
   zCkinPrfx = P("px");
   if( g.okCheckout ){
     @ <div id="ocheckout">
-    @ <fieldset><legend>Check-in options</legend>
+    @ <fieldset><legend>提交选项</legend>
     cgi_radio_fieldset(0, "c", 0, 0, mprintf("%d",showC),
-      "2", 0, "Show all check-ins<br>",
-      "3", 0, "Show only trunk check-ins<br>",
-      "1", 0, "Show only branch check-ins<br>",
-      "0", 0, "Show no check-ins<br>",
+      "2", 0, "显示所有的提交。<br>",
+      "3", 0, "只显示主干提交。<br>",
+      "1", 0, "只显示分支提交。<br>",
+      "0", 0, "不显示提交记录。<br>",
       NULL
     );
-    @ Only show check-ins of files with this prefix:
+    @ 只显示文件名符合以下前缀的提交:
     cgi_text("px", 0, 0, 0, 0, 25, 0, 0,
              mprintf("%s",zCkinPrfx?zCkinPrfx:""), 0);
     @ </fieldset>
@@ -733,13 +740,13 @@ void timeline_page(void){
   }
   if( g.okRead ){
     @ <div id="oticket">
-    cgi_radio_fieldset("Ticket options", "s", 0, 0, mprintf("%d",showS),
-      "3", 'A', "Show all ticket changes of any kind<br>",
-      "2", 'S', "Show all ticket status changes<br>",
-      "1", 'N', "Show only &quot;active&quot; and &quot;new&quot; "
-                "status changes<br>",
-      "0", 'U', "Show no ticket status changes<br>",
-      "9", 'H', "Show no tickets at all<br>",
+    cgi_radio_fieldset("任务单选项", "s", 0, 0, mprintf("%d",showS),
+      "3", 'A', "显示所有任务单任何类型变更。<br>",
+      "2", 'S', "显示所有任务单的状态变更。<br>",
+      "1", 'N', "只显示 &quot;活动&quot; 和 &quot;新建&quot; "
+                "状态变更。<br>",
+      "0", 'U', "不显示任务单状态变更。<br>",
+      "9", 'H', "不显示任务单记录。<br>",
       NULL
     );
     @ </div>
@@ -747,38 +754,38 @@ void timeline_page(void){
     cgi_hidden("s", 0, mprintf("%d",showS));
   }
   @ <div id="otimeline">
-  cgi_checkbox_fieldset("Timeline options", 0, 0,
-    "dm", "1", 0, mprintf("%d",divM), "Divide timeline by milestones<br>",
-    "dt", "1", 0, mprintf("%d",divT), "Divide timeline by days<br>",
+  cgi_checkbox_fieldset("时间线选项", 0, 0,
+    "dm", "1", 0, mprintf("%d",divM), "使用里程碑来分隔时间线。<br>",
+    "dt", "1", 0, mprintf("%d",divT), "使用日期来分隔时间线。<br>",
     "debug1", "1", 0, mprintf("%s",P("debug1")),
-      "Show the SQL used to generate the timeline",
+      "显示用来生成时间线的 SQL 语句。",
     NULL
   );
   @ </div>
 
   @ <div id="oother">
-  @ <fieldset><legend>Other options</legend>
+  @ <fieldset><legend>其它选项</legend>
   if( g.okRead ){
     cgi_checkbox("a", 0, 0, 0, 0, 0, "1", mprintf("%d",showA),
-      "Show assignment changes<br>");
+      "显示任务单分配变更。<br>");
   }else{
     cgi_hidden("a", 0, mprintf("%d",showA));
   }
   if( g.okCheckout ){
     cgi_checkbox("m", 0, 0, 0, 0, 0, "1", mprintf("%d",showM),
-      "Show milestones<br>");
+      "显示里程碑。<br>");
   }else{
     cgi_hidden("m", 0, mprintf("%d",showM));
   }
   if( g.okRdWiki ){
     cgi_checkbox("w", 0, 0, 0, 0, 0, "1", mprintf("%d",showW),
-      "Show Wiki edits<br>");
+      "显示 Wiki 编辑操作。<br>");
   }else{
     cgi_hidden("w", 0, mprintf("%d",showW));
   }
   if( g.okRdWiki || g.okRead ){
     cgi_checkbox("t", 0, 0, 0, 0, 0, "1", mprintf("%d",showT),
-      "Show attachments<br>");
+      "显示附件。<br>");
   }else{
     cgi_hidden("t", 0, mprintf("%d",showT));
   }
@@ -787,10 +794,10 @@ void timeline_page(void){
 
   @ <div id="oshow">
   cgi_hidden("x", 0, "1");
-  cgi_submit(0, 0, 0, 0, 0, "Show Timeline");
+  cgi_submit(0, 0, 0, 0, 0, "显示时间线");
   if( g.okAdmin ){
     @ &nbsp;&nbsp;&nbsp;
-    cgi_submit("set", 0, 0, 0, 0, "Make Default");
+    cgi_submit("set", 0, 0, 0, 0, "保存为默认值");
   }
   @ </div>
 
@@ -1020,26 +1027,26 @@ void checkin_view(void){
 
   nMs = atoi(az[2]);
   if( nMs==0 && g.okWrite && g.okCheckin ){
-    common_add_action_item(mprintf("inspect?cn=%d",cn), "Inspection");
+    common_add_action_item(mprintf("inspect?cn=%d",cn), "检查");
   }
   
   /* Show Patchset link only for check-ins.*/
   if( nMs==0 && g.okCheckout ){
-    common_add_action_item(mprintf("patchset?cn=%d",cn), "Patchset");
+    common_add_action_item(mprintf("patchset?cn=%d",cn), "补丁集");
   }
   if( g.okWrite && g.okCheckin ){
-    common_add_action_item(mprintf("chngedit?cn=%d",cn), "Edit");
+    common_add_action_item(mprintf("chngedit?cn=%d",cn), "编辑");
   }
   if( !strcmp(g.scm.zSCM,"cvs") && g.okRead ){
-    common_add_action_item(mprintf("taghints?cn=%d",cn), "Tagging/Branching");
+    common_add_action_item(mprintf("taghints?cn=%d",cn), "标签/分支");
   }
   add_chng_tools(0,cn,nMs);
   if( nMs==0 ){
     common_add_help_item("CvstracCheckin");
-    common_header("Check-in [%d]", cn);
+    common_header("提交 [%d]", cn);
   }else{
     common_add_help_item("CvstracMilestone");
-    common_header("Milestone [%d]", cn);
+    common_header("里程碑 [%d]", cn);
   }
 
   tx = (time_t)atoi(az[0]);
@@ -1051,21 +1058,21 @@ void checkin_view(void){
   @ <table cellpadding=1 cellspacing=0 width="100%%">
   @ <tr><td align="right" valign="top">
   if( nMs==0 ){
-    @ Check-in Number:
+    @ 提交号:
   }else{
-    @ Milestone Number:
+    @ 里程碑号:
   }
   @ </td>
   @   <td>%d(cn)</td><td width="30%%"></td></tr>
-  @ <tr><td align="right" valign="top">Date:</td>
-  @   <td>%s(zDate) (local)
+  @ <tr><td align="right" valign="top">日期:</td>
+  @   <td>%s(zDate) (本地)
   @   <br>%s(zDateUTC) (UTC)</td></tr>
-  @ <tr><td align="right">User:</td><td>%z(format_user(az[3]))</td></tr>
-  @ <tr><td align="right">Branch:</td><td>%h(az[1])</td></tr>
+  @ <tr><td align="right">用户:</td><td>%z(format_user(az[3]))</td></tr>
+  @ <tr><td align="right">分支:</td><td>%h(az[1])</td></tr>
   if( nMs && az[5] && az[5][0] ){
     char *z = db_short_query("SELECT 1 FROM file WHERE isdir AND base='%q'",
                              az[5]);
-    @ <tr><td align="right">Directory:</td>
+    @ <tr><td align="right">目录:</td>
     if( z ){
       @   <td><a href="%h(default_browse_url())?d=%h(az[5])">%h(az[5])</a></td>
       free(z);
@@ -1075,19 +1082,19 @@ void checkin_view(void){
     @ </tr>
   }
   if( nMs ){
-    @ <tr><td align="right">Type:</td>
-    @ <td>%h((nMs==1)?"Release":"Event")</td></tr>
+    @ <tr><td align="right">类型:</td>
+    @ <td>%h((nMs==1)?"发布":"事件")</td></tr>
   }
-  @ <tr><td align="right" valign="top">Comment:</td><td colspan=2>
+  @ <tr><td align="right" valign="top">注释:</td><td colspan=2>
   @ <div class="comment">
   output_formatted(az[4], 0);
   @ </div>
   if( g.okWrite && g.okCheckin ){
     @
-    @ <a href="chngedit?cn=%d(cn)">(edit)</a>
+    @ <a href="chngedit?cn=%d(cn)">(编辑)</a>
   }
   @ </td></tr>
-  @ <tr><td align="right" valign="top">Tickets:</td><td colspan=2>
+  @ <tr><td align="right" valign="top">任务单:</td><td colspan=2>
   if( azTkt[0]!=0 ){
     @ <table cellpadding=0 cellspacing=0 border=0>
     for(i=0; azTkt[i]; i+=2 ){
@@ -1099,12 +1106,12 @@ void checkin_view(void){
     }
     @ </table></td></tr>
   }
-  @ <tr><td align="right" valign="top">Inspections:</td><td colspan=2>
+  @ <tr><td align="right" valign="top">检查:</td><td colspan=2>
   for(i=0; azInspect[i]; i+=4){
     tx = (time_t)atoi(azInspect[i]);
     pTm = gmtime(&tx);
     strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S (UTC)", pTm);
-    @ <div>%s(zDate) by %h(azInspect[i+1]): %h(azInspect[i+2])</div>
+    @ <div>%s(zDate) 由 %h(azInspect[i+1]): %h(azInspect[i+2])</div>
     if(azInspect[i+3] && azInspect[i+3][0]){
       @ <div class="wiki">
       output_formatted(azInspect[i+3], 0);
@@ -1113,11 +1120,11 @@ void checkin_view(void){
   }
   @ </td></tr>
 
-  @ <tr><td align="right" valign="top">Check-ins:</td><td colspan=2>
+  @ <tr><td align="right" valign="top">提交:</td><td colspan=2>
   output_related_checkins(az[4]);
   @ </td></tr>
 
-  @ <tr><td align="right" valign="top">Files:</td><td colspan=2>
+  @ <tr><td align="right" valign="top">文件:</td><td colspan=2>
   @ <table cellpadding=0 cellspacing=0 border=0>
   for(cnt=i=0; azFile[i]; i+=6, cnt++){
     int chngtype = atoi(azFile[i+4]);
@@ -1135,13 +1142,13 @@ void checkin_view(void){
     @ &nbsp;&nbsp;&nbsp;&nbsp;</td>
     if( chngtype==1 ){
       @ <td>
-      @   added-&gt;<a href="fileview?f=%T(zF)&amp;v=%T(zVers)">
+      @   新文件-&gt;<a href="fileview?f=%T(zF)&amp;v=%T(zVers)">
       @   %s(zCurP)</a>
       @ </td>
     }else if( chngtype==2 ){
       @ <td>
       @   <a href="fileview?f=%T(zF)&amp;v=%T(zPrev)">
-      @   %s(zPrevP)</a>-&gt;removed
+      @   %s(zPrevP)</a>-&gt;已删除
       @ </td>
     }else{
       @ <td>
@@ -1152,7 +1159,7 @@ void checkin_view(void){
       if( azFile[i+2][0] && azFile[i+3][0] ){
         @ <td>&nbsp;&nbsp;&nbsp
         if( atoi(azFile[i+2]) || atoi(azFile[i+3]) ){
-          @ %h(azFile[i+2]) inserted, %h(azFile[i+3]) deleted
+          @ 插入 %h(azFile[i+2]) 行，删除 %h(azFile[i+3]) 行。
         }
         @ </td>
       }
@@ -1246,16 +1253,16 @@ void change_edit(void){
     milestone_edit();
     return;
   }
-  common_add_action_item(zCancel, "Cancel");
+  common_add_action_item(zCancel, "取消");
   common_add_help_item("CvstracCheckin");
-  common_header("Edit Check-in [%d]", cn);
+  common_header("编辑提交记录 [%d]", cn);
   @ <form action="chngedit" method="POST">
   @ <input type="hidden" name="cn" value="%d(cn)">
-  @ Edit the change message and press "OK":<br>
+  @ 编辑内容并点击 "确认" 按钮:<br>
   cgi_wikitext("m",40,zMsg);
   @ <blockquote>
-  @ <input type="submit" name="ok" value="OK">
-  @ <input type="submit" name="can" value="Cancel">
+  @ <input type="submit" name="ok" value="确认">
+  @ <input type="submit" name="can" value="取消">
   @ </blockquote>
   @ </form>
   common_footer();
@@ -1296,7 +1303,7 @@ void add_inspection(void){
     return;
   }
   common_add_help_item("CvstracInspection");
-  common_header("Inspection Report");
+  common_header("检查报告");
 
   @ <form action="inspect" method="POST">
   @ <input type="hidden" name="cn" value="%d(cn)">
@@ -1304,14 +1311,14 @@ void add_inspection(void){
   ** FIXME: admin should be able to pre-define accepted inspection types
   ** which we could provide in a dropdown
   */
-  cgi_text("r",0,0,0,0,40,1024,1,zResult?zResult:"","Inspection results");
-  @ <br>Comment:
-  @ (<small>See <a href="#format_hints">formatting hints</a></small>)<br>
+  cgi_text("r",0,0,0,0,40,1024,1,zResult?zResult:"","检查结果");
+  @ <br>说明:
+  @ (<small>参见 <a href="#format_hints">格式文本说明</a></small>)<br>
   cgi_wikitext("m",20,zComment);
   @ <p>
-  @ <input type="submit" name="preview" value="Preview">
-  @ <input type="submit" name="ok" value="OK">
-  @ <input type="submit" name="can" value="Cancel">
+  @ <input type="submit" name="preview" value="预览">
+  @ <input type="submit" name="ok" value="确定">
+  @ <input type="submit" name="can" value="取消">
   @ </form>
   if( P("preview") ){
     @ <div class="preview">
@@ -1321,7 +1328,7 @@ void add_inspection(void){
   }
   @ <a name="format_hints"></a>
   @ <hr>
-  @ <h3>Formatting Hints:</h3>
+  @ <h3>格式文本说明:</h3>
   append_formatting_hints();
   common_footer();
 }
@@ -1346,24 +1353,24 @@ void tag_hints(void){
   az = db_query("SELECT date, branch, milestone, user, message "
                 "FROM chng WHERE cn=%d", cn);
   if( az[0]==0 ){ cgi_redirect("index"); return; }
-  common_add_action_item( mprintf("chngview?cn=%d",cn), "Back");
+  common_add_action_item( mprintf("chngview?cn=%d",cn), "返回");
   add_chng_tools(0,cn,atoi(az[2]));
-  common_header("Tagging And Branching Hints");
+  common_header("标签和分支信息");
   tx = (time_t)atoi(az[0])-1;
   pTm = gmtime(&tx);
   strftime(zDateUTC, sizeof(zDateUTC), "%Y-%m-%d %H:%M:%S UTC", pTm);
-  @ <p>To create a tag that occurs <i>before</i> 
-  @ check-in <a href="chngview?cn=%d(cn)">[%d(cn)]</a>, go to the root of
-  @ the source tree and enter the following CVS command:</p>
+  @ <p>如果需要在
+  @ 提交 <a href="chngview?cn=%d(cn)">[%d(cn)]</a> <i>之前</i> 创建标签，转到
+  @ 源码树的根下执行以下 CVS 命令:</p>
   @ <blockquote>
-  @ <tt>cvs rtag -D '%s(zDateUTC)' </tt><i>&lt;tag-name&gt;</i><tt> .</tt>
+  @ <tt>cvs rtag -D '%s(zDateUTC)' </tt><i>&lt;标签名&gt;</i><tt> .</tt>
   @ </blockquote>
   @
-  @ <p>Be careful to include the dot (".") at the end of the line!
-  @ To create a branch that occurs before the check-in, enter this 
-  @ command:</p>
+  @ <p>注释在命令行未不要包含点号 (".") ！
+  @ 如果需要在此次提交之前创建分支，请执行以下
+  @ 命令:</p>
   @ <blockquote>
-  @ <tt>cvs rtag -b -D '%s(zDateUTC)' </tt><i>&lt;branch-name&gt;</i><tt> .</tt>
+  @ <tt>cvs rtag -b -D '%s(zDateUTC)' </tt><i>&lt;分支名&gt;</i><tt> .</tt>
   @ </blockquote>
   common_footer();
 }
@@ -1401,15 +1408,15 @@ void milestone_edit(void){
   mtype = atoi(zMType);
 
   if( cn>0 && P("del1") ){
-    common_add_action_item(mprintf("msedit?cn=%d",cn), "Cancel");
-    common_header("Are You Sure?");
+    common_add_action_item(mprintf("msedit?cn=%d",cn), "取消");
+    common_header("确认删除？");
     @ <form action="msedit" method="POST">
-    @ <p>You are about to delete all traces of milestone [%d(cn)] from
-    @ the database.  This is an irreversible operation.</p>
+    @ <p>您正在删除数据库中所有对里程碑 [%d(cn)] 的跟踪。
+    @ 这是一个无法撤消的操作。</p>
     @
     @ <input type="hidden" name="cn" value="%d(cn)">
-    @ <input type="submit" name="del2" value="Delete The Milestone">
-    @ <input type="submit" name="can" value="Cancel">
+    @ <input type="submit" name="del2" value="删除里程碑">
+    @ <input type="submit" name="can" value="取消">
     @ </form>
     common_footer();
     return;
@@ -1474,13 +1481,13 @@ void milestone_edit(void){
   common_add_help_item("CvstracMilestone");
   if( cn>0 ){
     common_standard_menu("msedit", 0);
-    common_add_action_item(mprintf("chngview?cn=%d",cn), "Cancel");
-    common_add_action_item(mprintf("msedit?cn=%d&del1=1",cn), "Delete");
-    common_header("Edit Milestone");
+    common_add_action_item(mprintf("chngview?cn=%d",cn), "取消");
+    common_add_action_item(mprintf("msedit?cn=%d&del1=1",cn), "删除");
+    common_header("编辑里程碑");
   }else{
     common_standard_menu("msnew", 0);
-    common_add_action_item("index", "Cancel");
-    common_header("Create New Milestone");
+    common_add_action_item("index", "取消");
+    common_header("创建新的里程碑");
   }
   @ <form action="msedit" method="POST">
   if( cn>0 ){
@@ -1489,24 +1496,24 @@ void milestone_edit(void){
   pTm = localtime(&tm);
   strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M:%S", pTm);
   @ <table>
-  @ <tr><td align="right">Date &amp; Time:</td>
+  @ <tr><td align="right">日期和时间:</td>
   @    <td><input type="text" name="t" value="%s(zDate)" size=26></td>
   @ <td width=20>&nbsp;</td>
-  @ <td>Type: 
-  cgi_optionmenu(2,"y", zMType, "Release", "1", "Event", "2", NULL);
+  @ <td>类型: 
+  cgi_optionmenu(2,"y", zMType, "发布", "1", "事件", "2", NULL);
   @ </td></tr>
-  @ <tr><td align="right">Branch:</td><td>
+  @ <tr><td align="right">分支:</td><td>
   cgi_v_optionmenu(2, "br", zBr, (const char**)azAllBr);
   @ </td></tr>
-  @ <tr><td align="right" valign="top">Comment:</td>
+  @ <tr><td align="right" valign="top">注释:</td>
   @   <td colspan=3>
   cgi_wikitext("m",20,zMsg);
   @   </td></tr>
   @ <tr><td colspan=4 align="center">
-  @   <input type="submit" value="Submit">
+  @   <input type="submit" value="提交">
   if( cn>0 ){
     @   &nbsp;&nbsp;&nbsp;
-    @   <input type="submit" value="Delete" name="del1">
+    @   <input type="submit" value="删除" name="del1">
   }
   @ </td></tr></table>
   @ </form>

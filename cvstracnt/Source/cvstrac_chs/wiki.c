@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: beta (xbeta@163.net) 2003-11-10
 **
 *******************************************************************************
 **
@@ -88,7 +90,7 @@ void wikitool(void){
     zPage, -(t1 ? t1 : time(0))
   );
   if( azPage[0]==0 ) {
-    common_err("Wiki page '%s' didn't return anything", zPage);
+    common_err("Wiki 页面 '%s' 没有返回任何内容", zPage);
   }
 
   if(P("t1")){
@@ -140,7 +142,7 @@ char *wiki_expand_name(const char *z){
     if( isupper(z[i]) ) n++;
   }
   zOut = malloc(n+1);
-  if( zOut==0 ) return "<out of memory>";
+  if( zOut==0 ) return "<内存不足>";
   for(n=i=0; z[i]; i++, n++){
     if( n>0 && isupper(z[i]) ){ zOut[n++] = ' '; }
     zOut[n] = z[i];
@@ -215,12 +217,12 @@ void diff_strings(int nContext,const char *zString1, const char *zString2){
         @ </pre>
         pclose(p);
       }else{
-        common_err("Unable to diff temporary files");
+        common_err("无法比较临时文件");
       }
       free(zCmd);
     }
   } else {
-    common_err("Unable to create a temporary file");
+    common_err("无法创建临时文件");
   }
   if( zF1[0] ) unlink(zF1);
   if( zF2[0] ) unlink(zF2);
@@ -437,24 +439,24 @@ void wiki_page(void){
     common_standard_menu("wiki", "search?w=1");
   }
   common_add_help_item("CvstracWiki");
-  common_add_action_item("wikitoc", "Contents");
+  common_add_action_item("wikitoc", "内容");
   if( canEdit ){
-    common_add_action_item( mprintf("wikiedit?p=%t", pg), "Edit");
+    common_add_action_item( mprintf("wikiedit?p=%t", pg), "编辑");
     if( attachment_max()>0 ){
-      common_add_action_item( mprintf("attach_add?tn=%t",pg), "Attach");
+      common_add_action_item( mprintf("attach_add?tn=%t",pg), "附件");
     }
   }
   if( zTime==0 && azPage[0] && azPage[5] && !overload ){
-    common_add_action_item(mprintf("wiki?p=%t&t=%t", pg, azPage[0]), "History");
+    common_add_action_item(mprintf("wiki?p=%t&t=%t", pg, azPage[0]), "历史");
   }
   if( !overload ){
-    common_add_action_item(mprintf("wiki.txt?p=%t&t=%t", pg, azPage[0]),"Text");
+    common_add_action_item(mprintf("wiki.txt?p=%t&t=%t", pg, azPage[0]),"文本");
   }
   if( doDiff ){
-    common_add_action_item(mprintf("wiki?p=%t&t=%t",pg,azPage[0]), "No-Diff");
+    common_add_action_item(mprintf("wiki?p=%t&t=%t",pg,azPage[0]), "无差异");
   }else if( azPage[0] && azPage[5] ){
     common_add_action_item(mprintf("wiki?p=%t&t=%t&diff=1",pg,azPage[0]),
-                           "Diff");
+                           "有差异");
   }
   if( canDelete ){
     const char *zLink;
@@ -463,7 +465,7 @@ void wiki_page(void){
     }else{
       zLink = mprintf("wikidel?p=%t&t=%d", pg, atoi(azPage[0]));
     }
-    common_add_action_item( zLink, "Delete");
+    common_add_action_item( zLink, "删除");
   }
   if( azPage[0] ){
     add_wiki_tools(0,pg,atoi(azPage[0]),azPage[5]?atoi(azPage[5]):0);
@@ -473,7 +475,7 @@ void wiki_page(void){
   common_link_header(zSearch,wiki_expand_name(pg));
   if( zTime && !doDiff ){
     @ <div id="history">
-    @ <h3>Page History</h3>
+    @ <h3>页面历史</h3>
     @ <ul>
     for(i=0; azHist[i]; i+=3){
       if( azPage[0] && strcmp(azHist[i+2],azPage[0])==0 ){
@@ -490,7 +492,7 @@ void wiki_page(void){
       }
     }
     @ </ul>
-    @ <p class="off"><a href="wiki?p=%h(pg)">Turn Off History</a></p>
+    @ <p class="off"><a href="wiki?p=%h(pg)">关闭历史</a></p>
     @ </div>
   }
   if( doDiff ){
@@ -501,18 +503,18 @@ void wiki_page(void){
     output_wiki(azPage[4], zLinkSuffix, pg);
     isLocked = atoi(azPage[1]);
     attachment_html(pg,
-      "<h3>Attachments:</h3>\n<blockquote>",
+      "<h3>附件:</h3>\n<blockquote>",
       "</blockquote>"
     );
   }else{
     if( isHome ){
-      @ <i>You haven't written anything on your home page...</i>
+      @ <i>在主页上，您还没有创建任何内容...</i>
     }else if( !isUser ){
-      @ <i>This page has not been created...</i>
+      @ <i>该页尚未创建...</i>
     }
     isLocked = 0;
   }
-  common_footer(); 
+  common_footer();
 }
 
 /*
@@ -581,10 +583,10 @@ void wikiedit_page(void){
   if( text==0 ) text = az[0] ? az[4] : "";
   text = remove_blank_lines(text);
   common_add_help_item("CvstracWiki");
-  common_add_action_item( mprintf("wiki?p=%t",pg), "Cancel");
-  common_header("Edit Wiki %h", pg);
+  common_add_action_item( mprintf("wiki?p=%t",pg), "取消");
+  common_header("编辑 Wiki %h", pg);
 
-  @ <p><big><b>Edit: "%h(wiki_expand_name(pg))"</b></big></p>
+  @ <p><big><b>编辑: "%h(wiki_expand_name(pg))"</b></big></p>
   @ <form action="wikiedit" method="POST">
   @ <input type="hidden" name="p" value="%h(pg)">
 
@@ -594,11 +596,11 @@ void wikiedit_page(void){
     @ </blockquote>
   }
 
-  @ Make changes to the document text below.  
+  @ 请修改下面的文本内容。
   if( P("preview") ){
-    @ See <a href="wikihints">Formatting Hints</a>.
+    @ 参见 <a href="wikihints">格式文本说明</a>.
   }else{
-    @ See <a href="#formatting">Formatting Hints</a>.
+    @ 参见 <a href="#formatting">格式文本说明</a>.
   }
   @ <br>
   cgi_wikitext("x", 100, text);
@@ -607,39 +609,39 @@ void wikiedit_page(void){
   /*
   ** Allow the editor to add a comment describing the change
   */
-  cgi_text( "r", 0, 0, 0, 0, 70, 70, 1, reason, "Comment");
+  cgi_text( "r", 0, 0, 0, 0, 70, 70, 1, reason, "注释");
 
   if( g.okAdmin ){
     if( isLocked ){
-      @ <input type="submit" name="lock" value="Unlock Page">
-      @ This page is currently locked, meaning only administrators
-      @ can edit it.<br>
+      @ <input type="submit" name="lock" value="解锁">
+      @ 当前页面已被锁定，
+      @ 只有管理员能进行编辑。<br>
     }else{
-      @ <input type="submit" name="lock" value="Lock Page">
-      @ This page is currently unlocked.  Anyone can edit it.<br>
+      @ <input type="submit" name="lock" value="锁定">
+      @ 页面锁定已解除，任何人都可以编辑它。
     }
   }
   if( P("preview") ){
-    @ <input type="submit" name="submit" value="Submit Changes As Shown">
+    @ <input type="submit" name="submit" value="提交修改并显示">
   }
-  @ <input type="submit" name="preview" value="Preview Your Changes">
+  @ <input type="submit" name="preview" value="预览修改效果">
   @ </form>
 
   if( P("preview") ){
-    @ <p>The following is what the page will look like:</p>
+    @ <p>以下是该页面实际的显示效果:</p>
     @ <p><table border=2 cellpadding=5 width="100%%"><tr><td>
     output_wiki(text,"",pg);
     @ </td></tr></table></p><br>
   }
 
   attachment_html(pg,
-    "<hr><h3>Attachments:</h3>\n<blockquote>",
+    "<hr><h3>附件:</h3>\n<blockquote>",
     "</blockquote>"
   );
   if( !P("preview") ){
     @ <a name="formatting">
     @ <hr>
-    @ <h3>Formatting Hints</h3>
+    @ <h3>格式文本说明</h3>
     append_formatting_hints();
   }
   common_footer(); 
@@ -655,7 +657,7 @@ void wikihints_page(void){
   throttle(0,0);
   common_standard_menu("wiki", "search?w=1");
   common_add_help_item("FormattingWikiPages");
-  common_header("Wiki Formatting Hints");
+  common_header("Wiki 格式提示");
   append_formatting_hints();
   common_footer(); 
 }
@@ -689,12 +691,12 @@ void wikitoc_page(void){
   );
   common_standard_menu("wiki", "search?w=1");
   common_add_help_item("CvstracWiki");
-  common_header("Wiki Table Of Contents");
+  common_header("Wiki 内容列表");
   @ <table id="wikitoc">
   @ <tr>
-  @   <th><a href="%h(g.zPath)">Page Name</a></th>
-  @   <th><a href="%h(g.zPath)?ctime=1&amp;desc=1">Created</a></th>
-  @   <th><a href="%h(g.zPath)?mtime=1&amp;desc=1">Last Modified</a></th>
+  @   <th><a href="%h(g.zPath)">页面名称</a></th>
+  @   <th><a href="%h(g.zPath)?ctime=1&amp;desc=1">创建时间</a></th>
+  @   <th><a href="%h(g.zPath)?mtime=1&amp;desc=1">最后修改</a></th>
   @ </tr>
   for(i=0; az[i]; i+=3){
     @ <tr>
@@ -761,12 +763,12 @@ void wikidel_page(void){
      "SELECT locked FROM wiki WHERE name='%q' LIMIT 1", pg));
   common_add_action_item(
      zTime ? mprintf("wiki?p=%t&t=%d", pg, tm) : mprintf("wiki?p=%t", pg),
-     "Cancel"     
+     "取消"     
   );
   common_add_help_item("CvstracWiki");
-  common_header("Verify Delete");
-  @ <p><big><b>Delete Wiki Page "%h(wiki_expand_name(pg))"?</b></big></p>
-  @ <p>All delete actions are irreversible. Make your choice carefully!</p>
+  common_header("确认删除");
+  @ <p><big><b>删除 Wiki 页面 "%h(wiki_expand_name(pg))"?</b></big></p>
+  @ <p>删除后将不可恢复！请谨慎抉择！</p>
   @ <form action="wikidodel" method="POST">
   @ <input type="hidden" name="p" value="%h(pg)">
   if( P("t") ){
@@ -778,49 +780,49 @@ void wikidel_page(void){
   if( !isLocked && (isHome || g.okSetup || nBefore+nAfter==0) ){
     @ <tr><td align="right">
     if( nBefore==0 && nAfter==0 ){
-      @ <input type="submit" name="all" value="Yes">
+      @ <input type="submit" name="all" value="确定">
     }else{
-      @ <input type="submit" name="all" value="All">
+      @ <input type="submit" name="all" value="全部">
     }
     @ </td><td>
-    @ Delete this page with all its history.
+    @ 删除该页及其所有历史。
     @ </td></tr>
     @
   }
   if( nBefore>0 && nAfter>0 && (isHome || g.okSetup) ){
     @
     @ <tr><td align="right">
-    @ <input type="submit" name="after" value="Older">
+    @ <input type="submit" name="after" value="旧的">
     @ </td><td>
-    @ Delete %d(nBefore+1) historical version(s) from %s(zTimeFmt) and older
-    @ but retain the %d(nAfter) most recent version(s) of the page.
+    @ 删除 %s(zTimeFmt) 以前的 %d(nBefore+1) 个历史版本，并保留 %d(nAfter) 个
+    @ 最新的页面版本。
     @ </td></tr>
   }
   if( nBefore+nAfter>0 ){
     @
     @ <tr><td align="right">
-    @ <input type="submit" name="one" value="One">
+    @ <input type="submit" name="one" value="一个">
     @ </td><td>
-    @ Delete a single page from %s(zTimeFmt) 
-    @ but retain the %d(nBefore+nAfter) other version(s) of the page.
+    @ 删除 %s(zTimeFmt) 的单个页面，
+    @ 并保留 %d(nBefore+nAfter) 个历史页面。
     @ </td></tr>
   }
   if( zIP && zIP[0] && nSimilar>1 ){
     @
     @ <tr><td align="right">
-    @ <input type="submit" name="similar" value="Similar">
+    @ <input type="submit" name="similar" value="类似">
     @ <input type="hidden" name="ip" value="%s(zIP)">
     @ </td><td>
-    @ Delete %d(nSimilar) changes to this and other wiki pages
-    @ from IP address (%s(zIP)) that occur
-    @ within one hour of %s(zTimeFmt).
+    @ 删除来自 IP 地址 (%s(zIP))，在 %s(zTimeFmt) 起
+    @ 一小时内提交的对该页面和其它页面的
+    @ %d(nSimilar) 处修改。
     @ </td></tr>
   }
   @
   @ <tr><td align="right">
-  @ <input type="submit" name="cancel" value="Cancel">
+  @ <input type="submit" name="cancel" value="取消">
   @ </td><td>
-  @ Do not delete anything.
+  @ 不删除任何页面。
   @ </td></tr>
   @ </table>  
   @ </form>

@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -426,33 +428,33 @@ void search_page(void){
   }
   common_standard_menu("search", 0);
   common_add_help_item("CvstracSearch");
-  common_header("Search");
+  common_header("搜索");
   @ <form action="search" method="GET">
-  @ <p>Search:
+  @ <p>搜索文本:
   @ <input type="text" size=40 name="s" value="%h(PD("s",""))">
-  @ <input type="submit" value="Go">
+  @ <input type="submit" value="搜索">
   if( g.okRead + g.okCheckout + g.okRdWiki>1 ){
     char *z;
-    @ <br>Look in:
+    @ <br>搜索范围:
     if( g.okRead ){
       z = srchTkt ? " checked " : "";
       @ <label for="t"><input type="checkbox" name="t" id="t" value="1"%s(z)>
-      @    Tickets</label>
+      @    任务单</label>
     }
     if( g.okCheckout ){
       z = srchCkin ? " checked " : "";
       @ <label for="c"><input type="checkbox" name="c" id="c" value="1"%s(z)>
-      @    Checkins</label>
+      @    提交</label>
     }
     if( g.okRdWiki ){
       z = srchWiki ? " checked " : "";
       @ <label for="w"><input type="checkbox" name="w" id="w" value="1"%s(z)>
-      @    Wiki Pages</label>
+      @    Wiki 页面</label>
     }
     if( g.okCheckout ){
       z = srchFile ? " checked " : "";
       @ <label for="f"><input type="checkbox" name="f" id="f" value="1"%s(z)>
-      @    Filenames</label>
+      @    文件名</label>
     }
   }
   @ </p>
@@ -465,36 +467,36 @@ void search_page(void){
       @ <p>
       switch( atoi(azResult[i]) ){
         case 1: /* ticket */
-          @ Ticket
+          @ 任务单
           output_ticket(atoi(azResult[i+2]),0);
           @ : %s(azResult[i+3])
           break;
         case 2: /* check-in */
-          @ Check-in
+          @ 提交
           output_chng(atoi(azResult[i+2]));
           break;
         case 3: /* wiki */
-          @ Wiki Page <a href="wiki?p=%s(azResult[i+2])">%s(azResult[i+3])</a>
+          @ Wiki 页面 <a href="wiki?p=%s(azResult[i+2])">%s(azResult[i+3])</a>
           break;
         case 4: /* file */
-          @ File <a href="rlog?f=%t(azResult[i+2])">%h(azResult[i+3])</a>
+          @ 文件 <a href="rlog?f=%t(azResult[i+2])">%h(azResult[i+3])</a>
           break;
         case 5: /* attachment */
           zPage = db_short_query("SELECT tn FROM attachment WHERE atn=%d",
                                  atoi(azResult[i+2]));
-          @ Attachment
+          @ 附件
           @   <a href="attach_get/%s(azResult[i+2])/%t(azResult[i+3])">\
           @   %s(azResult[i+3])</a> to
           if( is_integer(zPage) ){
             output_ticket(atoi(zPage),0);
           }else{
-            @ wiki page <a href="wiki?p=%s(zPage)">%s(zPage)</a>
+            @ wiki 页面 <a href="wiki?p=%s(zPage)">%s(zPage)</a>
           }
           break;
         case 6:{ /* directory */
           const char* zDir = azResult[i+2];
           if( zDir[0]=='/' ) zDir ++;
-          @ Directory <a href="dir?d=%t(zDir)">%h(zDir)</a>
+          @ 目录 <a href="dir?d=%t(zDir)">%h(zDir)</a>
           break;
         }
       }
@@ -517,7 +519,7 @@ void search_page(void){
     }
     @ </div>
   }else if( zPattern && zPattern[0] ){
-    @ <p>No results for <strong>%h(zPattern)</strong></p>
+    @ <p>没有找到与 <strong>%h(zPattern) 匹配的结果</strong></p>
   }
   common_footer();
 }

@@ -27,6 +27,162 @@
 #include "config.h"
 #include "common.h"
 
+#if CVSNT
+#include <errno.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <process.h>
+
+/*
+ private popen2() - in-fact this is exact copy of
+ newlib/libc/posix.c/popen.c with fork() instead of vfork()
+*/
+static struct pid {
+  struct pid *next;
+  FILE *fp;
+  pid_t pid;
+} *pidlist;
+
+FILE * popen2(const char *program, const char *type)
+{
+  struct pid *cur;
+  FILE *iop;
+  int pdes[2], pid;
+  char cmd[260] = "";
+  char *p1, *p2;
+
+  /* Replace all "/dev/null" to "NUL" */
+  p1 = program;
+  while (p2 = strstr(p1, "/dev/null"))
+  {
+    strncat(cmd, p1, p2 - p1);
+    strcat(cmd, "NUL");
+    p1 = p2 + strlen("/dev/null");
+  }
+  strcat(cmd, p1);
+  strcpy(program, cmd);
+
+  if ((*type != 'r' && *type != 'w')
+    || (type[1] && (type[2] || (type[1] != 'b' && type[1] != 't')))) {
+    errno = EINVAL;
+    return (NULL);
+  }
+
+  if ((cur = malloc(sizeof(struct pid))) == NULL)
+    return (NULL);
+
+  if (pipe(pdes) < 0) {
+    free(cur);
+    return (NULL);
+  }
+
+  switch (pid = fork()) {
+  case -1:      /* Error. */
+    (void)close(pdes[0]);
+    (void)close(pdes[1]);
+    free(cur);
+    return (NULL);
+    /* NOTREACHED */
+  case 0:       /* Child. */
+    if (*type == 'r') {
+      if (pdes[1] != STDOUT_FILENO) {
+        (void)dup2(pdes[1], STDOUT_FILENO);
+        (void)close(pdes[1]);
+      }
+      (void) close(pdes[0]);
+    } else {
+      if (pdes[0] != STDIN_FILENO) {
+        (void)dup2(pdes[0], STDIN_FILENO);
+        (void)close(pdes[0]);
+      }
+      (void)close(pdes[1]);
+    }
+    /* execl("/bin/sh", "sh", "-c", program, NULL); */
+    /* On cygwin32, we may not have /bin/sh.  In that
+                   case, try to find sh on PATH.  */
+    execlp("sh", "sh", "-c", program, NULL);
+    _exit(127);
+    /* NOTREACHED */
+  }
+
+  /* Parent; assume fdopen can't fail. */
+  if (*type == 'r') {
+    iop = fdopen(pdes[0], type);
+    (void)close(pdes[1]);
+  } else {
+    iop = fdopen(pdes[1], type);
+    (void)close(pdes[0]);
+  }
+
+  /* Link into list of file descriptors. */
+  cur->fp = iop;
+  cur->pid =  pid;
+  cur->next = pidlist;
+  pidlist = cur;
+
+  return (iop);
+}
+
+/*
+ * pclose --
+ *  Pclose returns -1 if stream is not associated with a `popened' command,
+ *  if already `pclosed', or waitpid returns an error.
+ */
+
+int pclose2(FILE *iop)
+{
+  register struct pid *cur, *last;
+  int pstat;
+  pid_t pid;
+
+  (void)fclose(iop);
+
+  /* Find the appropriate file pointer. */
+  for (last = NULL, cur = pidlist; cur; last = cur, cur = cur->next)
+    if (cur->fp == iop)
+      break;
+  if (cur == NULL)
+    return (-1);
+
+  do {
+    pid = waitpid(cur->pid, &pstat, 0);
+  } while (pid == -1 && errno == EINTR);
+
+  /* Remove the entry from the linked list. */
+  if (last == NULL)
+    pidlist = cur->next;
+  else
+    last->next = cur->next;
+  free(cur);
+
+  return (pid == -1 ? -1 : pstat);
+}
+
+int system2 (const char *cmdstring)
+{
+  int res;
+  const char* command[4];
+
+  if (cmdstring == NULL)
+    return 1;
+
+  command[0] = "sh";
+  command[1] = "-c";
+  command[2] = cmdstring;
+  command[3] = (const char *) NULL;
+
+  if ((res = spawnvp (_P_WAIT, "sh", command)) == -1)
+  {
+    /* when exec fails, return value should be as if shell */
+    /* executed exit (127) */
+    res = 127;
+  }
+
+  return res;
+}
+#endif
+
 /*
 ** Output a string with the following substitutions:
 **
@@ -388,6 +544,16 @@ void common_vlink_header(const char *zUrl, const char *zTitle, va_list ap){
   }else{
     @ %h(g.zName) - %h(zTitleTxt)
   }
+<<<<<<< common.c
+  if( !g.isAnon && g.zUser ){
+    @ <small><a href="logout" title="Logout %h(g.zUser)">Logged in</a> as
+    if( !strcmp(g.zUser,"setup") ){
+      @ setup
+    }else{
+      @ <a href="wiki?p=%T(g.zUser)">%h(g.zUser)</a>
+    }
+    @ </small>
+=======
   @ </h1>
 
   free(zTitleTxt);
@@ -396,6 +562,7 @@ void common_vlink_header(const char *zUrl, const char *zTitle, va_list ap){
   if( !g.isAnon ){
     @ <a href="logout" title="Logout %h(g.zUser)">Logged in</a> as
     output_user(g.zUser);
+>>>>>>> 1.7
   }else{
     /* We don't want to be redirected back to captcha page, but rather to 
     ** one from which we were redirected to captcha in the first place.
@@ -497,11 +664,12 @@ void common_about(void){
   @ <a href="http://www.cvstrac.org/">http://www.cvstrac.org/</a>
   @ </blockquote>
   @
-  @ <p>Copyright &copy; 2002-2006 <a href="mailto:drh@hwaci.com">
+  @ <p>Copyright &copy; 2002-2008 <a href="mailto:drh@hwaci.com">
   @ D. Richard Hipp</a>.
   @ The CVSTrac server is released under the terms of the GNU
   @ <a href="http://www.gnu.org/copyleft/gpl.html">
   @ General Public License</a>.</p>
+  @ <p>Copyright &copy; 2003-2008 CVSTracNT is transferred by <a href="http://www.cnpack.org">www.cnpack.org</a> <a href="mailto:master@cnpack.org">CnPack Team</a> .</p>
   common_footer(); 
 }
 

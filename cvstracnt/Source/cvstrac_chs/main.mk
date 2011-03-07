@@ -102,8 +102,11 @@ endif
 
 all:	$(APPNAME) index.html
 
-install:	$(APPNAME)
+install:	strip
 	mv $(APPNAME) $(INSTALLDIR)
+
+strip:	$(APPNAME)
+	strip $(APPNAME)
 
 translate:	$(SRCDIR)/translate.c
 	$(BCC) -o translate $(SRCDIR)/translate.c

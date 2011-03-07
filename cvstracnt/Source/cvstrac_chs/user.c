@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -43,13 +45,13 @@ void user_list(void){
   }
   common_standard_menu("userlist", 0);
   common_add_help_item("CvstracAdminUsers");
-  common_add_action_item("useredit", "Add User");
-  common_header("User List");
+  common_add_action_item("useredit", "新增用户");
+  common_header("用户列表");
   @ <table cellspacing=0 cellpadding=0 border=0>
   @ <tr>
-  @   <th align="right" class="nowrap">User ID</th>
-  @   <th>&nbsp;&nbsp;&nbsp;Permissions&nbsp;&nbsp;&nbsp;</th>
-  @   <th class="nowrap">In Real Life</th>
+  @   <th align="right" class="nowrap">用户名</th>
+  @   <th>&nbsp;&nbsp;&nbsp;许访问&nbsp;&nbsp;&nbsp;</th>
+  @   <th class="nowrap">真实姓名</th>
   @ </tr>
   azResult = db_query(
     "SELECT id, name, email, capabilities FROM user ORDER BY id");
@@ -76,53 +78,53 @@ void user_list(void){
   }
   @ </table>
   @ <hr>
-  @ <p><b>Notes:</b></p>
+  @ <p><b>提示:</b></p>
   @ <ol>
-  @ <li><p>The permission flags are as follows:</p>
+  @ <li><p>允许访问标志如下:</p>
   @ <table>
   @ <tr><td>a</td><td width="10"></td>
-  @     <td>Admin: Create or delete users and ticket report formats</td></tr>
+  @     <td>管理: 创建或删除用户及任务单报表格式。</td></tr>
   @ <tr><td>d</td><td></td>
-  @     <td>Delete: Erase anonymous wiki, tickets, and attachments</td></tr>
+  @     <td>删除: 删除匿名的 Wiki、任务单和附件。</td></tr>
   @ <tr><td>i</td><td></td>
-  @     <td>Check-in: Add new code to the %h(g.scm.zName) repository</td></tr>
-  @ <tr><td>j</td><td></td><td>Read-Wiki: View wiki pages</td></tr>
-  @ <tr><td>k</td><td></td><td>Wiki: Create or modify wiki pages</td></tr>
-  @ <tr><td>n</td><td></td><td>New: Create new tickets</td></tr>
+  @     <td>提交: 添加新的代码到 %h(g.scm.zName) 仓库中。</td></tr>
+  @ <tr><td>j</td><td></td><td>读 Wiki: 查看 Wiki 页面。</td></tr>
+  @ <tr><td>k</td><td></td><td>写 Wiki: 创建或修改 Wiki 页面。</td></tr>
+  @ <tr><td>n</td><td></td><td>新建任务单: 创建新的任务单。</td></tr>
   @ <tr><td>o</td><td></td>
-  @     <td>Check-out: Read code out of the %h(g.scm.zName) repository</td></tr>
-  @ <tr><td>p</td><td></td><td>Password: Change password</td></tr>
-  @ <tr><td>q</td><td></td><td>Query: Create or edit report formats</td></tr>
-  @ <tr><td>r</td><td></td><td>Read: View tickets and change histories</td></tr>
-  @ <tr><td>s</td><td></td><td>Setup: Change CVSTrac options</td></tr>
-  @ <tr><td>w</td><td></td><td>Write: Edit tickets</td></tr>
+  @     <td>取出: 从 %h(g.scm.zName) 仓库中取出代码。</td></tr>
+  @ <tr><td>p</td><td></td><td>密码: 修改用户密码。</td></tr>
+  @ <tr><td>q</td><td></td><td>查询: 创建或编辑报表格式。</td></tr>
+  @ <tr><td>r</td><td></td><td>读任务单: 查看任务单及其历史。</td></tr>
+  @ <tr><td>s</td><td></td><td>设置: 修改 CVSTrac 设置。</td></tr>
+  @ <tr><td>w</td><td></td><td>写任务单: 修改任务单。</td></tr>
   @ </table>
   @ </li>
   @
   @ <li><p>
-  @ If a user named "<b>anonymous</b>" exists, then anyone can access
-  @ the server without having to log in.  The permissions on the
-  @ anonymous user determine the access rights for anyone who is not
-  @ logged in.
+  @ 如果存在一个名为 "<b>anonymous</b>" 的用户，则所有人都可以访问
+  @ 该服务器而不需要登录。对 anonymous
+  @ 匿名用户的权限许可对任何登录的用户都
+  @ 适用。
   @ </p></li>
   @
   if( !strcmp(g.scm.zSCM,"cvs") ){
     @ <li><p>
-    @ You must be using CVS version 1.11 or later in order to give users
-    @ read-only access to the repository.
-    @ With earlier versions of CVS, all users with check-out
-    @ privileges also automatically get check-in privileges.
+    @ 您必须使用 CVS V1.11 或以上版本，以支持为仓库指定
+    @ 用户的只读访问权限。
+    @ 在更早版本的 CVS 中，所有拥有取出权限的
+    @ 用户自动会获得提交权限。
     @ </p></li>
     @
     @ <li><p>
-    @ Changing a users ID or password modifies the <b>CVSROOT/passwd</b>,
-    @ <b>CVSROOT/readers</b>, and <b>CVSROOT/writers</b> files in the CVS
-    @ repository, if those files have write permission turned on.  Users
-    @ IDs in <b>CVSROOT/passwd</b> that are unknown to CVSTrac are preserved.
+    @ 修改用户名和密码将同时修改 CVS 仓库中的 <b>CVSROOT/passwd</b>、
+    @ <b>CVSROOT/readers</b> 和 <b>CVSROOT/writers</b> 文件，
+    @ 前提是那些文件要有可写权限。
+    @ 在 <b>CVSROOT/passwd</b> 中存在的而在 CVSTrac 中未知的用户名将保留。
     if( g.okSetup ){
-      @ Use the "Import CVS Users" button on the 
-      @ <a href="setup_user">user setup</a> page
-      @ to import CVS users into CVSTrac.
+      @ 可以使用
+      @ <a href="setup_user">用户设置</a> 页面的 "导入 CVS 用户" 按钮
+      @ 来导入 CVS 中的用户到 CVSTrac。
     }
     @ </p></li>
   }
@@ -163,18 +165,18 @@ void user_edit(void){
 
   if( !higherUser ){
     if( P("delete") ){
-      common_add_action_item("userlist", "Cancel");
-      common_header("Are You Sure?");
+      common_add_action_item("userlist", "取消");
+      common_header("您确定要删除吗？");
       @ <form action="useredit" method="POST">
-      @ <p>You are about to delete the user <strong>%h(zId)</strong> from
-      @ the database.  This is an irreversible operation.</p>
+      @ <p>您将要从数据库中删除用户 <strong>%h(zId)</strong>。
+      @ 这是一个不可恢复的操作！</p>
       @
       @ <input type="hidden" name="id" value="%t(zId)">
       @ <input type="hidden" name="nm" value="">
       @ <input type="hidden" name="em" value="">
       @ <input type="hidden" name="pw" value="">
-      @ <input type="submit" name="delete2" value="Delete The User">
-      @ <input type="submit" name="can" value="Cancel">
+      @ <input type="submit" name="delete2" value="删除该用户">
+      @ <input type="submit" name="can" value="取消">
       @ </form>
       common_footer();
       return;
@@ -312,17 +314,17 @@ void user_edit(void){
   */
   common_standard_menu(0,0);
   common_add_help_item("CvstracAdminUsers");
-  common_add_action_item("userlist", "Cancel");
-  common_add_action_item(mprintf("useredit?delete=1&id=%t",zId), "Delete");
+  common_add_action_item("userlist", "取消");
+  common_add_action_item(mprintf("useredit?delete=1&id=%t",zId), "删除");
   if( zId ){
-    common_header("Edit User %s", zId);
+    common_header("编辑用户 %s", zId);
   }else{
-    common_header("Add New User");
+    common_header("增加新用户");
   }
   @ <form action="%s(g.zPath)" method="POST">
   @ <table align="left" style="margin: 10px;">
   @ <tr>
-  @   <td align="right" class="nowrap">User ID:</td>
+  @   <td align="right" class="nowrap">用户名:</td>
   if( zId ){
     @   <td>%h(zId) <input type="hidden" name="id" value="%h(zId)"></td>
   }else{
@@ -330,134 +332,134 @@ void user_edit(void){
   }
   @ </tr>
   @ <tr>
-  @   <td align="right" class="nowrap">Full Name:</td>
+  @   <td align="right" class="nowrap">全名:</td>
   @   <td><input type="text" name="nm" value="%h(zName)"></td>
   @ </tr>
   @ <tr>
-  @   <td align="right" class="nowrap">E-Mail:</td>
+  @   <td align="right" class="nowrap">邮件地址:</td>
   @   <td><input type="text" name="em" value="%h(zEMail)"></td>
   @ </tr>
   @ <tr>
-  @   <td align="right" valign="top">Capabilities:</td>
+  @   <td align="right" valign="top">用户权限:</td>
   @   <td>
-  @     <input type="checkbox" name="aa" id="aa"%s(oaa)><label for="aa">Admin</label><br>
-  @     <input type="checkbox" name="ad" id="ad"%s(oad)><label for="ad">Delete</label><br>
-  @     <input type="checkbox" name="ai" id="ai"%s(oai)><label for="ai">Check-In</label><br>
-  @     <input type="checkbox" name="aj" id="aj"%s(oaj)><label for="aj">Read Wiki</label><br>
-  @     <input type="checkbox" name="ak" id="ak"%s(oak)><label for="ak">Write Wiki</label><br>
-  @     <input type="checkbox" name="an" id="an"%s(oan)><label for="an">New Tkt</label><br>
-  @     <input type="checkbox" name="ao" id="ao"%s(oao)><label for="ao">Check-Out</label><br>
-  @     <input type="checkbox" name="ap" id="ap"%s(oap)><label for="ap">Password</label><br>
-  @     <input type="checkbox" name="aq" id="aq"%s(oaq)><label for="aq">Query</label><br>
-  @     <input type="checkbox" name="ar" id="ar"%s(oar)><label for="ar">Read</label><br>
+  @     <input type="checkbox" name="aa" id="aa"%s(oaa)><label for="aa">管理</label><br>
+  @     <input type="checkbox" name="ad" id="ad"%s(oad)><label for="ad">删除</label><br>
+  @     <input type="checkbox" name="ai" id="ai"%s(oai)><label for="ai">提交</label><br>
+  @     <input type="checkbox" name="aj" id="aj"%s(oaj)><label for="aj">读 Wiki</label><br>
+  @     <input type="checkbox" name="ak" id="ak"%s(oak)><label for="ak">写 Wiki</label><br>
+  @     <input type="checkbox" name="an" id="an"%s(oan)><label for="an">新任务单</label><br>
+  @     <input type="checkbox" name="ao" id="ao"%s(oao)><label for="ao">取出</label><br>
+  @     <input type="checkbox" name="ap" id="ap"%s(oap)><label for="ap">密码</label><br>
+  @     <input type="checkbox" name="aq" id="aq"%s(oaq)><label for="aq">查询</label><br>
+  @     <input type="checkbox" name="ar" id="ar"%s(oar)><label for="ar">读任务单</label><br>
   if( g.okSetup ){
-    @     <input type="checkbox" name="as" id="as"%s(oas)><label for="as">Setup</label><br>
+    @     <input type="checkbox" name="as" id="as"%s(oas)><label for="as">设置</label><br>
   }
-  @     <input type="checkbox" name="aw" id="aw"%s(oaw)><label for="aw">Write</label>
+  @     <input type="checkbox" name="aw" id="aw"%s(oaw)><label for="aw">写任务单</label>
   @   </td>
   @ </tr>
   @ <tr>
-  @   <td align="right">Password:</td>
+  @   <td align="right">密码:</td>
   @   <td><input type="password" name="pw" value=""></td>
   @ </tr>
 #ifdef CVSTRAC_WINDOWS
   @ <tr>
   @   <td></td>
-  @   <td><input type="checkbox" name="dl" id="dl"%s(odl)><label for="dl">Use Windows Password</label><br></td>
+  @   <td><input type="checkbox" name="dl" id="dl"%s(odl)><label for="dl">使用 Windows 密码</label><br></td>
   @ </tr>
 #endif
   if( !higherUser ){
     @ <tr>
     @   <td>&nbsp;</td>
-    @   <td><input type="submit" name="submit" value="Apply Changes">
+    @   <td><input type="submit" name="submit" value="应用修改">
     @       &nbsp;&nbsp;&nbsp;
-    @       <input type="submit" name="delete" value="Delete User"></td>
+    @       <input type="submit" name="delete" value="删除用户"></td>
     @ </tr>
   }
   @ </table>
   @ <table border="0"><tr><td>
-  @ <p><b>Notes:</b></p>
+  @ <p><b>说明:</b></p>
   @ <ol>
   if( higherUser ){
     @ <li><p>
-    @ User %h(zId) has Setup privileges and you only have Admin privileges
-    @ so you are not permitted to make changes to %h(zId).
+    @ 用户 %h(zId) 拥有设置权限而您只有管理权限，
+    @ 所以您不允许修改用户 %h(zId)。
     @ </p></li>
     @
   }
   if( g.scm.pxUserWrite!=0
         && !strcmp("yes",db_config("write_cvs_passwd","yes")) ){
     @ <li><p>
-    @ If the <b>Check-out</b> capability is specified then
-    @ the password entered here will be used to regenerate the
-    @ <b>CVSROOT/passwd</b> file and will thus become the CVS password
-    @ as well as the password for this server.
-    @ </p></li>
+    @ 如果指定了 <b>CVS 取出</b> 权限，
+    @ 则此处输入的密码
+    @ 将写入到 <b>CVSROOT/passwd</b>
+    @ 文件中并将成为该服务器上该用户
+    @ 的 CVS 访问密码。
     @
     @ <li><p>
-    @ The <b>Check-in</b> capability means that the user ID will be written
-    @ into the <b>CVSROOT/writers</b> file and thus allow write access to
-    @ the CVS repository.
+    @ <b>CVS 提交</b> 权限意味着用户名将写入到
+    @ <b>CVSROOT/writers</b> 文件中并使得用户可以写
+    @ CVS 仓库。
     @ </p></li>
     @
   }else{
     @ <li><p>
-    @ If the <b>Check-out</b> capability is specified then the user will be able
-    @ to browse the %s(g.scm.zName) repository.
+    @ 如果指定了 <b>取出</b> 权限，用户将能够浏览
+    @ %s(g.scm.zName) 仓库。
     @ </p></li>
     @
     @ <li><p>
-    @ The <b>Check-in</b> capability gives the user the ability to edit check-in
-    @ messages.
+    @ <b>提交</b> 权限将允许用户编辑提交
+    @ 信息。
     @ </p></li>
     @
   }
   @ <li><p>
-  @ The <b>Read</b> and <b>Write</b> privileges give the user the ability
-  @ to read and write tickets.  The <b>New Tkt</b> capability means that
-  @ the user is able to create new tickets.
+  @ <b>读任务单</b> 和 <b>写任务单</b> 权限允许用户读写
+  @ 任务单。<b>新建任务单</b> 权限意味着用户有能力
+  @ 创建新的任务单。
   @ </p></li>
   @
   @ <li><p>
-  @ The <b>Delete</b> privilege give the user the ability to erase
-  @ wiki, tickets, and atttachments that have been added by anonymous
-  @ users.  This capability is intended for deletion of spam.
+  @ <b>删除</b> 权限允许用户拥有删除由匿名用户
+  @ 增加的 Wiki、任务单和附件。
+  @ 这个功能用于垃圾清理。
   @ </p></li>
   @
   @ <li><p>
-  @ The <b>Query</b> privilege allows the user to create or edit
-  @ report formats by specifying appropriate SQL.  Users can run 
-  @ existing reports without the Query privilege.
+  @ <b>查询</b> 权限允许用户通过创建或编辑使用特定 SQL
+  @ 语句的报表格式。用户可以运行已有的报表格式而不需要
+  @ 查询权限。
   @ </p></li>
   @
   @ <li><p>
-  @ An <b>Admin</b> user can add other users, create new ticket report
-  @ formats, and change system defaults.  But only the <b>Setup</b> user
-  @ is able to change the %h(g.scm.zName) repository to
-  @ which this program is linked.
+  @ 一个 <b>管理</b> 用户能够添加其它的用户、创建新的报表格式、
+  @ 以及修改系统默认值。但是只有 <b>设置</b>
+  @ 用户才能修改该程序连接到的
+  @ %h(g.scm.zName) 仓库。
   @ </p></li>
   @
 #ifdef CVSTRAC_WINDOWS
   @ <li><p>
-  @ The <b>Use Windows Password</b> option enables linking CVSTrac password
-  @ with Windows domain (computer) one using existing username.
-  @ <p>Nevertheless giving user also <b>Password</b> privilege enables user
-  @ to override CVSTrac password making it separate from the Windows one.
+  @ <b>使用 Windows 密码</b> 选项能够让 CVSTrac 的用户密码与 Windows
+  @ 域 (计算机) 用户集成。
+  @ <p>不过用户可被授予更改密码的权限，这样 CVSTrac 用户的密码可以改得和
+  @ Windows 下的同名用户不同。
   @ </p></li>
   @
 #endif
   if( zId==0 || strcmp(zId,"anonymous")==0 ){
     @ <li><p>
-    @ No login is required for user "<b>anonymous</b>".  The capabilities
-    @ of this user are available to anyone without supplying a username or
-    @ password.  To disable anonymous access, make sure there is no user
-    @ with an ID of <b>anonymous</b>.
+    @ 不需要登录的用户 "<b>anonymous</b>"。该用户的权限对所有
+    @ 人适用，而不需要使用用户名和密码登录。
+    @ 要禁用 anonymous 匿名访问，请确认系统中没有
+    @ 名为 <b>anonymous</b> 的用户。
     @ </p></li>
     @
     @ <li><p>
-    @ The password for the "<b>anonymous</b>" user is used for anonymous
-    @ %h(g.scm.zName) access.  The recommended value for the anonymous password
-    @ is "anonymous".
+    @ 指定给 "<b>anonymous</b>" 用户的密码用于
+    @ %h(g.scm.zName) 匿名访问。推荐使用
+    @ "anonymous" 来作为匿名访问密码。
     @ </p></li>
   }
   @ </ol>

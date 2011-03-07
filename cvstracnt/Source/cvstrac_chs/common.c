@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -20,12 +20,264 @@
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
 **
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
+**
 *******************************************************************************
 **
 ** Routines shared by many pages
 */
 #include "config.h"
 #include "common.h"
+
+#ifdef CHINESE
+/* todo: 还未处理CHINESE格式下对缓冲区长度有效性检查 */
+
+/* 在Cygwin下支持CHINESE输出，当前版本仅支持以下格式:
+   %a / %A - 星期，星期一 - 星期天
+   %b / %B - 月份，01月 - 12月
+   %d / %D - 日期，01 - 31
+   %H      - 24制式小时，00 - 23
+   %I      - 12制式小时，01 - 12
+   %m      - 数字表示的月份，01 - 12
+   %M      - 分钟，00 - 59
+   %p      - 上午/下午
+   %S      - 秒，00 - 59
+   %w      - 数字表示星期，0 – 6; 星期天是 0
+   %y      - 年 00 - 99
+   %Y      - 年 四位格式
+*/
+size_t strftime2(char *dest, size_t maxsize, const char *format,
+				 const struct tm *timeptr)
+{
+	size_t len = 0;
+	const char *lpsz = format;
+	static const char *ChineseWeeks[] = {
+		"星期天", "星期一", "星期二", "星期三",
+		"星期四", "星期五", "星期六",
+	};
+
+
+	for (; *lpsz != '\0'; ++lpsz) {
+		/* 找到 '%', (避开 "%%") */
+		if (*lpsz != '%' || *(++lpsz) == '%') {
+			if (!((dest == 0) || (maxsize == 0))) {
+				dest[len] = *lpsz;
+			}
+			++len;
+			continue;
+		}
+
+		if (!((dest == 0) || (maxsize == 0))) {
+			switch(*lpsz)
+			{
+			case 'a' :
+			case 'A' : sprintf(dest + len, "%s", ChineseWeeks[timeptr->tm_wday]); break;
+			case 'b' :
+			case 'B' : sprintf(dest + len, "%02d月", timeptr->tm_mon+1); break;
+			case 'd' : sprintf(dest + len, "%02d", timeptr->tm_mday); break;
+			case 'D' : sprintf(dest + len, "%02d日", timeptr->tm_mday); break;
+			case 'H' : sprintf(dest + len, "%02d", timeptr->tm_hour); break;
+			case 'I' :
+				if (timeptr->tm_hour > 11)
+					sprintf(dest + len, "%02d", timeptr->tm_hour - 12);
+				else
+					sprintf(dest + len, "%02d", timeptr->tm_hour);
+				break;
+			case 'm' : sprintf(dest + len, "%02d", timeptr->tm_mon+1); break;
+			case 'M' : sprintf(dest + len, "%02d", timeptr->tm_min); break;
+			case 'p' :
+				if (timeptr->tm_hour > 11)
+					sprintf(dest + len, "%s", "上午");
+				else
+					sprintf(dest + len, "%s", "下午");
+				break;
+			case 'S' : sprintf(dest + len, "%02d", timeptr->tm_sec); break;
+			case 'w' : dest[len] = (char)timeptr->tm_wday + 0x1e; break;
+			case 'y' : sprintf(dest + len, "%02d", (timeptr->tm_year + 1900) / 100); break;
+			case 'Y' : sprintf(dest + len, "%4d", timeptr->tm_year + 1900); break;
+			default  : dest[len] = *lpsz; break;
+			}
+		}
+
+		switch(*lpsz) {
+		case 'a' :
+		case 'A' : len += 6; break;
+		case 'b' :
+		case 'B' : len += 4; break;
+		case 'd' : len += 2; break;
+		case 'D' : len += 4; break;
+		case 'H' :
+		case 'I' :
+		case 'm' :
+		case 'M' : len += 2; break;
+		case 'p' : len += 4; break;
+		case 'S' : len += 2; break;
+		case 'w' : len += 1; break;
+		case 'y' : len += 2; break;
+		case 'Y' : len += 4; break;
+		default  : len += 1; break;
+		}
+	}
+	dest[len] = '\0';
+	return ++len;
+}
+#endif
+
+#if CVSNT
+#include <errno.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <process.h>
+
+/*
+ private popen2() - in-fact this is exact copy of
+ newlib/libc/posix.c/popen.c with fork() instead of vfork()
+*/
+static struct pid {
+  struct pid *next;
+  FILE *fp;
+  pid_t pid;
+} *pidlist;
+
+FILE * popen2(const char *program, const char *type)
+{
+  struct pid *cur;
+  FILE *iop;
+  int pdes[2], pid;
+  char cmd[260] = "";
+  char *p1, *p2;
+
+  /* Replace all "/dev/null" to "NUL" */
+  p1 = program;
+  while (p2 = strstr(p1, "/dev/null"))
+  {
+    strncat(cmd, p1, p2 - p1);
+    strcat(cmd, "NUL");
+    p1 = p2 + strlen("/dev/null");
+  }
+  strcat(cmd, p1);
+  strcpy(program, cmd);
+
+  if ((*type != 'r' && *type != 'w')
+    || (type[1] && (type[2] || (type[1] != 'b' && type[1] != 't')))) {
+    errno = EINVAL;
+    return (NULL);
+  }
+
+  if ((cur = malloc(sizeof(struct pid))) == NULL)
+    return (NULL);
+
+  if (pipe(pdes) < 0) {
+    free(cur);
+    return (NULL);
+  }
+
+  switch (pid = fork()) {
+  case -1:      /* Error. */
+    (void)close(pdes[0]);
+    (void)close(pdes[1]);
+    free(cur);
+    return (NULL);
+    /* NOTREACHED */
+  case 0:       /* Child. */
+    if (*type == 'r') {
+      if (pdes[1] != STDOUT_FILENO) {
+        (void)dup2(pdes[1], STDOUT_FILENO);
+        (void)close(pdes[1]);
+      }
+      (void) close(pdes[0]);
+    } else {
+      if (pdes[0] != STDIN_FILENO) {
+        (void)dup2(pdes[0], STDIN_FILENO);
+        (void)close(pdes[0]);
+      }
+      (void)close(pdes[1]);
+    }
+    /* execl("/bin/sh", "sh", "-c", program, NULL); */
+    /* On cygwin32, we may not have /bin/sh.  In that
+                   case, try to find sh on PATH.  */
+    execlp("sh", "sh", "-c", program, NULL);
+    _exit(127);
+    /* NOTREACHED */
+  }
+
+  /* Parent; assume fdopen can't fail. */
+  if (*type == 'r') {
+    iop = fdopen(pdes[0], type);
+    (void)close(pdes[1]);
+  } else {
+    iop = fdopen(pdes[1], type);
+    (void)close(pdes[0]);
+  }
+
+  /* Link into list of file descriptors. */
+  cur->fp = iop;
+  cur->pid =  pid;
+  cur->next = pidlist;
+  pidlist = cur;
+
+  return (iop);
+}
+
+/*
+ * pclose --
+ *  Pclose returns -1 if stream is not associated with a `popened' command,
+ *  if already `pclosed', or waitpid returns an error.
+ */
+
+int pclose2(FILE *iop)
+{
+  register struct pid *cur, *last;
+  int pstat;
+  pid_t pid;
+
+  (void)fclose(iop);
+
+  /* Find the appropriate file pointer. */
+  for (last = NULL, cur = pidlist; cur; last = cur, cur = cur->next)
+    if (cur->fp == iop)
+      break;
+  if (cur == NULL)
+    return (-1);
+
+  do {
+    pid = waitpid(cur->pid, &pstat, 0);
+  } while (pid == -1 && errno == EINTR);
+
+  /* Remove the entry from the linked list. */
+  if (last == NULL)
+    pidlist = cur->next;
+  else
+    last->next = cur->next;
+  free(cur);
+
+  return (pid == -1 ? -1 : pstat);
+}
+
+int system2 (const char *cmdstring)
+{
+  int res;
+  const char* command[4];
+
+  if (cmdstring == NULL)
+    return 1;
+
+  command[0] = "sh";
+  command[1] = "-c";
+  command[2] = cmdstring;
+  command[3] = (const char *) NULL;
+
+  if ((res = spawnvp (_P_WAIT, "sh", command)) == -1)
+  {
+    /* when exec fails, return value should be as if shell */
+    /* executed exit (127) */
+    res = 127;
+  }
+
+  return res;
+}
+#endif
 
 /*
 ** Output a string with the following substitutions:
@@ -163,12 +415,12 @@ void common_err(const char *zFormat, ...){
   va_end(ap);
   cgi_reset_content();
   common_standard_menu(0,0);
-  common_header("Oops!");
+  common_header("错误!");
   @ <div class="error">
-  @ <p>The following error has occurred:</p>
+  @ <p>出现以下错误:</p>
   @ <blockquote>%h(zMsg)</blockquote>
   if( g.okSetup ){
-    @ <p>Query parameters:<p>
+    @ <p>查询参数:<p>
     cgi_print_all();
   }
   @ </div>
@@ -224,19 +476,19 @@ void common_standard_menu(const char *zOmit, const char *zSrchUrl){
   const char *zLimit;
   if( g.okNewTkt ){
     azLink[nLink++] = "tktnew";
-    azLink[nLink++] = "Ticket";
+    azLink[nLink++] = "任务单";
   }
   if( g.okCheckout ){
     azLink[nLink++] = default_browse_url();
-    azLink[nLink++] = "Browse";
+    azLink[nLink++] = "浏览";
   }
   if( g.okRead ){
     azLink[nLink++] = "reportlist";
-    azLink[nLink++] = "Reports";
+    azLink[nLink++] = "报表";
   }
   if( g.okRdWiki || g.okRead || g.okCheckout ){
     azLink[nLink++] = "timeline";
-    azLink[nLink++] = "Timeline";
+    azLink[nLink++] = "时间线";
   }
   if( g.okRdWiki ){
     azLink[nLink++] = "wiki";
@@ -244,33 +496,33 @@ void common_standard_menu(const char *zOmit, const char *zSrchUrl){
   }
   if( g.okRdWiki || g.okRead || g.okCheckout ){
     azLink[nLink++] = zSrchUrl ? zSrchUrl : "search";
-    azLink[nLink++] = "Search";
+    azLink[nLink++] = "搜索";
   }
   if( g.okCheckin ){
     azLink[nLink++] = "msnew";
-    azLink[nLink++] = "Milestone";
+    azLink[nLink++] = "里程碑";
   }
   if( g.okWrite && !g.isAnon ){
     azLink[nLink++] = "userlist";
-    azLink[nLink++] = "Users";
+    azLink[nLink++] = "用户";
   }
   if( g.okAdmin ){
     azLink[nLink++] = "setup";
-    azLink[nLink++] = "Setup";
+    azLink[nLink++] = "设置";
   }
   azLink[nLink++] = "login";
   if( g.isAnon ){
-    azLink[nLink++] = "Login";
+    azLink[nLink++] = "登录";
   }else{
-    azLink[nLink++] = "Logout";
+    azLink[nLink++] = "注销";
   }
   if( g.isAnon && (zLimit = db_config("throttle",0))!=0 && atof(zLimit)>0.0 ){
     azLink[nLink++] = "honeypot";
-    azLink[nLink++] = "0Honeypot";
+    azLink[nLink++] = "陷阱";
   }
   if( nLink>2 ){
     azLink[nLink++] = "index";
-    azLink[nLink++] = "Home";
+    azLink[nLink++] = "首页";
   }
   azLink[nLink] = 0;
 
@@ -317,7 +569,7 @@ void common_add_help_item(
   if( g.okRdWiki
       && db_exists("SELECT 1 FROM wiki WHERE name='%q'", zWikiPage)){
     azLink[nLink++] = mprintf("wiki?p=%s", zWikiPage);
-    azLink[nLink++] = "Help";
+    azLink[nLink++] = "帮助";
     azLink[nLink] = 0;
   }
 }
@@ -394,7 +646,7 @@ void common_vlink_header(const char *zUrl, const char *zTitle, va_list ap){
 
   @ <p id="identity">
   if( !g.isAnon ){
-    @ <a href="logout" title="Logout %h(g.zUser)">Logged in</a> as
+    @ <a href="logout" title="注销 %h(g.zUser)">登录用户:</a>
     output_user(g.zUser);
   }else{
     /* We don't want to be redirected back to captcha page, but rather to 
@@ -402,7 +654,7 @@ void common_vlink_header(const char *zUrl, const char *zTitle, va_list ap){
     */
     const char *zUri = (P("nxp")!=0) ? P("nxp") : getenv("REQUEST_URI");
     @ <a href="honeypot"><notatag arg="meaningless"></a>
-    @ <a href="login?nxp=%T(zUri)" title="Log in">Not logged in</a>
+    @ <a href="login?nxp=%T(zUri)" title="登录">未登录</a>
   }
   @ </p>
 
@@ -412,7 +664,6 @@ void common_vlink_header(const char *zUrl, const char *zTitle, va_list ap){
     @ <ul id="navigation">
     for(i=0; azLink[i] && azLink[i+1]; i+=2){
       const char *z = azLink[i+1];
-      if( z[0]<'A' ) z++;
       if( zOmitLink && !strcmp(zOmitLink,azLink[i]) ){
         @ <li id="current"><a href="%h(azLink[i])">%h(z)</a></li>
       }else{
@@ -428,7 +679,6 @@ void common_vlink_header(const char *zUrl, const char *zTitle, va_list ap){
     @ <ul id="action">
     for(i=0; azAction[i] && azAction[i+1]; i+=2){
       const char *z = azAction[i+1];
-      if( z[0]<'A' ) z++;
       @ <li><a href="%h(azAction[i])" rel="nofollow">%h(z)</a></li>
     }
     @ </ul>
@@ -486,23 +736,24 @@ void common_footer(void){
 */
 void common_about(void){
   login_check_credentials();
-  common_add_nav_item("index", "Home");
-  common_header("About This Server", azLink);
-  @ <p>This website is implemented using CVSTrac version @VERSION@.</p>
+  common_add_nav_item("index", "首页");
+  common_header("关于本站", azLink);
+  @ <p>该网站使用了 CVSTrac version @VERSION@。</p>
   @
-  @ <p>CVSTrac implements a patch-set and
-  @ bug tracking system for %h(g.scm.zName).
-  @ For additional information, visit the CVSTrac homepage at</p>
+  @ <p>CVSTrac 是一个为 %h(g.scm.zName) 
+  @ 设计的补丁和错误跟踪系统。
+  @ 更多信息，请访问 CVSTrac 主页:</p>
   @ <blockquote>
   @ <a href="http://www.cvstrac.org/">http://www.cvstrac.org/</a>
   @ </blockquote>
   @
-  @ <p>Copyright &copy; 2002-2006 <a href="mailto:drh@hwaci.com">
-  @ D. Richard Hipp</a>.
-  @ The CVSTrac server is released under the terms of the GNU
+  @ <p>版权所有 &copy; 2002-2008 <a href="mailto:drh@hwaci.com">
+  @ D. Richard Hipp</a>。
+  @ 该 CVSTrac 服务程序在 GNU
   @ <a href="http://www.gnu.org/copyleft/gpl.html">
-  @ General Public License</a>.</p>
-  common_footer(); 
+  @ General Public License</a> 协议下发布。</p>
+  @ <p>汉化移植版权 &copy; 2003-2008 <a href="http://www.cnpack.org/">CnPack 开发组</a> 成员 <a href="mailto:zjy@cnpack.org">周劲羽</a>、<a href="mailto:xbeta@163.net">beta</a> 。</p>
+  common_footer();
 }
 
 /*

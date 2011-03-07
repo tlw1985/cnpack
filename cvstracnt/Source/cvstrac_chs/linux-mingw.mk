@@ -16,7 +16,7 @@ BCC = gcc -g -O2
 #
 E = .exe
 
-#### C Compile and options for use in building executables that 
+#### C Compile and options for use in building executables that
 #    will run on the target platform.  This is usually the same
 #    as BCC, unless you are cross-compiling.
 #

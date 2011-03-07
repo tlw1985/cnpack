@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -37,23 +39,24 @@ static void common_rss_header(char *zTitle, char *zDescription, int nBuildDate){
   cgi_set_content_type("text/xml");
   g.zLinkURL = g.zBaseURL;  /* formatting for output links... */
 #if CVSTRAC_I18N
-  @ <?xml version="1.0" encoding="%h(nl_langinfo(CODESET))"?>
+  char * charset = db_config("charset",nl_langinfo(CODESET));
 #else
-  @ <?xml version="1.0" encoding="ISO-8859-1"?>
+  char * charset = db_config("charset","GB2312");
 #endif
+  @ <?xml version="1.0" encoding="%h(charset)"?>
   @ <rss version="2.0">
   @ <channel>
   @ <title>%h(g.zName) - %h(zTitle)</title>
   @ <link>%s(g.zBaseURL)/timeline</link>
   @ <description>%h(zDescription)</description>
-  @ <language>en</language>
+  @ <language>zh-cn</language>
   @ <pubDate>%h(cgi_rfc822_datestamp( time(0) ))</pubDate>
   if( nBuildDate>0 ){
     const char* zBD = cgi_rfc822_datestamp(nBuildDate);
     @ <lastBuildDate>%h(zBD)</lastBuildDate>
     cgi_append_header(mprintf("Last-Modified: %h\r\n",zBD));
   }
-  @ <generator>CVSTrac @VERSION@</generator>
+  @ <generator>CVSTrac @VERSION@ 中文版</generator>
   @ <ttl>%d(nTTL)</ttl>
 }
 
@@ -67,7 +70,7 @@ void common_rss_footer( void ) {
 ** WEBPAGE: /index.rss
 */
 void index_rss(void){
-  common_rss_header("Unauthorized", "No content available", 0);
+  common_rss_header("未验证", "无可用内容", 0);
   common_rss_footer();
 }
 
@@ -101,7 +104,7 @@ static char *get_ticket_title(int tn){
 void timeline_rss(void){
   const char *zEnd;       /* Day at which timeline ends */
   time_t begin, end;      /* Beginning and ending times for the timeline */
-  char **az;  
+  char **az;
   time_t thisDate;
   int thisDay, lastDay;
   int i;
@@ -265,8 +268,8 @@ void timeline_rss(void){
       if( showS==1 ){
         appendf(zSQL,&len,sizeof(zSQL),
           " AND ("
-          "(newval IN ('new','active') AND oldval NOT IN ('new','active')) OR"
-          "(newval NOT IN ('new','active') AND oldval IN ('new','active')))");
+          "(newval IN ('新建','活动') AND oldval NOT IN ('新建','活动')) OR"
+          "(newval NOT IN ('新建','活动') AND oldval IN ('新建','活动')))");
       }
     }
     if( showS==3 ){
@@ -336,7 +339,7 @@ void timeline_rss(void){
   cgi_modified_since(nLastBuildDate);
 
   lastDay = 0;
-  common_rss_header("Timeline", "Changes", nLastBuildDate);
+  common_rss_header("时间线", "更新记录", nLastBuildDate);
   for(i=0; az[i]; i+=7){
     char *zMsg = 0;      /* HTML text for description */
     char *zWiki = 0;     /* Wiki text for description */
@@ -356,16 +359,16 @@ void timeline_rss(void){
       case 1: { /* A check-in or milestone */
         if( rssDetail>=5 ) zWiki = az[i+6];  /* comment is wiki markup */
         if( az[i+3][0] && az[i+3][0]!='0' ){
-          bprintf(zPrefix, sizeof(zPrefix), "Milestone [%.20s]: ", az[i+5]);
+          bprintf(zPrefix, sizeof(zPrefix), "里程碑 [%.20s]: ", az[i+5]);
         }else{
           if( az[i+4][0] ){
             bprintf(zPrefix, sizeof(zPrefix),
-                    "Check-in [%.20s] on branch %.50s: ",
+                    "提交 [%.20s] 于分支 %.50s: ",
                     az[i+5], az[i+4]);
           }else{
-            bprintf(zPrefix, sizeof(zPrefix), "Check-in [%.20s]: ", az[i+5]);
+            bprintf(zPrefix, sizeof(zPrefix), "提交 [%.20s]: ", az[i+5]);
           }
-          bprintf(zSuffix, sizeof(zSuffix), " (By %.30s)", az[i+2]);
+          bprintf(zSuffix, sizeof(zSuffix), " (由 %.30s)", az[i+2]);
 
           if( rssDetail>=9 ) {
             /*
@@ -388,7 +391,7 @@ void timeline_rss(void){
             nMaxLen += j * 4 + 100;
             zTailMsg = malloc(nMaxLen);
             if( zTailMsg ) {
-              appendf(zTailMsg,&nLen,nMaxLen,"<hr>Files changed:<br>\n");
+              appendf(zTailMsg,&nLen,nMaxLen,"<hr>修改的文件:<br>\n");
               for(j=0; azFile[j]; j++){
                 if( azFile[j+1] ){
                   appendf(zTailMsg,&nLen,nMaxLen,"%s, ", azFile[j]);
@@ -407,8 +410,8 @@ void timeline_rss(void){
         break;
       }
       case 2: {  /* A new ticket was created */
-        bprintf(zPrefix, sizeof(zPrefix), "Create ticket #%.20s: ", az[i+5]);
-        bprintf(zSuffix, sizeof(zSuffix), " (By %.30s)", az[i+2]);
+        bprintf(zPrefix, sizeof(zPrefix), "创建任务单 #%.20s: ", az[i+5]);
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %.30s)", az[i+2]);
         bprintf(zLink,sizeof(zLink), "tktview?tn=%.20s",az[i+5]);
 
         /*
@@ -426,26 +429,26 @@ void timeline_rss(void){
         }
         bprintf(zType,sizeof(zType),"%.30s",az[i+4]);
         if( islower(zType[0]) ) zType[0] = toupper(zType[0]);
-        bprintf(zPrefix, sizeof(zPrefix),"%.30s ticket #%.20s, was %.20s.",
+        bprintf(zPrefix, sizeof(zPrefix),"%.30s 任务单 #%.20s，原来是 %.20s。",
              zType, az[i+5], az[i+3]);
-        bprintf(zSuffix, sizeof(zSuffix), " (By %.30s)", az[i+2]);
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %.30s)", az[i+2]);
         if( az[i+7] && atoi(az[i+8])==4 && strcmp(az[i],az[i+7])==0
             && strcmp(az[i+5],az[i+12])==0 ){
           i += 7;
           if( az[i+4][0]==0 ){
             appendf(zPrefix,0,sizeof(zPrefix),
-                    " Unassign from %.50s.", az[i+3]);
+                    " 取消对 %.50s 的分配。", az[i+3]);
           }else if( az[i+3][0]==0 ){
-            appendf(zPrefix,0,sizeof(zPrefix), " Assign to %.50s.", az[i+4]);
+            appendf(zPrefix,0,sizeof(zPrefix), " 分配给 %.50s。", az[i+4]);
           }else{
-            appendf(zPrefix,0,sizeof(zPrefix), " Reassign from %.50s to %.50s",
+            appendf(zPrefix,0,sizeof(zPrefix), " 重新由 %.50s 分配给 %.50s。",
                     az[i+3], az[i+4]); 
           }
         }
         if( az[i+7] && atoi(az[i+8])==6 && strcmp(az[i],az[i+7])==0
             && strcmp(az[i+5],az[i+12])==0 ){
           i += 7;
-          appendf(zPrefix,0,sizeof(zPrefix), " Plus other changes.");
+          appendf(zPrefix,0,sizeof(zPrefix), " 其它的变更。");
           while( az[i+7] && atoi(az[i+8])==6 && strcmp(az[i],az[i+7])==0
                  && strcmp(az[i+5],az[i+12])==0 ){
             i += 7;
@@ -460,22 +463,22 @@ void timeline_rss(void){
         }
         if( az[i+4][0]==0 ){
           bprintf(zPrefix, sizeof(zPrefix),
-                  "Unassign ticket #%.20s from %.50s.",
+                  "取消任务单 #%.20s 对 %.50s 的分配。",
                   az[i+5], az[i+3]);
         }else if( az[i+3][0]==0 ){
-          bprintf(zPrefix, sizeof(zPrefix), "Assign ticket #%.20s to %.50s.",
+          bprintf(zPrefix, sizeof(zPrefix), "分配任务单 #%.20s 给 %.50s。",
                   az[i+5], az[i+4]);
         }else{
           bprintf(zPrefix, sizeof(zPrefix),
-                  "Reassign ticket #%.20s from %.50s to %.50s",
+                  "重新分配任务单 #%.20s 从 %.50s 给 %.50s。",
                   az[i+5], az[i+3], az[i+4]); 
         }
-        bprintf(zSuffix, sizeof(zSuffix), " (By %.30s)", az[i+2]);
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %.30s)", az[i+2]);
         bprintf(zLink,sizeof(zLink),"tktview?tn=%.20s",az[i+5]);
         break;
       }
       case 5: {   /* Changes to a Wiki page */
-        bprintf(zPrefix, sizeof(zPrefix), "Wiki page %.300s ", az[i+5]);
+        bprintf(zPrefix, sizeof(zPrefix), "Wiki 页面 %.300s ", az[i+5]);
         /* Skip over subsequent lines of the same text and display 
         ** number of edits if greater then 1
         */
@@ -488,10 +491,10 @@ void timeline_rss(void){
           }
         }
         if( nEdits>1 ){
-          bprintf(zSuffix, sizeof(zSuffix), "edited %d times by %.30s",
+          bprintf(zSuffix, sizeof(zSuffix), "编辑 %d 次，由 %.30s",
                   nEdits, az[i+2]);
         }else{
-          bprintf(zSuffix, sizeof(zSuffix), "edited by %.30s", az[i+2]);
+          bprintf(zSuffix, sizeof(zSuffix), "由 %.30s 编辑", az[i+2]);
         }
         if( rssDetail>=5 ){
           zMsg = mprintf("%h",az[i+6]);
@@ -502,7 +505,7 @@ void timeline_rss(void){
         break;
       }
       case 6: {  /* Changes to a ticket other than status or assignment */
-        bprintf(zSuffix, sizeof(zSuffix), " (By %.30s)", az[i+2]);
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %.30s)", az[i+2]);
         /* Skip over subsequent lines of the same text and display 
         ** number of edits if greater then 1
         */
@@ -515,12 +518,12 @@ void timeline_rss(void){
           int len1 = strlen(az[i+3]);
 
           if( len1==0 ){
-            zMsg = mprintf("Added to #%h <i>%h</i>:",
+            zMsg = mprintf("增加到 #%h <i>%h</i>:",
                            az[i+5], zMsg ? zMsg : "");
             if( rssDetail>=9 ) zWiki = az[i+4];
           }else if( strlen(az[i+4])>len1+5
                     && strncmp(az[i+3],az[i+4],len1)==0 ){
-            zMsg = mprintf("Appended to #%h <i>%h</i>:",
+            zMsg = mprintf("追加到 #%h <i>%h</i>:",
                            az[i+5], zMsg ? zMsg : "");
             if( rssDetail>=9 ) zWiki = &(az[i+4])[len1];
           }else{
@@ -539,10 +542,10 @@ void timeline_rss(void){
           }
         }
         if( nEdits>1 ){
-          bprintf(zPrefix, sizeof(zPrefix), "%d changes to ticket #%.20s",
+          bprintf(zPrefix, sizeof(zPrefix), "%d 次修改任务单 #%.20s",
                   nEdits, az[i+5]);
         }else{
-          bprintf(zPrefix, sizeof(zPrefix), "Changes to ticket #%.20s",
+          bprintf(zPrefix, sizeof(zPrefix), "修改任务单 #%.20s",
               az[i+5]);
         }
         bprintf(zLink,sizeof(zLink),"tktview?tn=%.20s",az[i+5]);
@@ -550,12 +553,12 @@ void timeline_rss(void){
       }
       case 7: { /* Attachments */
         if( isdigit(az[i+3][0]) ){
-          bprintf(zPrefix, sizeof(zPrefix), "Attachment to ticket #%.20s: ",
+          bprintf(zPrefix, sizeof(zPrefix), "任务单 #%.20s 的附件: ",
                   az[i+3]);
           zMsg = mprintf(
-              "Attachment to ticket "
-              "<a href=\"%s/tktview?tn=%.20t\">#%.20s</a>: "
-              "%h bytes <a href=\"%s/attach_get/%T/%T\">%h</a>",
+              "任务单 "
+              "<a href=\"%s/tktview?tn=%.20t\">#%.20s</a> 的附件: "
+              "%h 字节 <a href=\"%s/attach_get/%T/%T\">%h</a>",
               g.zBaseURL, az[i+3], az[i+3], az[i+4], g.zBaseURL, az[i+6],
               az[i+5], az[i+5]);
           if( g.okRead ){
@@ -563,11 +566,11 @@ void timeline_rss(void){
           }
         }else{
           bprintf(zPrefix, sizeof(zPrefix),
-                  "Attachment to %.300s: %h bytes %h", 
+                  "%.300s 的附件: %h 字节 %h", 
                   az[i+3], az[i+4], az[i+5]);
           zMsg = mprintf(
-              "Attachment to <a href=\"%s/wiki?p=%.300t\">%.300s</a>: "
-              "%h bytes <a href=\"%s/attach_get/%T/%T\">%h</a>",
+              "<a href=\"%s/wiki?p=%.300t\">%.300s</a> 的附件: "
+              "%h 字节 <a href=\"%s/attach_get/%T/%T\">%h</a>",
               g.zBaseURL, az[i+3], az[i+3], az[i+4], g.zBaseURL,
               az[i+6], az[i+5], az[i+5]);
           if( g.okRdWiki ){
@@ -578,7 +581,7 @@ void timeline_rss(void){
           zWiki = db_short_query("SELECT description FROM attachment "
                                  "WHERE atn=%d", atoi(az[i+6]));
         }
-        bprintf(zSuffix, sizeof(zSuffix), "(by %.30s)", az[i+2]);
+        bprintf(zSuffix, sizeof(zSuffix), "(由 %.30s)", az[i+2]);
         break;
       }
       case 8: { /* An inspection */
@@ -594,12 +597,12 @@ void timeline_rss(void){
         }
         if( az[i+4][0] ){
           bprintf(zPrefix, sizeof(zPrefix),
-                  "Inspection of [%.20s] on branch %.50s: ",
+                  "检查 [%.20s] 于分支 %.50s: ",
                   az[i+5], az[i+4]);
         }else{
-          bprintf(zPrefix, sizeof(zPrefix), "Inspection of [%.20s]: ", az[i+5]);
+          bprintf(zPrefix, sizeof(zPrefix), "检查 [%.20s]: ", az[i+5]);
         }
-        bprintf(zSuffix, sizeof(zSuffix), " (By %.30s)", az[i+2]);
+        bprintf(zSuffix, sizeof(zSuffix), " (由 %.30s)", az[i+2]);
         if( g.okRead ){
           bprintf(zLink,sizeof(zLink),"chngview?cn=%.20s",az[i+5]);
         }

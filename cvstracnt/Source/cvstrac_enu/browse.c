@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -120,10 +120,15 @@ static void revision_history(const char *zName, int showMilestones){
     pTm = localtime(&t);
     strftime(zDate, sizeof(zDate), "%Y-%b-%d %H:%M", pTm);
     if( i==0 ){
+<<<<<<< browse.c
+      @ <thead><tr><th>Date</th><th width=80>Version</th>
+      @         <th>Description</th></tr>
+=======
       @ <thead><tr>
       @         <th class="date">Date</th>
       @         <th class="version">Version</th>
       @         <th class="description">Description</th></tr>
+>>>>>>> 1.7
       @ <tbody>
     }
     if( az[i][0]==0 ){

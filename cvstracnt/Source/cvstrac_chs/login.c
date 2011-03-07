@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -19,6 +19,8 @@
 ** Author contact information:
 **   drh@hwaci.com
 **   http://www.hwaci.com/drh/
+**
+** 简体中文翻译: 周劲羽 (zjy@cnpack.org) 2003-11-09
 **
 *******************************************************************************
 **
@@ -31,7 +33,7 @@
 #include <time.h>
 #ifdef CVSTRAC_WINDOWS
 /* Used by "use Windows password" feature */
-# include <windows.h>
+#include <windows.h>
 typedef BOOL (CALLBACK FNLOGONUSERA)(LPTSTR, LPTSTR, LPTSTR, DWORD, DWORD, PHANDLE);
 #endif
 
@@ -77,15 +79,15 @@ void login_page(void){
       sleep(1);
       zErrMsg = 
          @ <p class="error">
-         @ You entered an incorrect old password while attempting to change
-         @ your password.  Your password is unchanged.
+         @ 您在尝试修改密码时输入了一个错误的密码，
+         @ 您的密码没有被修改。
          @ </p>
       ;
     }else if( strcmp(zNew1,zNew2)!=0 ){
       zErrMsg = 
          @ <p class="error">
-         @ The two copies of your new passwords do not match.
-         @ Your password is unchanged.
+         @ 您两次输入的新密码不一致，
+         @ 您的密码没有被修改。
          @ </p>
       ;
     }else{
@@ -112,7 +114,7 @@ void login_page(void){
       sleep(1);
       zErrMsg = 
          @ <p class="error">
-         @ You entered an incorrect username and/or password
+         @ 您输入了一个无效的用户名或密码。
          @ </p>
       ;
     }else{
@@ -154,7 +156,7 @@ void login_page(void){
 #endif
   common_standard_menu("login", 0);
   common_add_help_item("CvstracLogin");
-  common_header("Login/Logout");
+  common_header("登录/注销");
   @ %s(zErrMsg)
   @ <form action="login" method="POST">
   if( P("nxp") ){
@@ -162,54 +164,54 @@ void login_page(void){
   }
   @ <table align="left" style="margin: 0 10px;">
   @ <tr>
-  @   <td align="right">User ID:</td>
+  @   <td align="right">用户名:</td>
   @   <td><input type="text" name="u" value="" size=30></td>
   @ </tr>
   @ <tr>
-  @  <td align="right">Password:</td>
+  @  <td align="right">密码:</td>
   @   <td><input type="password" name="p" value="" size=30></td>
   @ </tr>
   @ <tr>
   @   <td></td>
-  @   <td><input type="submit" name="in" value="Login"></td>
+  @   <td><input type="submit" name="in" value="登录"></td>
   @ </tr>
   @ </table>
   if( g.isAnon ){
-    @ <p>To login
+    @ <p>要登录，
   }else{
-    @ <p>You are current logged in as <b>%h(g.zUser)</b></p>
-    @ <p>To change your login to a different user
+    @ <p>您当前以用户名 <b>%h(g.zUser)</b> 登录。</p>
+    @ <p>如果您想使用另一个用户名登录，
   }
-  @ enter the user-id and password at the left and press the
-  @ "Login" button.  Your user name will be stored in a browser cookie.
-  @ You must configure your web browser to accept cookies in order for
-  @ the login to take.</p>
+  @ 在左边输入您的用户名和密码并点击
+  @ "登录" 按钮。您的用户名将被存储在浏览器的 Cookie 中。
+  @ 请确认您的浏览器允许使用 Cookie 以进行登录
+  @ 操作。</p>
   if( db_exists("SELECT id FROM user WHERE id='anonymous'") ){
-    @ <p>This server is configured to allow limited access to users
-    @ who are not logged in.</p>
+    @ <p>该服务器被配置为限制未登录用户
+    @ 使用。</p>
   }
   if( !g.isAnon ){
     @ <br clear="all"><hr>
-    @ <p>To log off the system (and delete your login cookie)
-    @  press the following button:<br>
-    @ <input type="submit" name="out" value="Logout"></p>
+    @ <p>如果要注销系统（并删除 Cookie 中的登录信息），
+    @  请点击下面的按钮:<br>
+    @ <input type="submit" name="out" value="注销"></p>
   }
   @ </form>
   if( !g.isAnon && g.okPassword ){
     @ <br clear="all"><hr>
-    @ <p>To change your password, enter your old password and your
-    @ new password twice below then press the "Change Password"
-    @ button.</p>
+    @ <p>要修改您的密码，请输入您原来的密码，再输入两次新的密码，
+    @ 然后点击下面的 "修改密码"
+    @ 按钮。</p>
     @ <form action="login" method="POST">
     @ <table>
-    @ <tr><td align="right">Old Password:</td>
+    @ <tr><td align="right">原密码:</td>
     @ <td><input type="password" name="p" size=30></td></tr>
-    @ <tr><td align="right">New Password:</td>
+    @ <tr><td align="right">新密码:</td>
     @ <td><input type="password" name="n1" size=30></td></tr>
-    @ <tr><td align="right">Repeat New Password:</td>
+    @ <tr><td align="right">重复密码:</td>
     @ <td><input type="password" name="n2" size=30></td></tr>
     @ <tr><td></td>
-    @ <td><input type="submit" value="Change Password"></td></tr>
+    @ <td><input type="submit" value="修改密码"></td></tr>
     @ </table>
     @ </form>
   }
@@ -292,7 +294,7 @@ void login_check_credentials(void){
   /*
   ** Next check to see if the user specified by "U" and "P" query
   ** parameters or by the login cookie exists
-  */  
+  */
   if( (zUser = P("U"))!=0 && (zPswd = P("P"))!=0 ){
     z = db_short_query("SELECT passwd FROM user WHERE id='%q'", zUser);
     if( z==0 || z[0]==0 || strcmp(crypt(zPswd,z),z)!=0 ){
