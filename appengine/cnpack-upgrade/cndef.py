@@ -111,12 +111,6 @@ LANG_NAMES = (
     'Swedish(1053)', 'Thai(1054)', 'Turkish(1055)', 'ZH-CN(2052)', 'Portuguese(2070)'
     )
 
-# Count by Country
-class GeoIP(db.Model):
-  startip = db.IntegerProperty(required=True)
-  endip = db.IntegerProperty(required=True)
-  code = db.StringProperty(required=True)
-
 def ip2long(ip):
   ip_array = ip.split('.')
   if len(ip_array) == 4:
@@ -127,14 +121,43 @@ def ip2long(ip):
 
 def country_code_by_addr(ip):
   ipnum = ip2long(ip)
-  geos = db.GqlQuery("SELECT * "
-                     "FROM GeoIP "
-                     "WHERE startip <= :1 ORDER BY startip DESC LIMIT 1", ipnum)
-  geo = geos.get()
-  if geo and (ipnum <= geo.endip):
-    return geo.code
-  else:
-    return '--'
+
+  code = '--'
+  f = file('geo.dat', 'rb')
+  f.seek(0, 2)
+  len = f.tell() / 10
+  l = 0l
+  r = len
+  while True:
+    m = (l + r) / 2
+    f.seek((l + r) / 2 * 10)
+    buf = f.read(4)
+    startip = 0l
+    for i in range(4):
+      startip += ord(buf[i]) << (i * 8)
+    buf = f.read(4)
+    endip = 0l
+    for i in range(4):
+      endip += ord(buf[i]) << (i * 8)
+    if ipnum >= startip and ipnum <= endip:
+      code = f.read(2)
+      break
+    if l == r:
+      break;
+    if ipnum < startip:
+      if r == m:
+        break
+      else:
+        r = m
+    elif ipnum > endip:
+      if l == m:
+        l = m + 1
+      else:
+        l = m
+    else:
+      break
+  f.close() # close the file 
+  return code
 
 def country_name_by_code(code):
   codes = list(COUNTRY_CODES)

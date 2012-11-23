@@ -125,8 +125,7 @@ class ViewPage(webapp.RequestHandler):
   <table border=0 width=770 height=20 cellspacing=0 cellpadding=0>
     <tr><td align="center">版权所有(C) 2001-2010 <a href="mailto:master@cnpack.org">CnPack 开发组</a></td></tr>
     <tr><td align="center">程序编写：<a href="mailto:zjy@cnpack.org">周劲羽</a></td></tr>
-    <tr><td align="center"><img src="http://code.google.com/appengine/images/appengine-noborder-120x30.gif" 
-alt="由 Google App Engine 提供支持" /></td></tr>
+    <tr><td align="center">由 Google App Engine 提供支持</td></tr>
   </table>
 </div>
 
