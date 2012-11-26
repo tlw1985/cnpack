@@ -104,7 +104,8 @@ function country_code_by_addr($ip)
 {
   $ipnum = ip2long($ip);
   $code = '--';
-  if (!$fd = @fopen('geo.dat', 'rb'))
+  $fn = dirname(__FILE__).'\geo.dat';
+  if (!$fd = @fopen($fn, 'rb'))
     return $code;    
   fseek($fd, 0, SEEK_END);
   $len = ftell($fd) / 10;

@@ -7,7 +7,7 @@
 // ×¢ÊÍ£º$Id: config.php,v 1.15 2005/01/15 13:53:33 yygw Exp $
 //==============================================================================
 
-$debug = true;
+$debug = false;
 
 $g_sys_vars['dbtype']   = 'mysql';
 $g_sys_vars['dbhost']   = 'localhost';
