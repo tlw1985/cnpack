@@ -420,17 +420,17 @@ class ViewPage {
     else
 	    $db->query("SELECT * ".
                  "FROM cwlogs ".
-                 "WHERE date <= $date ORDER BY date DESC ".
+                 "WHERE date <= '$date' ORDER BY date DESC ".
                  "LIMIT ".($this->offset * $num).", $num");
 
     $this->outStr('日志查看：');
-    $this->outStr(sprintf('<a href="./?kind=6&offset=%d&$min=%d">前十分钟</a>&nbsp;', $this->offset, $min + 1));
-    $this->outStr(sprintf('<a href="./?kind=6&offset=%d&$min=%d">前一页</a>&nbsp;', $this->offset + 1, $min));
+    $this->outStr(sprintf('<a href="./?kind=6&offset=%d&min=%d">前十分钟</a>&nbsp;', $this->offset, $min + 1));
+    $this->outStr(sprintf('<a href="./?kind=6&offset=%d&min=%d">前一页</a>&nbsp;', $this->offset + 1, $min));
     $this->outStr('<a href="./?kind=6&offset=0&$min=0">当前</a>&nbsp;');
     if ($this->offset >= 1)
-      $this->outStr(sprintf('<a href="./?kind=6&offset=%d&$min=%d">后一页</a>&nbsp;', $this->offset - 1, $min));
+      $this->outStr(sprintf('<a href="./?kind=6&offset=%d&min=%d">后一页</a>&nbsp;', $this->offset - 1, $min));
     if ($min >= 1)
-      $this->outStr(sprintf('<a href="./?kind=6&offset=%d&$min=%d">后十分钟</a>&nbsp;', $this->offset, $min - 1));
+      $this->outStr(sprintf('<a href="./?kind=6&offset=%d&min=%d">后十分钟</a>&nbsp;', $this->offset, $min - 1));
     $this->outStr('
 <table width="100%" align="center" border="1" cellpadding="1" cellspacing="0">
   <tr>
