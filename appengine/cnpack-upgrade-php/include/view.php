@@ -535,11 +535,11 @@ class ViewPage {
     $this->outStr('条件组合查询：');
     if ($this->offset >= 1)
       $this->outStr(sprintf('<a href="./?kind=8&offset=%d&date=%d&ide=%s&ver=%s&code=%s">上一页</a>&nbsp;', 
-        $this->offset - 1, $idate, toStr(ide), toStr(ver), toStr(code)));
+        $this->offset - 1, $idate, toStr($ide), toStr($ver), toStr($code)));
     $this->outStr(sprintf('<a href="./?kind=8&offset=0&date=%d&ide=%s&ver=%s&code=%s">当前</a>&nbsp;', 
-      $idate, toStr(ide), toStr(ver), toStr(code)));
+      $idate, toStr($ide), toStr($ver), toStr($code)));
     $this->outStr(sprintf('<a href="./?kind=8&offset=%d&date=%d&ide=%s&ver=%s&code=%s">下一页</a>&nbsp;', 
-      $this->offset + 1, $idate, toStr(ide), toStr(ver), toStr(code)));
+      $this->offset + 1, $idate, toStr($ide), toStr($ver), toStr($code)));
 
     $this->outStr('
 <form method="get" name="query" action="./" class="form">
