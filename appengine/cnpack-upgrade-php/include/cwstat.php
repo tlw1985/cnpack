@@ -100,11 +100,11 @@ function DoStat()
   if (ip2long($ipaddr) == 0)
     $ipaddr = $_SERVER["REMOTE_ADDR"];
   
-  $ide = get_request('ide');
+  $ide = get_request('ide', 'none');
   incCntIde($today, $ide);
   incCntIde($alldate, $ide);
 
-  $ver = get_request('ver');
+  $ver = get_request('ver', 'none');
   incCntVer($today, $ver);
   incCntVer($alldate, $ver);
 
@@ -112,7 +112,7 @@ function DoStat()
   incCntCountry($today, $code);
   incCntCountry($alldate, $code);
 
-  $lang = get_request('langid');
+  $lang = get_request('langid', 'none');
   incCntLang($today, $lang);
   incCntLang($alldate, $lang);
 

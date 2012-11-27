@@ -1,34 +1,34 @@
-<?php
+ï»¿<?php
 
 require_once ('config.php');
 require_once ('db_mysql.inc');
 
-$g_lang['DatabaseErrorDebug'] = "Êı¾İ¿â´íÎó£º%s<br><br>\nMySQL ´íÎó£º%d (%s)";
-$g_lang['DatabaseError'] = "ÎŞĞ§µÄÊı¾İ·ÃÎÊ£¡";
+$g_lang['DatabaseErrorDebug'] = "æ•°æ®åº“é”™è¯¯ï¼š%s<br><br>\nMySQL é”™è¯¯ï¼š%d (%s)";
+$g_lang['DatabaseError'] = "æ— æ•ˆçš„æ•°æ®è®¿é—®ï¼";
 
 //==============================================================================
-// È«¾Ö¹«¹²º¯Êı
+// å…¨å±€å…¬å…±å‡½æ•°
 //==============================================================================
 
-// µÃµ½µ±Ç°ÈÕÆÚ
+// å¾—åˆ°å½“å‰æ—¥æœŸ
 function get_date()
 {
   return date('Y-m-d');
 }
 
-// µÃµ½µ±Ç°Ê±¼ä
+// å¾—åˆ°å½“å‰æ—¶é—´
 function get_time()
 {
   return date('H:i:s');
 }  
 
-// µÃµ½ÈÕÆÚÊ±¼ä
+// å¾—åˆ°æ—¥æœŸæ—¶é—´
 function get_datetime()
 {
 	return date("Y-m-d H:i:s");
 }
 
-// È¡Á½¸öÊ±¼äÏà²îµÄÌìÊı£¬$time2 - $time1£¬Èç¹û $time2 Îª¿Õ£¬Ê¹ÓÃµ±Ç°Ê±¼ä¼ÆËã
+// å–ä¸¤ä¸ªæ—¶é—´ç›¸å·®çš„å¤©æ•°ï¼Œ$time2 - $time1ï¼Œå¦‚æœ $time2 ä¸ºç©ºï¼Œä½¿ç”¨å½“å‰æ—¶é—´è®¡ç®—
 function get_diff_days($time1, $time2 = '')
 {
   if (is_string($time1))
@@ -40,7 +40,7 @@ function get_diff_days($time1, $time2 = '')
   return floor(($time2 - $time1) / 60 / 60 / 24);
 }
 
-// ÑéÖ¤ÊÇ¸ñÊ½ÓĞĞ§µÄ Email µØÖ·
+// éªŒè¯æ˜¯æ ¼å¼æœ‰æ•ˆçš„ Email åœ°å€
 function is_valid_email($email)
 {
   $result = isset($email) && strstr($email, '@') &&
@@ -48,30 +48,30 @@ function is_valid_email($email)
   return $result;
 }
 
-// È¡ÓÃ»§Ìá½»µÄ²ÎÊı
+// å–ç”¨æˆ·æäº¤çš„å‚æ•°
 function get_request($name, $default = '', $valid = '', $delete_ctrlchar = true)
 {
   $result = $_REQUEST[$name];
   if (empty($result) || ($valid != '') && ($result != $valid))
     $result = $default;
-  // ¹ıÂËµô²»°²È«µÄ¿ØÖÆ×Ö·û
+  // è¿‡æ»¤æ‰ä¸å®‰å…¨çš„æ§åˆ¶å­—ç¬¦
   if ($delete_ctrlchar)
     $result = preg_replace("[;_'<>\"]", "", $result);
   return $result;
 }
 
-// È¡ÓÃ»§Ìá½»µÄÕûÊı²ÎÊı
+// å–ç”¨æˆ·æäº¤çš„æ•´æ•°å‚æ•°
 function get_int_request($name, $default = '', $valid = '', $delete_ctrlchar = true)
 {
   return (integer) get_request($name, $default, $valid, $delete_ctrlchar);
 }
 
-// ·µ»Ø´øÓïÑÔ²ÎÊıµÄÊä³öÁ´½Ó
+// è¿”å›å¸¦è¯­è¨€å‚æ•°çš„è¾“å‡ºé“¾æ¥
 function get_link($link)
 {
   global $lang;
   if (ereg("([?&]{1})lang=", $link) || strstr($link, "://")) {
-    // ÒÑ¾­°üº¬ÓïÑÔ²ÎÊıµÄ»òÁ´½Óµ½ÆäËüµØ·½µÄ²»ĞŞ¸Ä
+    // å·²ç»åŒ…å«è¯­è¨€å‚æ•°çš„æˆ–é“¾æ¥åˆ°å…¶å®ƒåœ°æ–¹çš„ä¸ä¿®æ”¹
   	return $link;
   } else {
     if (strstr($link, "?"))
@@ -81,13 +81,13 @@ function get_link($link)
   }
 }
 
-// Êä³ö´ø»»ĞĞ·ûµÄÎÄ±¾
+// è¾“å‡ºå¸¦æ¢è¡Œç¬¦çš„æ–‡æœ¬
 function output($html = '')
 {
   echo $html."\n";
 }
 
-// Êä³öÒ»¸öÁ´½Ó
+// è¾“å‡ºä¸€ä¸ªé“¾æ¥
 function output_url($url, $text = '', $head = '', $tail = '')
 {
   if ($text == '')
@@ -95,7 +95,7 @@ function output_url($url, $text = '', $head = '', $tail = '')
   echo "$head<a href=\"$url\">".$text."</a>$tail";
 }
 
-// Êä³ö JavaScript ¶Ô»°¿òĞÅÏ¢
+// è¾“å‡º JavaScript å¯¹è¯æ¡†ä¿¡æ¯
 function output_alert($msg = '')
 {
   echo "<script type=\"text/javascript\">\n".
@@ -105,7 +105,7 @@ function output_alert($msg = '')
        "</script>\n";
 }
 
-// ÌáÊ¾´íÎóĞÅÏ¢·µ»Ø
+// æç¤ºé”™è¯¯ä¿¡æ¯è¿”å›
 function halt($msg = '')
 {
   global $g_lang;
@@ -118,10 +118,10 @@ function halt($msg = '')
 }
 
 //==============================================================================
-// µ÷ÊÔÏà¹Ø¹«¹²º¯Êı
+// è°ƒè¯•ç›¸å…³å…¬å…±å‡½æ•°
 //==============================================================================
 
-// Êä³öµ÷ÊÔĞÅÏ¢
+// è¾“å‡ºè°ƒè¯•ä¿¡æ¯
 function debug_output($msg)
 {
   global $debug;
@@ -129,14 +129,14 @@ function debug_output($msg)
 		echo $msg."<br>\n";
 }
 
-// ¼ì²é´«µİµÄÖµ£¬ÊÇ·ñÓĞ£¿ÊÇ·ñÎª¿Õ£¿
+// æ£€æŸ¥ä¼ é€’çš„å€¼ï¼Œæ˜¯å¦æœ‰ï¼Ÿæ˜¯å¦ä¸ºç©ºï¼Ÿ
 function filled_out($form_vars, $check_has_vars = 0)
 {
-  // ¼ì²é±äÁ¿Ò»¶¨ÒªÓĞ
+  // æ£€æŸ¥å˜é‡ä¸€å®šè¦æœ‰
   if ( 0 == count($form_vars) && $check_has_vars == 1)
     return false;
 
-  // ¼ì²éÃ¿¸ö±äÁ¿Ò»¶¨Òª´æÔÚ£¬¶øÇÒÒª¸³Öµ
+  // æ£€æŸ¥æ¯ä¸ªå˜é‡ä¸€å®šè¦å­˜åœ¨ï¼Œè€Œä¸”è¦èµ‹å€¼
   foreach ($form_vars as $key => $value)
   {
   	 debug_output("$key = $value");
@@ -146,8 +146,8 @@ function filled_out($form_vars, $check_has_vars = 0)
   return true;
 }
 
-// dump_array Êä³öÊı×é±äÁ¿ÄÚÈİ
-// $array     ÒªÊä³öµÄÊı×é±äÁ¿
+// dump_array è¾“å‡ºæ•°ç»„å˜é‡å†…å®¹
+// $array     è¦è¾“å‡ºçš„æ•°ç»„å˜é‡
 // to represent the array as a set
 function dump_array($array)
 {
@@ -174,7 +174,7 @@ function dump_array($array)
   }
   else
   {
-    // Èç¹û²»ÊÇÊı×é£¬Ôò·µ»Ø±äÁ¿
+    // å¦‚æœä¸æ˜¯æ•°ç»„ï¼Œåˆ™è¿”å›å˜é‡
     return $array;
   }
 }
@@ -206,15 +206,15 @@ function dump_sys_vars()
          "\n<!-- END VARIABLE DUMP -->\n";
 }
 
-// output_vars ÏÔÊ¾³£ÓÃµÄÊı×é±äÁ¿
+// output_vars æ˜¾ç¤ºå¸¸ç”¨çš„æ•°ç»„å˜é‡
 function output_vars()
 {
   echo dump_sys_vars();
 }
 
-// user_error_handler ×Ô¶¨Òå´íÎó´¦Àíº¯Êı
-// $errno 	´íÎó±àºÅ
-// $errstr  ´íÎóĞÅÏ¢
+// user_error_handler è‡ªå®šä¹‰é”™è¯¯å¤„ç†å‡½æ•°
+// $errno 	é”™è¯¯ç¼–å·
+// $errstr  é”™è¯¯ä¿¡æ¯
 function user_error_handler ($errno, $errstr)
 {
   echo "<table bgcolor = '#cccccc'><tr><td>
@@ -230,7 +230,7 @@ function user_error_handler ($errno, $errstr)
   echo "</td></tr></table><br>";
 }
 
-// ²úÉúËæ»úÊı
+// äº§ç”Ÿéšæœºæ•°
 function rndkey($lng){
  $char_list = array();
  $char_list[] = "1234567890";
@@ -246,7 +246,7 @@ function rndkey($lng){
  return($rnd_Key);
 }
 
-// ÓÃ»§Êı¾İ¿âÀà
+// ç”¨æˆ·æ•°æ®åº“ç±»
 class db extends DB_Sql 
 {
   function db($query = "")
