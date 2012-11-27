@@ -268,7 +268,7 @@ class ViewPage {
       $d1 = date("Y-m-d", mktime(0, 0, 0, getMonth($d2), 1, getYear($d2)));
       $db->query("SELECT * ".
                  "FROM cwcntmonth ".
-                 "WHERE date = $d1");
+                 "WHERE date = '$d1'");
       if ($db->next_record()) {
         $mact[$i] = $db->f('count');
       }
@@ -489,7 +489,7 @@ class ViewPage {
   } 
 
   function getMonthStr($date) {
-    if (date == $this->alldate)
+    if (strtotime($date) == strtotime($this->alldate))
       return '全部';
     else
       return date("Y-m", strtotime($date));
