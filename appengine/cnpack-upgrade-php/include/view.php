@@ -457,7 +457,7 @@ class ViewPage {
     $field = get_request('field');
     $value = get_request('value');
     $db = new db(sprintf("SELECT * ".
-                 "FROM CWLogs ".
+                 "FROM cwlogs ".
                  "WHERE %s = '%s' ".
                  "ORDER BY date DESC ".
                  "LIMIT %d, %d", $field, $value, $this->offset * $num, $num));
