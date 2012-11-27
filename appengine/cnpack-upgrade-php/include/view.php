@@ -599,7 +599,8 @@ class ViewPage {
     <td width="18%">IDE</td>
     <td width="18%">版本号</td>');
 
-    $db->seek();
+    if ($db->num_rows() > 0)
+      $db->seek();
     while ($db->next_record()) {
       $this->outStr('<tr>');
       $this->outStr(sprintf('<td>%s</td>', $this->getMonthStr($db->f('date'))));
