@@ -317,14 +317,14 @@ class ViewPage {
     }
 
     $db->query("SELECT * ".
-               "FROM CWCntHour ".
+               "FROM cwcnthour ".
                "WHERE date = '$date'");
     while ($db->next_record()) {
       $cntday[$db->f('hour')] = $db->f('count');
     }
 
     $db->query("SELECT * ".
-               "FROM CWCntHour ".
+               "FROM cwcnthour ".
                "WHERE date = '".addDays($date, -1)."'");
     while ($db->next_record()) {
       $cntlast[$db->f('hour')] = $db->f('count');
@@ -370,7 +370,7 @@ class ViewPage {
   function outIde() {
     $date = addDays($this->today, $this->offset);
     $db = new db("SELECT * ".
-                 "FROM CWCntIde ".
+                 "FROM cwcntide ".
                  "WHERE date = '".$this->alldate."' ORDER BY count DESC");
     $ides = array();
     $cntall = array();
@@ -381,7 +381,7 @@ class ViewPage {
 
     $cntday = array();
     $db->query("SELECT * ".
-               "FROM CWCntIde ".
+               "FROM cwcntide ".
                "WHERE date = '$date'");
     while ($db->next_record()) {
       $cntday[cStr($db->f('ide'))] = $db->f('count');
@@ -389,7 +389,7 @@ class ViewPage {
 
     $cntlast = array();
     $db->query("SELECT * ".
-               "FROM CWCntIde ".
+               "FROM cwcntide ".
                "WHERE date = '".addDays($date, -1)."'");
     while ($db->next_record()) {
       $cntlast[cStr($db->f('ide'))] = $db->f('count');
@@ -435,7 +435,7 @@ class ViewPage {
   function outVer() {
     $date = addDays($this->today, $this->offset);
     $db = new db("SELECT * ".
-                 "FROM CWCntVer ".
+                 "FROM cwcntver ".
                  "WHERE date = '".$this->alldate."' ORDER BY count DESC");
     $vers = array();
     $cntall = array();
@@ -446,7 +446,7 @@ class ViewPage {
 
     $cntday = array();
     $db->query("SELECT * ".
-               "FROM CWCntVer ".
+               "FROM cwcntver ".
                "WHERE date = '$date'");
     while ($db->next_record()) {
       $cntday[cStr($db->f('ver'))] = $db->f('count');
@@ -454,7 +454,7 @@ class ViewPage {
 
     $cntlast = array();
     $db->query("SELECT * ".
-               "FROM CWCntVer ".
+               "FROM cwcntver ".
                "WHERE date = '".addDays($date, -1)."'");
     while ($db->next_record()) {
       $cntlast[cStr($db->f('ver'))] = $db->f('count');
