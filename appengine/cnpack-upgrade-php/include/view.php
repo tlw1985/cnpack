@@ -309,7 +309,7 @@ class ViewPage {
   }
   
   function doOutData($table, $field, $title, $kind, $col1, $col2, $col3, $col4) {
-    $date = addDays($this->today, $this->offset);
+    $date = addDays($this->today, -$this->offset);
     $db = new db("SELECT * ".
                  "FROM $table ".
                  "WHERE date = '".$this->alldate."' ORDER BY count DESC");
