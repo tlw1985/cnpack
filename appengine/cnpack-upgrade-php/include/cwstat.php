@@ -113,6 +113,8 @@ function DoStat()
   incCntCountry($alldate, $code);
 
   $lang = get_request('langid', 'none');
+  if(strlen($lang) > 4)
+    $lang = substr($lang, 4);
   incCntLang($today, $lang);
   incCntLang($alldate, $lang);
 
