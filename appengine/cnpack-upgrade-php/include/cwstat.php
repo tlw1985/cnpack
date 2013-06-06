@@ -7,6 +7,10 @@ require_once ('cndef.php');
 function incLog($ipaddr, $now, $ide, $ver, $code, $lang)
 {
   $db = new db("INSERT INTO cwlogs (ipaddr, date, ide, ver, code, lang) VALUES ('$ipaddr', '$now', '$ide', '$ver', '$code', '$lang')");
+  if (rand(1,10000) == 100)
+  {
+    $db->query("DELETE FROM cwlogs WHERE date < '".date("Y-m-d", strtotime('-2 weeks'))."'");
+  }
 }
 
 function incCntHour($date, $hour)
